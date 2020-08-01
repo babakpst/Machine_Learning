@@ -171,5 +171,9 @@ while i < abs(length)                                      % while not finished
   if exist('OCTAVE_VERSION')
     fflush(stdout);
   end
+  Theta1 = reshape(X(1:25 * (400 + 1)), ...
+                 25, (400 + 1));
+  
+  displayData(Theta1(:, 2:end));  
 end
 fprintf('\n');

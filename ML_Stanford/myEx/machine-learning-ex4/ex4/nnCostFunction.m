@@ -62,26 +62,66 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+X = [ones(m,1) X];
+z2 = X*Theta1';
+a2 = sigmoid(z2);
+a2 = [ones(m,1) a2];
+
+z3 = a2*Theta2';
+a3 = sigmoid(z3);
+h = a3;
+
+for c=1:num_labels
+  yy = (y==c);
+  J = J + (1.0/m)*( -yy'* log(h(:,c)) - (1-yy)'* log(1-h(:,c)) );% + (lambda/(2*m) * (temp'*temp) );
+end
+
+Theta1_temp = Theta1(:,2:end);
+Theta2_temp = Theta2(:,2:end);
+params = [Theta1_temp(:) ; Theta2_temp(:)];
+%params'*params
+J = J + (lambda/(2*m))*params'*params;
+
+% gradient
+yc=1:num_labels;
+yc = yc'; % 10x1
+for t = 1:m
+
+  % step 1: for each training example, we compute the activation units.
+  a1 = X(t,:); % 1x401
+  a1 =a1'; % 401x1 
+  z2 = Theta1*a1; % 25x1 = (25x401) * (401x1)
+  a2 = sigmoid(z2);  % 25x1
+  a2 = [1; a2]; % 26x1
+
+  z3 = Theta2*a2; %(10x26) * (26x1)
+  a3 = sigmoid(z3); % 10x1
 
 
+  % step 2: For each output unit k in layer 3 (the output layer)
+  yy= (yc==y(t)); % 10x1
+  delta3 = a3 - yy;  % 10x1
 
+  % step 3:
+  z2 =[1; z2]; 
+  delta2 = Theta2'*delta3 .* sigmoidGradient(z2); % 26x1 = (26x10) * (10x1) .* (26x1)  
 
+  % step 4:
+  delta2 = delta2(2:end); %25x1
+  
+  Theta1_grad = Theta1_grad + delta2 * a1'; % 25x401 = (25x1)*(1x401)
+  Theta2_grad = Theta2_grad + delta3 * a2'; % 10x26  =  (10x1)*(1x25)
+  
+end  
 
+Theta1_grad = (1.0/m) * Theta1_grad; % 10x26  
+Theta2_grad = (1.0/m) * Theta2_grad; % 25x401 
 
-
-
-
-
-
-
-
-
-
-
-
+% reqularization
+Theta1_grad(:,2:end) = Theta1_grad(:,2:end) + (lambda/m) * Theta1(:,2:end);
+Theta2_grad(:,2:end) = Theta2_grad(:,2:end) + (lambda/m) * Theta2(:,2:end);
 
 % -------------------------------------------------------------
-
 % =========================================================================
 
 % Unroll gradients
