@@ -115,7 +115,7 @@
 
 \begin{itemize}
 	\item Supervised learning: functional approximation from labeled data. 
-	\item Unsupervised learning: functional description.
+	\item Unsupervised learning: functional description. Learning from unlabeled data. 
 	\item Reinforcement learning: Learning from delayed reward. 
 \end{itemize}
 
@@ -131,7 +131,7 @@ There are two types of supervised learning:
 
 \subsection{Terms}
 \begin{itemize}
-\item Instances: Inputs-pictures, pixels, etc.
+\item Instances: Inputs, such as pictures, pixels, etc.
 \item Concept: A set of functions that maps inputs to outputs.
 \item Target concept: The actual function that can map inputs to outputs. This is the actual answer.
 \item Hypothesis class: Set of all the functions that we are going to think about. 
@@ -166,7 +166,7 @@ A decision tree algorithm is a sequence of steps that will lead you to the desir
 \item Loop back to (1) till you narrow down the possibilities to one answer (the output).
 \end{itemize}
 Note that the usefulness of a question depends upon the answers we got to previous questions.
-\includegraphics[scale=0.5]{entroy.png}
+
 
 
 \section{Expressiveness}
@@ -192,7 +192,7 @@ Pseudocode:
 
 
 How to find the best attribute for the decision tree at each level: \\
-There are a couple of option. The most common method is called information gain: a measure that expresses how well an attribute splits the data into groups based on classification (for ex., if an attribution returns low info. gain, if it divides samples to two classes with a even yes/no, but the info gain is high, if each class has more of yeses or nos).
+There are a couple of options. The most common method is called information gain: a measure that expresses how well an attribute splits the data into groups based on classification. For example, an attribution returns \textit{low information gain}, if it divides samples to two classes with an even yes and no, but the information gain is high, if each class has more of yeses or nos.
 
 It quantifies the reduction in randomness (Entropy) over the labels we have with a set of data, based upon knowing the value of a particular attribute. A mathematical way to measure the gain, is entropy. It measures the homogeneity of a data set S's  classifications. It ranges from 0, which means that all of the classifications in the data set are the same (either yes or no), to $log_{2}$ of the number of different classifications, which means that the classifications are equally distributed within the data set. For a binary classification the entropy is only $log_{2} 1 = 1$ (if yes and no samples are equally divided). entropy is calculated as follows: 
 
@@ -201,11 +201,26 @@ Entropy(S) = \sum_{i=1}^{c} -p_{i} \; log_{2} (p_{i})
 \end{equation}
 where:
 \begin{itemize}
-\item c corresponds to the number of different classifications 
+\item $c$ corresponds to the number of different classifications 
 \item $p_{i}$ corresponds to the proportion of the data with the classification i
 \end{itemize}
 
 Here is the plot of entropy for a binary classifier, as the proportional of yes and no samples change:
+\includegraphics[scale=0.5]{entroy.png}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Information gain measures the reduction in entropy that results from partitioning the data on an attribute A, which is another way of saying that it represents how effective an attribute is at classifying the data. Given a set of training data S and an attribute A, the formula for information gain is:
 
