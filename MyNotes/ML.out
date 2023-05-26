@@ -5,9 +5,10 @@
 \BOOKMARK [2][-]{subsection.1.2.1}{Terms}{section.1.2}% 5
 \BOOKMARK [0][-]{chapter.2}{Decision tree}{}% 6
 \BOOKMARK [1][-]{section.2.1}{Intro}{chapter.2}% 7
-\BOOKMARK [1][-]{section.2.2}{Expressiveness}{chapter.2}% 8
-\BOOKMARK [1][-]{section.2.3}{ID3 algorithm to create a decision tree}{chapter.2}% 9
-\BOOKMARK [1][-]{section.2.4}{Extending ID3 algorithm}{chapter.2}% 10
-\BOOKMARK [1][-]{section.2.5}{over-fitting}{chapter.2}% 11
-\BOOKMARK [1][-]{section.2.6}{BIAS \(Inductive bias\)}{chapter.2}% 12
-\BOOKMARK [0][-]{section.2.6}{Bibliography}{}% 13
+\BOOKMARK [1][-]{section.2.2}{Representation vs Algorithm:}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.3}{Expressiveness}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.4}{ID3 algorithm to create a decision tree}{chapter.2}% 10
+\BOOKMARK [1][-]{section.2.5}{Extending ID3 algorithm}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.6}{over-fitting}{chapter.2}% 12
+\BOOKMARK [1][-]{section.2.7}{BIAS \(Inductive bias\)}{chapter.2}% 13
+\BOOKMARK [0][-]{section.2.7}{Bibliography}{}% 14
