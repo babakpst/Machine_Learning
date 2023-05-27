@@ -105,34 +105,44 @@
 %\listofalgorithms                 % List of algorithms
 %\addcontentsline{toc}{chapter}{List of Algorithms}  % This command includes the list of algorithms in the table of content
 
-% Chapters ==========================================================
+% Chapters =====================================================================
+%===============================================================================
+%===============================================================================
+%===============================================================================
 %\include{chapter1_Introduction}
-\chapter[Introduction]{Introduction}
+\chapter[Introduction]{Introduction to ML}
 \label{ch:ML}
 \noindent
 
 \section{General}
 
 \begin{itemize}
-	\item Supervised learning: functional approximation from labeled data. 
-	\item Unsupervised learning: functional description. Learning from unlabeled data. 
-	\item Reinforcement learning: Learning from delayed reward. 
+	\item Supervised learning (SL): functional approximation from labeled data. 
+	\item Unsupervised learning (UL): functional description. Learning from unlabeled data. 
+	\item Reinforcement learning (RL): Learning from delayed reward. 
 \end{itemize}
 
 
-\section{Supervised learning}
-\label{sec:sl}
+
+
+
+
+%===============================================================================
+%===============================================================================
+%===============================================================================
+\chapter[Supervised learning]{Supervised learning (SL)}
+\label{ch:sl}
 There are two types of supervised learning:
 
 \begin{itemize}
-\item classification: taking some inputs and mapping it to some discrete label. (true of false, male or female, etc.)
-\item regression: continuous valued function. Mapping from input to some \textbf{real number}. Something like age is more like discrete number, so, it is also classification. 
+\item classification: taking some inputs and mapping it to some discrete labels. (true of false; male or female; SUV or sedan or truck; class1, class2, class3.)
+\item regression: returns continuous valued function. Mapping from input to some \textbf{real number}. Something like age is more like discrete number, so, it is also classification. 
 \end{itemize}
 
-\subsection{Terms}
+\section{Terms}
 \begin{itemize}
 \item Instances: Inputs, such as pictures, pixels, etc.
-\item Concept: A set of functions that maps inputs to outputs.
+\item Concept: A set of \textit{functions} that maps inputs to outputs.
 \item Target concept: The actual function that can map inputs to outputs. This is the actual answer.
 \item Hypothesis class: Set of all the functions that we are going to think about. 
 \item Sample (Training set): A set of instances with correct labels.
@@ -141,24 +151,24 @@ There are two types of supervised learning:
 \end{itemize}
 
 
-\chapter[Decision tree]{Decision tree}
+\section{SL: Decision tree}
 
-\section{Intro}
-\label{sec:dt}
+\subsection{Introduction}
 
-First, we need to come up with a set of features for our decision tree. 
+Decision tree is a classification learning in the form of a sequence of decisions based on the attributes/features/questions (which forms the nodes) applied to every instance to assign it to a specific class. Answers to the questions would be the edges of the trees.
+For example, deciding to eat at a restaurant or not, or classification of vehicles into sedans, SUVs, trucks, etc.
 
+\subsection{Representation of the decision tree:}
 
-\section{Representation vs Algorithm:}
-
-A decision tree is a structure of nodes, edges and leaves that can be used to represent the data.
+A decision tree is a structure of nodes, edges and leaves that can be used to \textit{represent} the data. We always start at the root of the tree, otherwise we don't look at any other attribute in the tree. 
 \begin{itemize}
 \item Nodes represent attributes where you ask a question about it. (vehicle length, vehicle height, number of doors, etc.).
-\item Edges represent values. (A specific value for each attribute)
-\item Leaves represent the output/answer (vehicle’s type).
+\item Edges represent values/answers, a specific value for each attribute/question.
+\item Leaves represent the output (or final answer). For example, vehicle’s type.
 \end{itemize}
 
-A decision tree algorithm is a sequence of steps that will lead you to the desired output. To form a decision tree, we need to come up with the attributes that can split the space, roughly in half. 
+\subsection{Algorithm to build a decision tree}
+Algorithm means how to create the decision tree. A decision tree \textit{algorithm} is a sequence of steps that will lead you to the desired output. To form a decision tree, we need to come up with the attributes that can split the space, roughly in half. 
 \begin{itemize}
 \item Pick the best attribute (the one that can split the data roughly in half). If this attribute added no valuable information (not a good split), it might cause overfitting.
 \item Ask a question about this attribute.
@@ -167,60 +177,50 @@ A decision tree algorithm is a sequence of steps that will lead you to the desir
 \end{itemize}
 Note that the usefulness of a question depends upon the answers we got to previous questions.
 
-
-
-\section{Expressiveness}
+\subsection{Expressiveness}
 
 \begin{itemize}
 	\item Decision trees can basically express any function using the input attributes.
 	\item For Boolean functions (AND, OR, XOR, etc.), the truth table row will be translated into a path to a leaf.
-	\item How many decision trees we can generate for a specific function/problem? Decision tree hypothesis space is very huge $(2^{(2^{n})})$, this why we need to design algorithms to efficiently search the hypothesis space for the best decision tree. 
+	\item How many decision trees we can generate for a specific function/problem? For n boolean attributes with boolean output, the decision tree hypothesis space is very huge $(2^{(2^{n})})$. (Babak note:  this number of decision tree is not really distinct, see my notebook).
+	This is why we need to design algorithms to efficiently search the hypothesis space for the best decision tree. 
 \end{itemize}
 
-\section{ID3 algorithm to create a decision tree}
-ID3 builds decision trees using a top-down, greedy approach. The greedy part of the approach comes from the fact that it will decide which attribute should be at the root of the tree by looking just one move ahead. It compares all available attributes to find which one classifies the data the best, but it doesn’t look ahead (or behind) at other attributes to see which combinations of them classify the data the best.
+Decision trees with AND and OR are linear (they need linear number of nodes-ANY type problems). But XOR is a hard problem (requires $2^n$ nodes-PARITY type of problems).
 
-Pseudocode:
+\subsection{ID3 algorithm to create a decision tree}
+We need to find the best attributes for each node, to narrow down the space with each question. 
+ID3 (Inducing Decision Tree (3)) builds decision trees using a top-down, greedy approach. The greedy part of the approach comes from the fact that it will decide which attribute should be at the root of the tree by looking just one move ahead. It compares all available attributes to find which one classifies the data the best, but it doesn't look ahead (or behind) at other attributes to see which combinations of them classify the data the best. ID3 algorithm returns an optimal decision tree, but as the size of the training data and the number of attributes increase, it becomes more likely that running ID3 on it will return a suboptimal decision
+tree.
+
+Pseudo code:
 \begin{enumerate}
-\item Pick the best attribute A (The definitions of best attribute comes later). To select this attribute, a statistical test is used to determine for each attribute how well it alone classifies the training examples.
+\item Pick the best attribute A (the definitions of best attribute comes later). To select this attribute, a statistical test is used to determine for each attribute how well it alone classifies the training examples.
 \item Split the data into subsets that correspond to the possible values of the best attribute.
 \item Assign A as a decision attribute for a node.
 \item For each value of A, create a descendant node.
 \item Sort training examples to leaves.
-\item If examples perfectly classified --	Stop -- else --Iterate over leaves	
+\item If examples perfectly classified (means all data point are of the same class) or there is no more attributes --	Stop -- else --Iterate over leaves	
 \end{enumerate}	
 
 
 How to find the best attribute for the decision tree at each level: \\
 There are a couple of options. The most common method is called information gain: a measure that expresses how well an attribute splits the data into groups based on classification. For example, an attribution returns \textit{low information gain}, if it divides samples to two classes with an even yes and no, but the information gain is high, if each class has more of yeses or nos.
 
-It quantifies the reduction in randomness (Entropy) over the labels we have with a set of data, based upon knowing the value of a particular attribute. A mathematical way to measure the gain, is entropy. It measures the homogeneity of a data set S's  classifications. It ranges from 0, which means that all of the classifications in the data set are the same (either yes or no), to $log_{2}$ of the number of different classifications, which means that the classifications are equally distributed within the data set. For a binary classification the entropy is only $log_{2} 1 = 1$ (if yes and no samples are equally divided). entropy is calculated as follows: 
+It quantifies the reduction in randomness (Entropy) over the labels we have with a set of data, based upon knowing the value of a particular attribute. A mathematical way to measure the gain, is entropy. It measures the homogeneity of a data set S's  classifications. \textcolor{red}{\textit{Entropy ranges from 0, which means that all of the classifications in the data set are the same (either yes or no), to $log_{2}$ of the number of different classifications, which means that the classifications are equally distributed within the data set.}} For a binary classification the entropy is only $log_{2} 1 = 1$ (if yes and no samples are equally divided). entropy is calculated as follows: 
 
 \begin{equation}
 Entropy(S) = \sum_{i=1}^{c} -p_{i} \; log_{2} (p_{i})
 \end{equation}
 where:
 \begin{itemize}
-\item $c$ corresponds to the number of different classifications 
+\item $c$ corresponds to the number of different classifications (either for the attribute or the final output)
 \item $p_{i}$ corresponds to the proportion of the data with the classification i
 \end{itemize}
 
 Here is the plot of entropy for a binary classifier, as the proportional of yes and no samples change:
+
 \includegraphics[scale=0.5]{entroy.png}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Information gain measures the reduction in entropy that results from partitioning the data on an attribute A, which is another way of saying that it represents how effective an attribute is at classifying the data. Given a set of training data S and an attribute A, the formula for information gain is:
 
@@ -228,32 +228,53 @@ Information gain measures the reduction in entropy that results from partitionin
 	Gain(S,A)  = Entropy(S) - \sum_v  \frac{|S_v|}{|S|} \; Entropy(S_v)
 \end{equation}
 
-where $v$ is all the possible values of attribute A (for example, sunny, cloudy, rainy), and $S_v$ is the total number of samples (regardless of the value of the sample) corresponding to this value of attribute (for example sunny). We want to maximize information gain, so we want the entropies of the partitioned data to be as low as possible, which explains why attributes that exhibit high information gain split training data into relatively heterogeneous groups.
 
-As the size of the training data and the number of attributes increase, it becomes likelier that running ID3 on it will return a suboptimal decision tree.
+where $v$ is all the possible values of attribute the attribute (for example, sunny, cloudy, rainy), and $S_v$ is the total number of samples corresponding to this value of attribute (for example sunny). 
 
-\section{Extending ID3 algorithm}
-Small tweaks allow ID3 to handle continuous attributes, missing attribute values, data that doesn’t work particularly well with
-information gain, and more.
+For \textit{if I play tennis game} (yes and no is the final output) with attributes weather (sunny, cloudy, rainy), temperature (hot, cold, mild), humidity (normal, high),  first, we calculate the entropy of the entire set (Entropy(S)) (wrt the the final output classification, yes and no). For each attribute, we calculate the the entropy corresponding to each value of entropy, then we calculate the final entropy. 
 
-For continuous attributes, we can classify the attributes based on thresholds. 
+
+We want to maximize information gain, so we want the entropies of the partitioned data to be as low as possible, which explains why attributes that exhibit high information gain split training data into relatively heterogeneous groups.
+
+As the size of the training data and the number of attributes increase, it becomes likelier that running ID3 on it will return a sub-optimal decision tree.
+
+\subsection{Inductive bias}
+Two types of bias for classifiers: 
+\begin{itemize}
+	\item Restriction Bias: Describes the hypothesis set space (H) that we will consider for learning the tree.
+	Complete hypothesis space (low Restriction Bias). Instead of looking at infinitely many functions, we only consider those that can be represented by the decision tree. 
+	\item Preference Bias: Describes the subset of hypothesis n ($n \in H $), from the hypothesis set space H, that we prefer.
+\end{itemize}
+
+Inductive bias of ID3 algorithm:
+\begin{itemize}
+\item it prefers the decision tree with good splits at top (even if a bad split generates the same outcome). This is because ID3 is greedy using info gain. 
+\item it prefers correct outcome over incorrect because ID3 repeats until the labels are correctly classified.
+\item it prefers shorter trees (comes from the fact that we use good splits from the top).
+\end{itemize}
+
+\subsection{Extending ID3 algorithm-other consideration}
+\textbf{For continuous attributes}, we can classify the attributes based on thresholds (that exists in the data set). The continuous data attribute provides the most information gain, while giving a decision tree that is not generalize well. 
+
+Does it make sense to repeat an attribute along a path in a decision tree? No, it does not make sense for discrete values, but for continuous values, it makes sense, because indeed we are asking a different question (for a different range). 
 
 If the data for some attributes is missing, we can choose the most popular data for the missing item. Two options here: does not take the classification into account, or choose the most popular value for the same classification. 
 Another method to deal with the missing data, is assigning the probability of each value of the attribute to the missing entries. 
 
+\textbf{When do we stop?} When everything classified correctly or if there is no more attribute. What if  we have noise in data (different answer for the same instance)? Causes an infinite loop. What would be the stopping criterion, then? We want generalization, and we should avoid \textbf{over-fitting}. If the tree is too big/complicated, there is a chance that it overfits. There are two popular approaches to avoid over-fitting in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have. 
 
-\section{over-fitting}
-There are two popular approaches to avoid this in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have.
 
-The data available to train the decision tree will be split into a training set and test set and trees with various maximum depths will be created based on the training set and tested against the test set.
+One option to avoid over-fitting, is that we can grow the trees, and use cross-validation to prevent over-fitting. The data available to train the decision tree will be split into a training set and validation/test set and we keep growing the tree with various maximum depths will be created based on the training set and then test it against the test set. The best will be selected (when the error grows, we stop growing the tree).
 
 Pruning the tree, on the other hand, involves testing the original tree against pruned versions of it. Leaf nodes are taken away from the tree as long as the pruned tree performs better against test data than the larger tree.
 
 
-Changing the information gain formula:
+\textbf{Regression:} how to adapt decision trees for regression type of problems (continuous outputs)? Decision trees as we’ve defined them here don’t transfer directly to regression problems. We no longer have a useful notion of information gain, so our approach at attribute sorting falls through. Instead, we can rely on purely statistical methods (like variance and correlation) to determine how important an attribute is. For leaves, too, we can do averages, local linear fit, or a host of other approaches that mathematically generalize with no regard for the meaning of the data.
+
+\subsection{Changing the information gain formula is another option}
 The information gain formula used by the ID3 algorithm treats all of the variables the same, regardless of their distribution and their importance. This is a problem when it comes to continuous variables or discrete variables with many possible values because training examples may be few and far between for each possible value, which leads to low entropy and high information gain by virtue of splitting the data into small subsets, but results in a decision tree that might not generalize well.
 
-One successful approach to deal with this is using a formula called GainRatio in the place of information gain. GainRatio tries to correct for information gain’s natural bias toward attributes with many possible values by adding a denominator to information gain called SplitInformation. SplitInformation attempts to measure how broadly partitioned an attribute is and how evenly distributed those partitions are. In general, the SplitInformation of an attribute with n equally­distributed values is log 2 n . These relatively large denominators significantly affect an attribute’s chances of being the best attribute after an iteration of the ID3 algorithm and help to avoid choices that perform particularly well on the training data but not so well outside of it.
+One successful approach to deal with this is using a formula called GainRatio in the place of information gain. GainRatio tries to correct for information gain’s natural bias toward attributes with many possible values by adding a denominator to information gain called SplitInformation. SplitInformation attempts to measure how broadly partitioned an attribute is and how evenly distributed those partitions are. In general, the SplitInformation of an attribute with n equally ­distributed values is $log_2 n$ . These relatively large denominators significantly affect an attribute’s chances of being the best attribute after an iteration of the ID3 algorithm and help to avoid choices that perform particularly well on the training data but not so well outside of it.
 
 \begin{gather*}
 	GainRatio(S,A)  = \frac{Gain(S,A)}{SplitInformation(S,A)} \\
@@ -261,16 +282,56 @@ One successful approach to deal with this is using a formula called GainRatio in
 \end{gather*}
 
 
-\section{BIAS (Inductive bias)}
-Two types of bias: restriction bias (hypophysis), and preference bias (prefer a subset of hypophisys, this is inductive).
+\subsection{Advantages and Disadvantages of Decision Trees (copied from a text)}
+\textbf{Advantages:}
 
-Bias of ID3 are: 
 \begin{itemize}
-\item it prefers the decision tree with good splits at top (even if a bad split generates the same outcome).
-\item it prefers correct outcome over incorrect. 
-\item it prefers shorter trees (comes from that fact that we use good splits from the top).
+\item Simple to understand and to interpret.
+\item Requires little data preparation. Other techniques often require data normalization, dummy variables need to be created and blank values to be removed.
+\item The cost of using the tree (i.e., predicting data) is logarithmic in the number of data points used to train the tree.
+\item Able to handle both numerical and categorical data. Other techniques are usually specialized in analyzing datasets that have only one type of variable.
+\item Able to handle multi-output problems.
+\item Uses a white box model. If a given situation is observable in a model, the explanation for the condition is easily explained by Boolean logic. By contrast, in a black box model (e.g., in an artificial neural network), results may be more difficult to interpret.
+\item Possible to validate a model using statistical tests. That makes it possible to account for the reliability of the model.
+\item Performs well even if its assumptions are somewhat violated by the true model from which the data were generated.
 \end{itemize}
 
+
+
+\textbf{Disadvantages:}
+
+\begin{itemize}
+\item Can create over-complex trees that do not generalize the data well. This is called overfitting. Mechanisms such as pruning (setting the minimum number of samples required at a leaf node or setting the maximum depth of the tree) are necessary to avoid this problem.
+\item Decision trees can be unstable because small variations in the data might result in a completely different tree being generated. This problem is mitigated by using decision trees within an ensemble.
+\item The problem of learning an optimal decision tree is known to be NP-complete under several aspects of optimality and even for simple concepts. Consequently, practical decision-tree learning algorithms are based on heuristic algorithms such as the greedy algorithm where locally
+optimal decisions are made at each node. Such algorithms cannot guarantee to return the globally optimal decision tree. This can be mitigated by training multiple trees in an ensemble learner, where the features and samples are randomly sampled with replacement.
+\item There are concepts that are hard to learn because decision trees do not express them easily, such as XOR, parity or multiplexer problems.
+\item Decision tree learners create biased trees if some classes dominate. It is therefore recommended to balance the dataset prior to fitting with the decision tree.
+\end{itemize}
+
+
+
+
+
+
+\section{SL: Regression and classification}
+\section{SL: Neural network}
+\section{SL: Instance based learning}
+\section{SL: Ensemble B\&B}
+\section{SL: Kernel methods and SVMs}
+\section{SL: Comp Learning Theory}
+\section{SL: VC dimensions}
+\section{SL: Bayesian Learning}
+\section{SL: Bayesian inference}
+
+
+%===============================================================================
+%===============================================================================
+%===============================================================================
+\chapter[Unsupervised learning]{Unsupervised learning (UL)}
+
+\section{Random optimization}
+\section{Clustering}
 
 
 % Appendix ==========================================================

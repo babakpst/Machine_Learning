@@ -140,3 +140,4 @@ dmypy.json
 
 # general
 *.zip
+*.xopp
