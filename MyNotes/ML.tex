@@ -333,6 +333,32 @@ optimal decisions are made at each node. Such algorithms cannot guarantee to ret
 \section{Random optimization}
 \section{Clustering}
 
+\chapter[Reinforced Learning]{Reinforced Learning (RL)}
+
+\section{Markov Decision Process}
+
+\chapter[Miscellaneous topics]{Miscellaneous topics}
+
+\section{One hot encoding}
+
+\href{https://www.youtube.com/watch?v=v_4KWmkwmsU&ab_channel=deeplizard}{source1} and \href{https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/}{source2}
+
+A one hot encoding is a representation of categorical variables as binary vectors. This first requires that the categorical values be mapped to integer values. Then, each integer value is represented as a binary vector that is all zero values except the index of the integer, which is marked with a 1. 
+
+Example: assume we have a sequence of labels with the values \textit{red} and \textit{green}. We can assign \textit{red} an integer value of 0 and \textit{green} the integer value of 1. As long as we always assign these numbers to these labels, this is called an integer encoding. Consistency is important so that we can invert the encoding later and get labels back from integer values, such as in the case of making a prediction. Next, we can create a binary vector to represent each integer value. The vector will have a length of 2 for the 2 possible integer values. The \textit{red} label encoded as a 0 will be represented with a binary vector [1, 0] where the zeroth index is marked with a value of 1. In turn, the \textit{green} label encoded as a 1 will be represented with a binary vector [0, 1] where the first index is marked with a value of 1. If we had the sequence: \textit{red, red, green}, we could represent it with the integer encoding: 0, 0, 1. And the one hot encoding of:
+[1, 0], [1, 0], and [0, 1].
+
+Why Use a One Hot Encoding?
+A one hot encoding allows the representation of categorical data to be more expressive. Many machine learning algorithms cannot work with categorical data directly. The categories must be converted into numbers. This is required for both input and output variables that are categorical. We could use an integer encoding directly, rescaled where needed. This may work for problems where there is a natural ordinal relationship between the categories, and in turn the integer values, such as labels for temperature \textit{cold, warm, and hot}.
+
+There may be problems when there is no ordinal relationship and allowing the representation to lean on any such relationship might be damaging to learning to solve the problem. An example might be the labels dog and cat
+
+In these cases, we would like to give the network more expressive power to learn a probability-like number for each possible label value. This can help in both making the problem easier for the network to model. When a one hot encoding is used for the output variable, it may offer a more nuanced set of predictions than a single label.
+
+We can use libraries such is scikit-learn and keras to encode a categorical feature for ML.
+
+
+
 
 % Appendix ==========================================================
 %\appendices

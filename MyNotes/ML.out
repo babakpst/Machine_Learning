@@ -25,4 +25,8 @@
 \BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 25
 \BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 26
 \BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 27
-\BOOKMARK [0][-]{section.3.2}{Bibliography}{}% 28
+\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 28
+\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 29
+\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 30
+\BOOKMARK [1][-]{section.5.1}{One hot encoding}{chapter.5}% 31
+\BOOKMARK [0][-]{section.5.1}{Bibliography}{}% 32
