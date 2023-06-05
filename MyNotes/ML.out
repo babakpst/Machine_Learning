@@ -13,21 +13,23 @@
 \BOOKMARK [2][-]{subsection.2.2.7}{Extending ID3 algorithm-other consideration}{section.2.2}% 13
 \BOOKMARK [2][-]{subsection.2.2.8}{Changing the information gain formula is another option}{section.2.2}% 14
 \BOOKMARK [2][-]{subsection.2.2.9}{Advantages and Disadvantages of Decision Trees \(copied from a text\)}{section.2.2}% 15
-\BOOKMARK [1][-]{section.2.3}{SL: Regression and classification}{chapter.2}% 16
-\BOOKMARK [1][-]{section.2.4}{SL: Neural network}{chapter.2}% 17
-\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 18
-\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 19
-\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 20
-\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 21
-\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 22
-\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 23
-\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 24
-\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 25
-\BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 26
-\BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 27
-\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 28
-\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 29
-\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 30
-\BOOKMARK [1][-]{section.5.1}{One hot encoding}{chapter.5}% 31
-\BOOKMARK [1][-]{section.5.2}{F1 score, precision, and recall}{chapter.5}% 32
-\BOOKMARK [0][-]{section.5.2}{Bibliography}{}% 33
+\BOOKMARK [2][-]{subsection.2.2.10}{Random forest}{section.2.2}% 16
+\BOOKMARK [1][-]{section.2.3}{SL: Regression and classification}{chapter.2}% 17
+\BOOKMARK [1][-]{section.2.4}{SL: Neural network}{chapter.2}% 18
+\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 19
+\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 20
+\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 21
+\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 22
+\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 23
+\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 24
+\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 25
+\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 26
+\BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 27
+\BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 28
+\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 29
+\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 30
+\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 31
+\BOOKMARK [1][-]{section.5.1}{One hot encoding}{chapter.5}% 32
+\BOOKMARK [1][-]{section.5.2}{F1 score, precision, and recall}{chapter.5}% 33
+\BOOKMARK [1][-]{section.5.3}{Overfitting vs underfitting}{chapter.5}% 34
+\BOOKMARK [0][-]{section.5.3}{Bibliography}{}% 35

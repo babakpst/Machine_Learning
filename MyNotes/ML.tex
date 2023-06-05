@@ -310,7 +310,8 @@ optimal decisions are made at each node. Such algorithms cannot guarantee to ret
 \end{itemize}
 
 
-
+\subsection{Random forest}
+The random forest uses many trees, and it makes a prediction by averaging the predictions of each component tree. It generally has much better predictive accuracy than a single decision tree and it works well with default parameters. If you keep modeling, you can learn more models with even better performance, but many of those are sensitive to getting the right parameters.
 
 
 
@@ -370,6 +371,14 @@ These quantities are also related to the ($F1$) score, which is defined as the h
 $F1 = 2 \frac{R * P}{ P + R } $.
 
 The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
+
+
+\section{Overfitting vs underfitting}
+This is a phenomenon called overfitting, where a model matches the training data almost perfectly, but does poorly in validation and other new data. On the flip side, if we make our tree very shallow, it doesn't divide up the houses into very distinct groups.
+
+At an extreme, if a tree divides houses into only 2 or 4, each group still has a wide variety of houses. Resulting predictions may be far off for most houses, even in the training data (and it will be bad in validation too for the same reason). When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, that is called underfitting.
+
+Since we care about accuracy on new data, which we estimate from our validation data, we want to find the sweet spot between underfitting and overfitting. Visually, we want the low point of the (red) validation curve in the figure below.
 
 % Appendix ==========================================================
 %\appendices
