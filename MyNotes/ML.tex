@@ -319,8 +319,65 @@ The random forest uses many trees, and it makes a prediction by averaging the pr
 
 Regression is the mapping of continuous inputs to continuous outputs, as opposed to the classification where we had mapping from discrete input to discrete output. Regression is similar to function approximation. Back then, regression meant falling  back to the average/mean, but now, we mean, using functional form to approximate a bunch of points.  
 
+We use regression because the data itself is not accurate and has noise. If the data is exact, we need to use interpolation and spline methods, to exactly fit the line with the data. 
+
+\subsection{Linear regression}
+
+Finding a linear function/relationship between the input data and the output. It might not be a good fit though. We want to find a line (linear function) such that it minimizes the deviation, or to be more precise, the squared error between the data points and the line. This is least square regression. Basically, this is fitting data with a curve, so that we can predict the results based on the model. Here we do not try to intersect every point, rather the curve is designed to follow the pattern of points. (The other approach is interpolation that we try to pass the line/curve through each data point.)
+
+In summary, this is an approximate function that fits the shape or general trend of the data w/o necessarily matching the individual points. 
+To find the line:
+\begin{equation}
+	\begin{split}
+	\text{data points:  } \{(x_i, y_i): i=1 ... n \} \\
+	\text{find a and b for the linear fit:  } y_i = a x_i + b \\
+	\text{such that minimizes error:  } e = \sum_{i=1}^n (y_i -(ax_i+b))^2
+	\end{split}
+\end{equation}
+To find the the two unknowns of the linear fit, a and b, take the derivative of the error with respect to a and b and set it zero. That would be a system of equations with two unknowns. After solving the equation you have the fit. To have a nonlinear fit, we can use a polynomial model: 
+
+\subsection{Non-linear regression}
+\begin{equation}
+	f(x_i) = a_0 + a_1 x_i + a_2 x_i^2 + ...
+\end{equation}
+The unknowns are $a_0, a_1, ...$. 
+See my class notes for more details. 
+
+\subsection{Error}
+Training data has errors due to various reasons such as reading errors, sensor errors, transcription error, maliciously given data, etc. This is the reason we are using the regression not the interpolation. 
+
+\subsection{Cross validation}
+
+To better fit the model, we can use higher order polynomial, but it leads to over-fitting. The goal is always to generalize the model to fit the real world data. The test set is just a representation of the data that we may see in future. The model should be complex enough to model the training set without overfitting. 
+
+The data points that we are using for training are assumed to be Independent and Identically Distributed (IID), which means that there’s no inherent difference between training, testing and real-world data and all the data is coming from the same source. This is the \textit{Fundamental Assumption of Supervised Learning.}
 
 
+The idea is that we select part of the training set as the test set, not touching the actual test during the training set. This is indeed the cross validation set. 
+
+Cross Validation steps:
+
+\begin{itemize}
+	\item Randomly partition the training data into k folds of equal size.
+	\item Train the model on all the folds except for one (k-1).
+	\item Validate the model’s performance using the fold that was not used in training.
+	\item Repeat steps 2 and 3 using different combinations of these folds.
+	\item Average the error in predicting the polynomial trained on the training folds.
+\end{itemize}
+
+Observation for Cross Validation:
+\begin{itemize}
+\item Average cross validation error is higher than training error for lower orders .
+\item Average cross validation error decreases as the polynomial order increases (same for training error).
+\item After the golden degree, increasing the degree of polynomial will result in overfitting, and the Cross Validation error will start to increase.
+\end{itemize}
+
+\subsection{Other cases}
+
+For the regression, we can have multiple independent variables/features for the regression. 
+
+Using discrete numbers is also possible for regression, however this is no trivial. We need to encode the attributes. For example, by enumerating the categories (giving a number to each possible value of this feature). It is a bit misleading because a correlation between the ordering of the
+enumeration and the its value can be interpolated. The other option is represent the value of the feature as a Boolean.
 
 \section{SL: Neural network}
 \section{SL: Instance based learning}
