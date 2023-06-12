@@ -177,6 +177,8 @@ Algorithm means how to create the decision tree. A decision tree \textit{algorit
 \end{itemize}
 Note that the usefulness of a question depends upon the answers we got to previous questions.
 
+Purity: means all the samples are of the same kind. This is the ideal case for the leaf nodes. We have impurity if it is still a mix of various categories. 
+
 \subsection{Expressiveness}
 
 \begin{itemize}
@@ -190,22 +192,29 @@ Decision trees with AND and OR are linear (they need linear number of nodes-ANY 
 
 \subsection{ID3 algorithm to create a decision tree}
 We need to find the best attributes for each node, to narrow down the space with each question. 
-ID3 (Inducing Decision Tree (3)) builds decision trees using a top-down, greedy approach. The greedy part of the approach comes from the fact that it will decide which attribute should be at the root of the tree by looking just one move ahead. It compares all available attributes to find which one classifies the data the best, but it doesn't look ahead (or behind) at other attributes to see which combinations of them classify the data the best. ID3 algorithm returns an optimal decision tree, but as the size of the training data and the number of attributes increase, it becomes more likely that running ID3 on it will return a suboptimal decision
-tree.
+ID3 (Inducing Decision Tree (3)) builds decision trees using a top-down, greedy approach. The greedy part of the approach comes from the fact that it will decide which attribute should be at the root of the tree by looking just one move ahead. It compares all available attributes to find which one classifies the data the best, but it doesn't look ahead (or behind) at other attributes to see which combinations of them classify the data the best. ID3 algorithm returns an optimal decision tree, but as the size of the training data and the number of attributes increase, it becomes more likely that running ID3 on it will return a suboptimal decision tree.
 
-Pseudo code:
+\hfill \break
+\textbf{To train a decision tree, answer these questions:}
+\begin{itemize}
+	\item How to find the best attribute/feature for the decision tree at each level?
+	\item When do you stop splitting?
+\end{itemize}
+
+\hfill \break
+\textbf{Pseudo code:}
 \begin{enumerate}
 \item Pick the best attribute A (the definitions of best attribute comes later). To select this attribute, a statistical test is used to determine for each attribute how well it alone classifies the training examples.
 \item Split the data into subsets that correspond to the possible values of the best attribute.
 \item Assign A as a decision attribute for a node.
 \item For each value of A, create a descendant node.
 \item Sort training examples to leaves.
-\item If examples perfectly classified (means all data point are of the same class) or there is no more attributes --	Stop -- else --Iterate over leaves	
+\item Stopping criteria (see down there): f examples perfectly classified (means all data point are of the same class) or there is no more attributes --	Stop splitting -- else --Iterate over leaves	
 \end{enumerate}	
 
-
-How to find the best attribute for the decision tree at each level: \\
-There are a couple of options. The most common method is called information gain: a measure that expresses how well an attribute splits the data into groups based on classification. For example, an attribution returns \textit{low information gain}, if it divides samples to two classes with an even yes and no, but the information gain is high, if each class has more of yeses or nos.
+\hfill \break
+\textbf{How to find the best attribute/feature for the decision tree at each level:} \\
+There are a couple of options. The most common method is called information gain: a measure that expresses how well an attribute splits the data into groups based on classification (maximize purity or minimize impurity). For example, an attribution returns \textit{low information gain}, if it divides samples to two classes with an even yes and no, but the information gain is high, if each class has more of yeses or nos.
 
 It quantifies the reduction in randomness (Entropy) over the labels we have with a set of data, based upon knowing the value of a particular attribute. A mathematical way to measure the gain, is entropy. It measures the homogeneity of a data set S's  classifications. \textcolor{red}{\textit{Entropy ranges from 0, which means that all of the classifications in the data set are the same (either yes or no), to $log_{2}$ of the number of different classifications, which means that the classifications are equally distributed within the data set.}} For a binary classification the entropy is only $log_{2} 1 = 1$ (if yes and no samples are equally divided). entropy is calculated as follows: 
 
@@ -220,7 +229,17 @@ where:
 
 Here is the plot of entropy for a binary classifier, as the proportional of yes and no samples change:
 
-\includegraphics[scale=0.5]{entroy.png}
+
+\begin{figure}[H]
+	\centering
+	\caption{Entropy}
+	\includegraphics[scale=0.5]{entroy.png}
+	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+	%#\label{XXX}
+\end{figure}
+
+
+
 
 Information gain measures the reduction in entropy that results from partitioning the data on an attribute A, which is another way of saying that it represents how effective an attribute is at classifying the data. Given a set of training data S and an attribute A, the formula for information gain is:
 
@@ -238,6 +257,18 @@ We want to maximize information gain, so we want the entropies of the partitione
 
 As the size of the training data and the number of attributes increase, it becomes likelier that running ID3 on it will return a sub-optimal decision tree.
 
+
+The other option we can use instead of Entropy is the \textbf{Gini function.} 
+
+\hfill \break
+\textbf{When do you stop splitting?}
+\begin{itemize}
+	\item when a node is 100\% pure
+	\item when splitting a node will result in the tree exceeding a maximum depth (to avoid over-fitting)
+	\item when improvement in purity score (information gain) are below a threshold
+	\item when the number of examples in a node is below a threshold
+\end{itemize}
+
 \subsection{Inductive bias}
 Two types of bias for classifiers: 
 \begin{itemize}
@@ -254,22 +285,44 @@ Inductive bias of ID3 algorithm:
 \end{itemize}
 
 \subsection{Extending ID3 algorithm-other consideration}
-\textbf{For continuous attributes}, we can classify the attributes based on thresholds (that exists in the data set). The continuous data attribute provides the most information gain, while giving a decision tree that is not generalize well. 
+\textbf{For continuous values attributes/features}, we can classify the attributes based on thresholds (that exists in the data set). Without threshhold, the continuous data attribute provides the most information gain, while giving a decision tree that is not generalize well. To find the threshold, we can plot the values and decide based on a threshold the returns the best outcome, by calculating the information gain values for each threshold. One way to select the threshold is to take all the values that are mid points between the sorted list of training. For example, for 10 training samples, we need to test the info gain for 9 values, for this specific feature. We can even have multiple threshold for one feature (by creating multiple features).
 
-Does it make sense to repeat an attribute along a path in a decision tree? No, it does not make sense for discrete values, but for continuous values, it makes sense, because indeed we are asking a different question (for a different range). 
+\textbf{Does it make sense to repeat an attribute along a path in a decision tree?} No, it does not make sense for discrete values, but for continuous values, it makes sense, because indeed we are asking a different question (for a different range). 
 
-If the data for some attributes is missing, we can choose the most popular data for the missing item. Two options here: does not take the classification into account, or choose the most popular value for the same classification. 
+\textbf{If the data for some attributes is missing,} we can choose the most popular data for the missing item. Two options here: does not take the classification into account, or choose the most popular value for the same classification. 
 Another method to deal with the missing data, is assigning the probability of each value of the attribute to the missing entries. 
 
-\textbf{When do we stop?} When everything classified correctly or if there is no more attribute. What if  we have noise in data (different answer for the same instance)? Causes an infinite loop. What would be the stopping criterion, then? We want generalization, and we should avoid \textbf{over-fitting}. If the tree is too big/complicated, there is a chance that it overfits. There are two popular approaches to avoid over-fitting in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have. 
-
+\textbf{Over-fitting + When do we stop?} When everything classified correctly or if there is no more attribute. What if we have noise in data (different answer for the same instance)? Causes an infinite loop. What would be the stopping criterion, then? We want generalization, and we should avoid \textbf{over-fitting}. If the tree is too big/complicated, there is a chance that it overfits. There are two popular approaches to avoid over-fitting in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have. 
 
 One option to avoid over-fitting, is that we can grow the trees, and use cross-validation to prevent over-fitting. The data available to train the decision tree will be split into a training set and validation/test set and we keep growing the tree with various maximum depths will be created based on the training set and then test it against the test set. The best will be selected (when the error grows, we stop growing the tree).
 
 Pruning the tree, on the other hand, involves testing the original tree against pruned versions of it. Leaf nodes are taken away from the tree as long as the pruned tree performs better against test data than the larger tree.
 
 
+\textbf{One-hot encoding:} If there are multiple categories for a feature, we can use one-hot encoding to convert each category to a binary feature. Thus, jf a feature can take k values, one-hot encoding creates k binary features. There are libraries in the sklearn library for this task. See the details in the \ref{sec:one-hot}.
+
 \textbf{Regression:} how to adapt decision trees for regression type of problems (continuous outputs)? Decision trees as we’ve defined them here don’t transfer directly to regression problems. We no longer have a useful notion of information gain, so our approach at attribute sorting falls through. Instead, we can rely on purely statistical methods (like variance and correlation) to determine how important an attribute is. For leaves, too, we can do averages, local linear fit, or a host of other approaches that mathematically generalize with no regard for the meaning of the data.
+
+\subsection{Regression with Decision tree}
+
+We can use decision trees for classification (DecisionTreeClassifier) or for regression (DecisionTreeRegressor). Training a regressor is not any different from the classifier, but for the leaf node, we use the average of the continuous values of all the samples in that node. 
+
+The major difference here is that how you choose to split the data at the node. Instead of maximizing the entropy, we try to minimize the variance of the values for the continuous feature. Thus, we calculate the variance for the values at each leaf separated by the feature, then we use a weighted method to combine it. 
+
+\begin{equation}
+	\begin{split}
+	\text{minimize the variance (means choose the feature with largest value)} = \\
+	\text{variance of all samples at the root} - \\
+	\big[ \\ 
+	\frac{\text{num of samples in the left leaf}}{ \text{num of total samples }} \times \text{variance of left leaf} +\\
+	\frac{\text{num of samples in the right leaf}}{ \text{num of total samples }} \times \text{variance of right leaf}\\
+	\big]
+	\end{split}
+\end{equation}
+
+
+
+For example, if a feature divides 10 samples into two leaf nodes with 4 and 6 samples in each leaf node, then, the weighted average of variance is $\frac{4}{10} \times \text{variance of left leaf} + \frac{6}{10} \times \text{variance of right leaf} $.
 
 \subsection{Changing the information gain formula is another option}
 The information gain formula used by the ID3 algorithm treats all of the variables the same, regardless of their distribution and their importance. This is a problem when it comes to continuous variables or discrete variables with many possible values because training examples may be few and far between for each possible value, which leads to low entropy and high information gain by virtue of splitting the data into small subsets, but results in a decision tree that might not generalize well.
@@ -348,7 +401,7 @@ Training data has errors due to various reasons such as reading errors, sensor e
 
 \subsection{Cross validation}
 
-To better fit the model, we can use higher order polynomial, but it leads to over-fitting. The goal is always to generalize the model to fit the real world data. The test set is just a representation of the data that we may see in future. The model should be complex enough to model the training set without overfitting. 
+To better fit the model, we can use higher order polynomial, but it leads to over-fitting. The goal is always to generalize the model to fit the real world data. The test set is just a representation of the data that we may see in future. The model should be complex enough to model the training set without over-fitting. 
 
 The data points that we are using for training are assumed to be Independent and Identically Distributed (IID), which means that there’s no inherent difference between training, testing and real-world data and all the data is coming from the same source. This is the \textit{Fundamental Assumption of Supervised Learning.}
 
@@ -380,8 +433,37 @@ Using discrete numbers is also possible for regression, however this is no trivi
 enumeration and the its value can be interpolated. The other option is represent the value of the feature as a Boolean.
 
 \section{SL: Neural network}
+
+
+\subsection{Perceptron}
+
+simplest model of a brain cell. The Perceptron calculates the sum of products of the inputs X and their corresponding weights W, and then compare the result with an activation threshold. If the sum is greater than or equal the firing threshold $\theta$, the perceptron returns one, otherwise, it is zero.
+
+\begin{equation}
+\sum_{i=1}^k X_i W_i \ge \theta  \Rightarrow y = 1 \: \text{otherwise} \: y = 0
+\end{equation}
+
+\begin{figure}[H]
+	\centering
+	\caption{Perceptron}
+	\includegraphics[trim =20cm 15.0cm 10cm 8cm, clip, scale=0.2]{perceptron.png}
+	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+	%#\label{XXX}
+\end{figure}
+
+
+
+
 \section{SL: Instance based learning}
 \section{SL: Ensemble B\&B}
+
+Ensemble Learning is in general the process of combining some simple rules into a more complex rule that can generalize well.
+
+It works by dividing the data into smaller subsets, learn over each individual subset to come up with a rule, then combine all these rules in a single more complex rule. If we looked at the whole data, it would be hard to come up with simple rules.
+
+
+
+
 \section{SL: Kernel methods and SVMs}
 \section{SL: Comp Learning Theory}
 \section{SL: VC dimensions}
@@ -404,6 +486,7 @@ enumeration and the its value can be interpolated. The other option is represent
 \chapter[Miscellaneous topics]{Miscellaneous topics}
 
 \section{One hot encoding}
+\label{sec:one-hot}
 
 \href{https://www.youtube.com/watch?v=v_4KWmkwmsU&ab_channel=deeplizard}{source1} and \href{https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/}{source2}
 
