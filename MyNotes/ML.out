@@ -39,4 +39,7 @@
 \BOOKMARK [1][-]{section.5.1}{One hot encoding}{chapter.5}% 39
 \BOOKMARK [1][-]{section.5.2}{F1 score, precision, and recall}{chapter.5}% 40
 \BOOKMARK [1][-]{section.5.3}{Overfitting vs underfitting}{chapter.5}% 41
-\BOOKMARK [0][-]{section.5.3}{Bibliography}{}% 42
+\BOOKMARK [1][-]{section.5.4}{Cost function}{chapter.5}% 42
+\BOOKMARK [1][-]{section.5.5}{Gradient descent \(or steepest descent\)}{chapter.5}% 43
+\BOOKMARK [1][-]{section.5.6}{Model validation}{chapter.5}% 44
+\BOOKMARK [0][-]{section.5.6}{Bibliography}{}% 45
