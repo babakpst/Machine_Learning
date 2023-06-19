@@ -289,10 +289,9 @@ Inductive bias of ID3 algorithm:
 
 \textbf{Does it make sense to repeat an attribute along a path in a decision tree?} No, it does not make sense for discrete values, but for continuous values, it makes sense, because indeed we are asking a different question (for a different range).
 
-\textbf{If the data for some attributes is missing,} we can choose the most popular data for the missing item. Two options here: does not take the classification into account, or choose the most popular value for the same classification.
-Another method to deal with the missing data, is assigning the probability of each value of the attribute to the missing entries.
+\textbf{If the data for some attributes is missing,} see \ref{sec:missing}.
 
-\textbf{Over-fitting + When do we stop?} When everything classified correctly or if there is no more attribute. What if we have noise in data (different answer for the same instance)? Causes an infinite loop. What would be the stopping criterion, then? We want generalization, and we should avoid \textbf{over-fitting}. If the tree is too big/complicated, there is a chance that it overfits. There are two popular approaches to avoid over-fitting in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have.
+\textbf{Over-fitting + When do we stop?} When everything classified correctly or if there is no more attribute. What if we have noise in data (different answer for the same instance)? Causes an infinite loop. What would be the stopping criterion, then? We want generalization, and we should avoid \textbf{over-fitting}. If the tree is too big/complicated, there is a chance that it over-fits. There are two popular approaches to avoid over-fitting in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have.
 
 One option to avoid over-fitting, is that we can grow the trees, and use cross-validation to prevent over-fitting. The data available to train the decision tree will be split into a training set and validation/test set and we keep growing the tree with various maximum depths will be created based on the training set and then test it against the test set. The best will be selected (when the error grows, we stop growing the tree).
 
@@ -587,8 +586,19 @@ There are many metrics for summarizing model quality, but we'll start with one c
 
 Many people make a mistake when measuring predictive accuracy. They make predictions with their training data and compare those predictions to the target values in the training data. This is not valid. The most straightforward way to validate the model is to exclude some data from the model-building process, and then use those to test the model's accuracy on data it hasn't seen before. This data is called validation data.
 
+\section{Data processing/cleaning: Missing Values}
+\label{sec:missing}
 
+There are many ways the data misses: wrong measurement, data is private, data is not available, etc.
 
+Generally, there are three approaches deal with the missing data:
+\begin{itemize}
+  \item The simplest option: drop columns/features with missing values. Unless most values in the dropped columns are missing, the model loses access to a lot of (potentially useful!) information with this approach.
+  \item Imputation: fills in the missing values with some number. For instance, we can fill in the mean value along each column, or we can choose the most popular data for the missing item. We can also assign the probability of each value of the attribute to the missing entries. The imputed value won't be exactly right in most cases, but it usually leads to more accurate models than you would get from dropping the column entirely.
+  \item Extending imputation: we impute the missing values, as before. And, additionally, for each column with missing entries in the original dataset, we add a new column that shows the location of the imputed entries. For example, if the size of bedroom is missing for some instances, we add a new column, missing\_bedromm\_size, and set it to FALSE for all valid instances and TRUE for all missing instances. This will meaningfully improve results. In other cases, it doesn't help at all.
+\end{itemize}
+
+In pandas, we can use .isnul() to detect columns with missing data. We can use .drop to drop columns. We can also use dropna to either drop columns or instances.
 
 
 % Appendix ==========================================================
