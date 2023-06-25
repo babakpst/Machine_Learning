@@ -484,12 +484,19 @@ It works by dividing the data into smaller subsets, learn over each individual s
 
 \chapter[Miscellaneous topics]{Miscellaneous topics}
 
-\section{One hot encoding}
+\section{One hot encoding for categorical features}
 \label{sec:one-hot}
 
 \href{https://www.youtube.com/watch?v=v_4KWmkwmsU&ab_channel=deeplizard}{source1} and \href{https://machinelearningmastery.com/how-to-one-hot-encode-sequence-data-in-python/}{source2}
 
-A one hot encoding is a representation of categorical variables as binary vectors. This first requires that the categorical values be mapped to integer values. Then, each integer value is represented as a binary vector that is all zero values except the index of the integer, which is marked with a 1.
+A categorical feature takes only a few limited number of values. There are tree options to deal with the categorical features:
+\begin{itemize}
+  \item Drop the feature: this option works only if the feature does not provide any useful information.
+  \item Ordinal encoding: assigning a value to each category \textbf{(ordinal variables)}. This method works for tree-based (decision tree) models.
+  \item One-hot encoding: creating one feature for each category, and assigning binary values. This method works particularly well if there is no clear ordering in the categorical data. We refer to categorical variables without an intrinsic ranking as \textbf{nominal variables}. One-hot encoding generally does not perform well if the categorical variable takes on a large number of values (15 and more). We refer to the number of unique entries of a categorical variable as the cardinality of that categorical variable. High cardinality columns can either be dropped from the dataset, or we can use ordinal encoding.
+\end{itemize}
+
+A one hot encoding is a representation of categorical features as binary vectors. This first requires that the categorical values be mapped to integer values. Then, each integer value is represented as a binary vector that is all zero values except the index of the integer, which is marked with a 1.
 
 Example: assume we have a sequence of labels with the values \textit{red} and \textit{green}. We can assign \textit{red} an integer value of 0 and \textit{green} the integer value of 1. As long as we always assign these numbers to these labels, this is called an integer encoding. Consistency is important so that we can invert the encoding later and get labels back from integer values, such as in the case of making a prediction. Next, we can create a binary vector to represent each integer value. The vector will have a length of 2 for the 2 possible integer values. The \textit{red} label encoded as a 0 will be represented with a binary vector [1, 0] where the zeroth index is marked with a value of 1. In turn, the \textit{green} label encoded as a 1 will be represented with a binary vector [0, 1] where the first index is marked with a value of 1. If we had the sequence: \textit{red, red, green}, we could represent it with the integer encoding: 0, 0, 1. And the one hot encoding of:
 [1, 0], [1, 0], and [0, 1].
