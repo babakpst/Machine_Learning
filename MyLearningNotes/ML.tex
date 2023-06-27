@@ -293,7 +293,7 @@ Inductive bias of ID3 algorithm:
 
 \textbf{Over-fitting + When do we stop?} When everything classified correctly or if there is no more attribute. What if we have noise in data (different answer for the same instance)? Causes an infinite loop. What would be the stopping criterion, then? We want generalization, and we should avoid \textbf{over-fitting}. If the tree is too big/complicated, there is a chance that it over-fits. There are two popular approaches to avoid over-fitting in decision trees: stop growing the tree before it becomes too large or prune the tree after it becomes too large. Typically, a limit to a decision tree’s growth will be specified in terms of the maximum number of layers, or depth, it’s allowed to have.
 
-One option to avoid over-fitting, is that we can grow the trees, and use cross-validation to prevent over-fitting. The data available to train the decision tree will be split into a training set and validation/test set and we keep growing the tree with various maximum depths will be created based on the training set and then test it against the test set. The best will be selected (when the error grows, we stop growing the tree).
+One option to avoid over-fitting is that we can grow the trees, and use cross-validation to prevent over-fitting. The data available to train the decision tree will be split into a training set and validation/test set and we keep growing the tree with various maximum depths will be created based on the training set and then test it against the test set. The best will be selected (when the error grows, we stop growing the tree).
 
 Pruning the tree, on the other hand, involves testing the original tree against pruned versions of it. Leaf nodes are taken away from the tree as long as the pruned tree performs better against test data than the larger tree.
 
@@ -392,37 +392,13 @@ To find the the two unknowns of the linear fit, a and b, take the derivative of 
 \end{equation}
 The unknowns are $a_0, a_1, ...$.
 See my class notes for more details.
+To better fit the regression model, we can use higher order polynomial, but it leads to over-fitting.
+
 
 \subsection{Error}
 Training data has errors due to various reasons such as reading errors, sensor errors, transcription error, maliciously given data, etc. This is the reason we are using the regression not the interpolation.
 
 To calculate the parameters of the model, we need to form the cost function (see \ref{sec:cost}) and minimize the error using an optimization technique, such as gradient descent \ref{}.
-
-\subsection{Cross validation}
-
-To better fit the model, we can use higher order polynomial, but it leads to over-fitting. The goal is always to generalize the model to fit the real world data. The test set is just a representation of the data that we may see in future. The model should be complex enough to model the training set without over-fitting.
-
-The data points that we are using for training are assumed to be Independent and Identically Distributed (IID), which means that there’s no inherent difference between training, testing and real-world data and all the data is coming from the same source. This is the \textit{Fundamental Assumption of Supervised Learning.}
-
-
-The idea is that we select part of the training set as the test set, not touching the actual test during the training set. This is indeed the cross validation set.
-
-Cross Validation steps:
-
-\begin{itemize}
-	\item Randomly partition the training data into k folds of equal size.
-	\item Train the model on all the folds except for one (k-1).
-	\item Validate the model’s performance using the fold that was not used in training.
-	\item Repeat steps 2 and 3 using different combinations of these folds.
-	\item Average the error in predicting the polynomial trained on the training folds.
-\end{itemize}
-
-Observation for Cross Validation:
-\begin{itemize}
-\item Average cross validation error is higher than training error for lower orders .
-\item Average cross validation error decreases as the polynomial order increases (same for training error).
-\item After the golden degree, increasing the degree of polynomial will result in overfitting, and the Cross Validation error will start to increase.
-\end{itemize}
 
 \subsection{Other cases}
 
@@ -509,6 +485,36 @@ There may be problems when there is no ordinal relationship and allowing the rep
 In these cases, we would like to give the network more expressive power to learn a probability-like number for each possible label value. This can help in both making the problem easier for the network to model. When a one hot encoding is used for the output variable, it may offer a more nuanced set of predictions than a single label.
 
 We can use libraries such is scikit-learn and keras to encode a categorical feature for ML.
+
+\section{Cross validation}
+
+The goal is always to generalize the model to fit the real world data. The test set is just a representation of the data that we may see in future. The model should be complex enough to model the training set without over-fitting.
+
+The data points that we are using for training are assumed to be Independent and Identically Distributed (IID), which means that there’s no inherent difference between training, testing and real-world data and all the data is coming from the same source. This is the \textit{Fundamental Assumption of Supervised Learning.}
+
+
+A fixed validation set leaves some random chance in determining model scores. That is, a model might do well on the fixed validation set, even if it would be inaccurate on a different set. The larger the validation set, the less randomness (aka \textit{noise}) there is in our measure of model quality, and the more reliable it will be. Unfortunately, we can only get a large validation set by removing rows from our training data, and smaller training datasets mean worse models! The idea is that we select part of the training set as the test set, not touching the actual test during the training set. This is indeed the cross validation set.
+
+Cross Validation steps:
+
+\begin{itemize}
+  \item Randomly partition the training data into k folds of equal size.
+  \item Train the model on all the folds except for one (k-1).
+  \item Validate the model’s performance using the fold that was not used in training.
+  \item Repeat steps 2 and 3 using different combinations of these folds.
+  \item Average the error in predicting the polynomial trained on the training folds.
+\end{itemize}
+
+Cross-validation gives a more accurate measure of model quality, which is especially important if you are making a lot of modeling decisions. However, it can take longer to run, because it estimates multiple models (one for each fold). For small datasets, where extra computational burden isn't a big deal, you should run cross-validation. For larger datasets, a single validation set is sufficient. Your code will run faster, and you may have enough data that there's little need to re-use some of it for holdout. There's no simple threshold for what constitutes a large vs. small dataset. But if your model takes a couple minutes or less to run, it's probably worth switching to cross-validation. Alternatively, you can run cross-validation and see if the scores for each experiment seem close. If each experiment yields the same results, a single validation set is probably sufficient. Note that we no longer need to keep track of separate training and validation sets.
+
+To use cross validation, it is more convenient to implement a pipeline.
+
+Observation for using cross validation with linear regression:
+\begin{itemize}
+  \item Average cross validation error is higher than training error for lower orders .
+  \item Average cross validation error decreases as the polynomial order increases (same for training error).
+  \item After the golden degree, increasing the degree of polynomial will result in overfitting, and the Cross Validation error will start to increase.
+\end{itemize}
 
 \section{F1 score, precision, and recall}
 Refer to \href{https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html#precision-recall}{this source.}

@@ -16,7 +16,7 @@ class DataPreparation:
   debugMode: bool = False
   categoriecalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
   imputeStrategy: int = 1  # 1: Constant, 2: mean, 3: median, 4: most_frequent ##TODO USE ENUMERATE
-
+  targetColumn: str = ""
 
   def __post_init__(self):
     self.fullpath = os.path.join(self.dataPath, self.filename)
@@ -38,14 +38,29 @@ class DataPreparation:
     print(self.df_data.head())
   
 
-# remove rows/instances with missing target
+  # remove rows/instances with missing target
+  def missingTarget(self):
+    print(f" {} instances are missing the target values. Dropping---------." ) # here
+    self.df_data.dropna(axis=0, subset=[self.targetColumn], inplace=True)
+
+  # fix missing values in the column - approach one: drop column
+  def missingAppOneDrop(self):
+    pass
+  # fix missing values in the column - approach two: Impute column
+  def missingAppTwoImpute(self):
+    pass
+
+  # fix missing values in the column - approach three: impute and extend
+  def missingAppThreeImpute(self):
+    pass
+
 
 # separate target from the data.
 
 # split train to train and validate
 
 
-# get columns, categorical, 
+# deal with categorical data get columns, , 
 
 # get numerical data, impune
 
@@ -66,9 +81,14 @@ class visualization:
 class parser:
   pass
 
+
+class crossValidation:
+  pass
+
+
 #=============================================
 def main():
-  data = DataPreparation(filename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy=2)
+  data = DataPreparation(filename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy=2, targetColumn='y')
   data.readData()
 
 
