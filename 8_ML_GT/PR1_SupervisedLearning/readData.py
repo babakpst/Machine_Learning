@@ -7,7 +7,8 @@ import numpy as np
 import os
 #import argparser
 from sklearn.preprocessing import OneHotEncoder
-
+from sklearn.impute import SimpleImputer
+from IPython.display import display # to display dataframe
 
 
 #================================================
@@ -15,14 +16,22 @@ from sklearn.preprocessing import OneHotEncoder
 # reading the trainging data
 @dataclass
 class DataPreprocessing:
+  """_summary_
+  """
+  
   trainfilename: str = ""
   testfilename: str = ""
   dataPath: str = ""
   split: float = 0.8
   debugMode: bool = False
   categoriecalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
-  imputeStrategy: str = "imputation"       # drop: drop columns,         2: mean, 3: median, 4: most_frequent ##TODO USE ENUMERATE
+  imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features), mean: mean of data (only works with numeric features), median: uses the median (only works with numeric features), most_frequent: replaces with the most frequent value (works with numeric or object features).
+  addImputeCol: bool = False
+  
+  #missing_values: ? = np.nan # for impute
+  fill_value: any = "" # for impute, when using the constant strategy, otherwise it would be ignored.
   target: str = ""
+  cardinalityThreshold: int = 15
 
   def __post_init__(self):
     self.fullpath = os.path.join(self.dataPath, self.trainfilename)
@@ -44,71 +53,215 @@ class DataPreprocessing:
     print("\n info about the data: ")
     print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22}\n {len(self.df_data):<22} | {len(self.df_data.columns):<22} | {True if self.df_data.isnull().values.any() else False:<22} | {self.df_data[self.target].isnull().sum()}') 
     
+    self.objectFeatures = self.df_data.select_dtypes(include=['object']).columns.to_list()
+    if self.target in self.objectFeatures:  # drop the target columns
+      self.objectFeatures.remove(self.target)
+    if self.debugMode:
+      print("\n Here are the object features: \n", self.objectFeatures)
+    
+    self.numericFeatures = self.df_data.select_dtypes(exclude=['object']).columns.to_list()
+    if self.target in self.numericFeatures:  # drop the target columns
+      self.numericFeatures.remove(self.target)
+    if self.debugMode:
+      print("\n Here are the numerical features: \n", self.numericFeatures)
+
     print("\n missing values: ")
     missing_val_count_by_column = (self.df_data.isnull().sum())
     print(missing_val_count_by_column[missing_val_count_by_column > 0].sort_values(ascending=False))
-    self.cols_with_missing_data = [col for col in df_data.columns if df_data[col].isnull().any()]
+
+    self.objectFeatures_with_missing_data = [col for col in self.df_data[self.objectFeatures].columns if self.df_data[col].isnull().any()] # categorrical features with missing data
+    if self.target in self.objectFeatures_with_missing_data:  # target should not be here, but let's check it out. 
+      self.objectFeatures_with_missing_data.remove(self.target)
+
+    self.numericFeatures_with_missing_data = [col for col in self.df_data[self.numericFeatures].columns if self.df_data[col].isnull().any()] # numerical features with missing data
+    if self.target in self.numericFeatures_with_missing_data:  # target should not be here, but let's check it out. 
+      self.numericFeatures_with_missing_data.remove(self.target)
+
+    self.Features_with_missing_data = [self.numericFeatures_with_missing_data, self.objectFeatures_with_missing_data]
+    
+    
+    
+    if self.debugMode:
+      print("\n object features with missing data: \n", self.objectFeatures_with_missing_data)
+      print("\n numerical features with missing data: \n", self.numericFeatures_with_missing_data)
+
 
     print("\n data head")
     print(self.df_data.head())
-  
+
   # remove rows/instances with missing target ---
   def missingTarget(self):
     if self.df_data[self.target].isnull().values.any():
-      print(f"\n {self.df_data[self.target].isnull().sum()} instances are missing the target value. Dropping the instances." ) # here
+      print(f"\n {self.df_data[self.target].isnull().sum()} instances are missing the target value. Dropping the instances." )
       self.df_data.dropna(axis=0, subset=[self.target], how='any', inplace=True)
     else:
       print("\n There is no missing target.")
 
 
-  # select a subset of features
-  def selectFeatures(self, features):
+  #  a subset of features in the data
+  def pickFeatures(self, features):
     self.data = self.data[featurs]
 
-  # select object features
-  def selectObjectFeatures(self):
-    self.objectFeatures = self.df_data.dtypes == 'object'
-
-
-
   def handleMissingValues(self):
-    if not self.cols_with_missing_data:
+    if not self.objectFeatures_with_missing_data and not self.numericFeatures_with_missing_data:
       print("There is no missing data")
     else:
-      if self.imputeStrategy == "drop":
-        print(" impute strategy is: drop columns with misstin data")
-        ImputeDrop()
-      elif imputeStrategy == 2:
+      if self.addImputeCol:
+        for col in self.Features_with_missing_data:
+          self.df_data[col + '_was_missing'] = self.df_data[col].isnull()
+
+      if self.imputeStrategy == "drop": # for categorical and numerical features
+        print(" impute strategy: drop features with missing data (categorical and numerical)")
+        self.df_data = self.df_data.drop(self.Features_with_missing_data, axis=1)
+
+      elif self.imputeStrategy in ["mean", "median", "most_frequent"]:  
+        ImputeTheData()
+
+      elif self.imputeStrategy == "constant": #  
+        print(" The constant  impute strategy affects the numerical and categorical features.")
+        ImputeConstant()
+
+
+  def ImputeTheData(self):
+    if self.debugMode:
+      print(f"\n Before {self.imputeStrategy} impute for num features: \n", self.df_data[self.numericFeatures_with_missing_data])
+
+    imputer = SimpleImputer(strategy=self.imputeStrategy, copy=False)
+    
+    self.df_data[self.numericFeatures_with_missing_data] = pd.DataFrame(imputer.fit_transform(self.df_data[self.numericFeatures_with_missing_data]), columns = self.numericFeatures_with_missing_data)
+    # imputed_num_features = pd.DataFrame(imputer.fit_transform(self.df_data[self.numericFeatures_with_missing_data]), columns = self.numericFeatures_with_missing_data)
+
+    # self.df_data = self.df_data.drop(self.numericFeatures_with_missing_data,axis=1)
+    # self.df_data = self.df_data.join(imputed_num_features)
+
+    if self.debugMode:
+      print(f"\n After {self.imputeStrategy} impute for num features: \n", self.df_data[self.numericFeatures_with_missing_data])
+
+    if self.debugMode:
+      print(f"\n Before {'most_frequent'} impute for categorical features: \n", self.df_data[self.objectFeatures_with_missing_data])
+
+    cat_imputer = SimpleImputer(strategy=self.imputeStrategy, copy=False)
+    self.df_data[self.objectFeatures_with_missing_data] = pd.DataFrame(cat_imputer.fit_transform(self.df_data[self.objectFeatures_with_missing_data]), columns = self.objectFeatures_with_missing_data)
+    # imputed_cat_features = pd.DataFrame(cat_imputer.fit_transform(self.df_data[self.objectFeatures_with_missing_data]), columns = self.objectFeatures_with_missing_data)
+
+    # self.df_data = self.df_data.drop(self.objectFeatures_with_missing_data,axis=1)
+    # self.df_data = self.df_data.join(imputed_cat_features)
+
+    if self.debugMode:
+      print("\n After most frequent impute for categorical features: \n", self.df_data[self.objectFeatures_with_missing_data])
+
+
+  def ImputeConstant(self):
+    if self.debugMode:
+      print("\n Before most frequent impute for num features: \n", self.df_data[self.numericFeatures_with_missing_data])
+
+    imputer = SimpleImputer(strategy='constant', fill_value=self.fill_value, copy=False)
+    imputed_num_features = pd.DataFrame(imputer.fit_transform(self.df_data[self.numericFeatures_with_missing_data]), columns = self.numericFeatures_with_missing_data)
+
+    self.df_data = self.df_data.drop(self.numericFeatures_with_missing_data,axis=1)
+    self.df_data = self.df_data.join(imputed_num_features)
+
+    if self.debugMode:
+      print("\n After most frequent impute for num features: \n", self.df_data[self.numericFeatures_with_missing_data])
+
+    if self.debugMode:
+      print("\n Before most frequent impute for categorical features: \n", self.df_data[self.objectFeatures_with_missing_data])
+
+    imputed_cat_features = pd.DataFrame(imputer.fit_transform(self.df_data[self.objectFeatures_with_missing_data]), columns = self.objectFeatures_with_missing_data)
+
+    self.df_data = self.df_data.drop(self.objectFeatures_with_missing_data,axis=1)
+    self.df_data = self.df_data.join(imputed_cat_features)
+
+    if self.debugMode:
+      print("\n After most frequent impute for categorical features: \n", self.df_data[self.objectFeatures_with_missing_data])
+
+  # normalize numerical data
+  def normalizeCategoricalFeatures(self):
+    if self.debugMode:
+      print("\n Before normalization: \n", self.df_data[self.numericFeatures])
+    self.df_data[self.numericFeatures] = (self.df_data[self.numericFeatures]-self.df_data[self.numericFeatures].min()) / (self.df_data[self.numericFeatures].max()-self.df_data[self.numericFeatures].min())
+
+    if self.debugMode:
+      print("\n After normalization: \n", self.df_data[self.numericFeatures])
+
+  # one-hot encoder for object functions
+  def catgoricalFeatures_processing(self):
+
+    # first find how many categories exist for each col
+    unique_cats_of_objectFeatures = list(map(lambda col: self.df_data[col].nunique(), self.objectFeatures))
+    d = dict(zip(self.objectFeatures, unique_cats_of_objectFeatures))
+    
+    print("unique categories of object features: ")
+    print(sorted(d.items(), key = lambda x:x[1]))
+
+    # features that will be one-hot encoded
+    low_cardinality_cols = [col for col in self.objectFeatures if self.df_data[col].nunique() < self.cardinalityThreshold]
+
+    # features that will be dropped from the dataset
+    high_cardinality_cols = list(set(self.objectFeatures)-set(low_cardinality_cols))
+
+    print(f'Categorical columns that will be one-hot encoded (less than {self.cardinalityThreshold} unique categories):', low_cardinality_cols)
+    print('\nCategorical columns that will be dropped from the dataset  (more than {self.cardinalityThreshold} unique categories):', high_cardinality_cols)
 
 
 
-  # impute options: 
-  # Impute approach one: drop column
-  def ImputeDrop(self):
-    pass
 
 
-  # fix missing values in the column - approach two: Impute column
-  def missingAppTwoImpute(self):
-    pass
+    if self.categoriecalFeatures == 1:
+      self.df_data.drop(self.objectFeatures, axis=1)
+    elif self.categoriecalFeatures == 2: # ordinal numbering of the categorical features
 
-  # fix missing values in the column - approach three: impute and extend
-  def missingAppThreeImpute(self):
-    pass
+
+
+# =============   here.
+    # 'ignore' to avoid errors when the validation data contains classes that aren't represented in the training data
+    OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False ) # 
+    #OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(X_train[object_cols]))
+    #OH_cols_valid = pd.DataFrame(OH_encoder.transform(X_valid[object_cols]))
+    OH_df_bank = pd.DataFrame(OH_encoder.fit_transform(df_bank[low_cardinality_cols]))
+
+    # One-hot encoding removed index; put it back
+    #OH_cols_train.index = X_train.index
+    #OH_cols_valid.index = X_valid.index
+    OH_df_bank.index = df_bank.index
+
+    # Remove categorical columns (will replace with one-hot encoding)
+    #num_X_train = X_train.drop(object_cols, axis=1)
+    #num_X_valid = X_valid.drop(object_cols, axis=1)
+    num_df_bank = df_bank.drop(low_cardinality_cols, axis=1)
+
+    # Add one-hot encoded columns to numerical features
+    #OH_X_train = pd.concat([num_X_train, OH_cols_train], axis=1)
+    #OH_X_valid = pd.concat([num_X_valid, OH_cols_valid], axis=1)
+    OH_df_bank = pd.concat([num_df_bank, OH_df_bank], axis=1)
+
+    # Ensure all columns have string type
+    #OH_X_train.columns = OH_X_train.columns.astype(str)
+    #OH_X_valid.columns = OH_X_valid.columns.astype(str)    
+    OH_df_bank.columns = OH_df_bank.columns.astype(str)    
+    
+    df_bank = OH_df_bank
+    
+    if debug: 
+        print("after one-hot encoding:")
+        display(df_bank.head())
+
+
+# =============
+
+
+
+
+
 
 
   # separate target from the data.
 
   # split train to train and validate
+ 
+  
 
 
-  # deal with categorical data get columns, , 
-
-  # get numerical data, impune
-  
-  
-  
-  # normalize the data
 
 
 
@@ -163,20 +316,22 @@ class testData:
 def main():
   #data = DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='y')
   #data = DataPreprocessing(trainfilename="PhishingWebsitesData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='Result')
-  data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='SalePrice')
+  data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='SalePrice', debugMode = True)
   data.readData()
   data.missingTarget()
 
   #features = [f1, f2, f3]
-  #data.selectFeatures(feaetures)
-  
+  #data.pickFeatures(feaetures)
+
+
+
   data.handleMissingValues()
 
-  data.selectObjectFeatures()
+  data.normalizeCategoricalFeatures()
 
 
 
-  print(" ==================")
+  print("\n ==================")
   print(" end of the code")
 
 if __name__== "__main__":
