@@ -6,9 +6,10 @@ from dataclasses import dataclass, field
 import numpy as np
 import os
 #import argparser
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
 from IPython.display import display # to display dataframe
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
 
 
 #================================================
@@ -25,8 +26,12 @@ class DataPreprocessing:
   split: float = 0.8
   debugMode: bool = False
   categoriecalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
-  imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features), mean: mean of data (only works with numeric features), median: uses the median (only works with numeric features), most_frequent: replaces with the most frequent value (works with numeric or object features).
-  addImputeCol: bool = False
+  imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features) 
+                                # mean: mean of data (only works with numeric features)
+                                # median: uses the median (only works with numeric features) 
+                                # most_frequent: replaces with the most frequent value (works with numeric or object features).
+                                # constant: uses fill_value to replace all nans with a constant fill_value.
+  addImputeCol: bool = False    # Ture/False
   
   #missing_values: ? = np.nan # for impute
   fill_value: any = "" # for impute, when using the constant strategy, otherwise it would be ignored.
@@ -78,13 +83,10 @@ class DataPreprocessing:
       self.numericFeatures_with_missing_data.remove(self.target)
 
     self.Features_with_missing_data = [self.numericFeatures_with_missing_data, self.objectFeatures_with_missing_data]
-    
-    
-    
+        
     if self.debugMode:
       print("\n object features with missing data: \n", self.objectFeatures_with_missing_data)
       print("\n numerical features with missing data: \n", self.numericFeatures_with_missing_data)
-
 
     print("\n data head")
     print(self.df_data.head())
@@ -100,7 +102,7 @@ class DataPreprocessing:
 
   #  a subset of features in the data
   def pickFeatures(self, features):
-    self.data = self.data[featurs]
+    self.data = self.data[features]
 
   def handleMissingValues(self):
     if not self.objectFeatures_with_missing_data and not self.numericFeatures_with_missing_data:
@@ -176,7 +178,7 @@ class DataPreprocessing:
       print("\n After most frequent impute for categorical features: \n", self.df_data[self.objectFeatures_with_missing_data])
 
   # normalize numerical data
-  def normalizeCategoricalFeatures(self):
+  def normalizeNumericalFeatures(self):
     if self.debugMode:
       print("\n Before normalization: \n", self.df_data[self.numericFeatures])
     self.df_data[self.numericFeatures] = (self.df_data[self.numericFeatures]-self.df_data[self.numericFeatures].min()) / (self.df_data[self.numericFeatures].max()-self.df_data[self.numericFeatures].min())
@@ -184,8 +186,7 @@ class DataPreprocessing:
     if self.debugMode:
       print("\n After normalization: \n", self.df_data[self.numericFeatures])
 
-  # one-hot encoder for object functions
-  def catgoricalFeatures_processing(self):
+  def categoricalFeatures_processing(self):
 
     # first find how many categories exist for each col
     unique_cats_of_objectFeatures = list(map(lambda col: self.df_data[col].nunique(), self.objectFeatures))
@@ -203,66 +204,40 @@ class DataPreprocessing:
     print(f'Categorical columns that will be one-hot encoded (less than {self.cardinalityThreshold} unique categories):', low_cardinality_cols)
     print('\nCategorical columns that will be dropped from the dataset  (more than {self.cardinalityThreshold} unique categories):', high_cardinality_cols)
 
-
-
-
-
     if self.categoriecalFeatures == 1:
       self.df_data.drop(self.objectFeatures, axis=1)
     elif self.categoriecalFeatures == 2: # ordinal numbering of the categorical features
+      ordinal_encoder = OrdinalEncoder()
+      if self.debugMode:
+        print("\n Before ordinal encoding: \n", self.df_data[self.objectFeatures])
+  
+      self.df_data[self.objectFeatures] = ordinal_encoder.fit_transform(self.df_data[self.objectFeatures])
 
+      if self.debugMode:
+        print("\n After ordinal encoding: \n", self.df_data[self.objectFeatures])
 
+    elif self.categoriecalFeatures == 3: # One-hot encoding of the categorical features
 
-# =============   here.
-    # 'ignore' to avoid errors when the validation data contains classes that aren't represented in the training data
-    OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False ) # 
-    #OH_cols_train = pd.DataFrame(OH_encoder.fit_transform(X_train[object_cols]))
-    #OH_cols_valid = pd.DataFrame(OH_encoder.transform(X_valid[object_cols]))
-    OH_df_bank = pd.DataFrame(OH_encoder.fit_transform(df_bank[low_cardinality_cols]))
+      if self.debugMode:
+        print("\n Before one-hot encoding: \n", self.df_data[low_cardinality_cols])
 
-    # One-hot encoding removed index; put it back
-    #OH_cols_train.index = X_train.index
-    #OH_cols_valid.index = X_valid.index
-    OH_df_bank.index = df_bank.index
-
-    # Remove categorical columns (will replace with one-hot encoding)
-    #num_X_train = X_train.drop(object_cols, axis=1)
-    #num_X_valid = X_valid.drop(object_cols, axis=1)
-    num_df_bank = df_bank.drop(low_cardinality_cols, axis=1)
-
-    # Add one-hot encoded columns to numerical features
-    #OH_X_train = pd.concat([num_X_train, OH_cols_train], axis=1)
-    #OH_X_valid = pd.concat([num_X_valid, OH_cols_valid], axis=1)
-    OH_df_bank = pd.concat([num_df_bank, OH_df_bank], axis=1)
-
-    # Ensure all columns have string type
-    #OH_X_train.columns = OH_X_train.columns.astype(str)
-    #OH_X_valid.columns = OH_X_valid.columns.astype(str)    
-    OH_df_bank.columns = OH_df_bank.columns.astype(str)    
+      # 'ignore' to avoid errors when the validation data contains classes that aren't represented in the training data
+      OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False ) # 
+      OH_df_data = OH_encoder.fit_transform(self.df_data[low_cardinality_cols])
+      self.df_data = self.df_data.drop(self.objectFeatures, axis=1)
+      self.df_data = self.df_data.join(OH_df_data)
     
-    df_bank = OH_df_bank
-    
-    if debug: 
-        print("after one-hot encoding:")
-        display(df_bank.head())
 
+      if self.debugMode:
+        print("\n Before one-hot encoding: \n", self.df_data[low_cardinality_cols])
 
-# =============
-
-
-
-
-
+    return self
 
 
   # separate target from the data.
 
   # split train to train and validate
  
-  
-
-
-
 
 
 #================================================
@@ -312,24 +287,25 @@ class testData:
   pass
 
 
+
+
+
+
+
 #************************************************
 def main():
   #data = DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='y')
   #data = DataPreprocessing(trainfilename="PhishingWebsitesData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='Result')
-  data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='SalePrice', debugMode = True)
+  data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", split = 0.8, categoriecalFeatures = 1, imputeStrategy="drop", target='SalePrice', debugMode = True)
   data.readData()
   data.missingTarget()
 
   #features = [f1, f2, f3]
   #data.pickFeatures(feaetures)
 
-
-
   data.handleMissingValues()
-
-  data.normalizeCategoricalFeatures()
-
-
+  data.normalizeNumericalFeatures()
+  data.categoricalFeatures_processing()
 
   print("\n ==================")
   print(" end of the code")
