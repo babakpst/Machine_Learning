@@ -70,8 +70,9 @@ class DataPreprocessing:
     if self.debugMode:
       print("\n Here are the numerical features: \n", self.numericFeatures)
 
-    print("\n missing values: ")
     missing_val_count_by_column = (self.df_data.isnull().sum())
+    print(type(missing_val_count_by_column))
+    print("\n missing values: ")
     print(missing_val_count_by_column[missing_val_count_by_column > 0].sort_values(ascending=False))
 
     self.objectFeatures_with_missing_data = [col for col in self.df_data[self.objectFeatures].columns if self.df_data[col].isnull().any()] # categorrical features with missing data
@@ -82,11 +83,14 @@ class DataPreprocessing:
     if self.target in self.numericFeatures_with_missing_data:  # target should not be here, but let's check it out. 
       self.numericFeatures_with_missing_data.remove(self.target)
 
-    self.Features_with_missing_data = [self.numericFeatures_with_missing_data, self.objectFeatures_with_missing_data]
+    self.Features_with_missing_data = self.objectFeatures_with_missing_data + self.numericFeatures_with_missing_data
+    # self.Features_with_missing_data = self.objectFeatures_with_missing_data
+
         
     if self.debugMode:
       print("\n object features with missing data: \n", self.objectFeatures_with_missing_data)
       print("\n numerical features with missing data: \n", self.numericFeatures_with_missing_data)
+      print("\n Features with missing data (total {}): \n".format(len(self.Features_with_missing_data)), self.Features_with_missing_data)
 
     print("\n data head")
     print(self.df_data.head())
@@ -116,6 +120,14 @@ class DataPreprocessing:
         print(" impute strategy: drop features with missing data (categorical and numerical)")
         self.df_data = self.df_data.drop(self.Features_with_missing_data, axis=1)
 
+        # removing deleted features from the list
+        self.objectFeatures = [item for item in self.objectFeatures if item not in self.objectFeatures_with_missing_data]
+        self.numericFeatures= [item for item in self.numericFeatures if item not in self.numericFeatures_with_missing_data]
+
+        if self.debugMode:
+          print("\n object features after dropping: \n", self.objectFeatures)
+          print("\n numerical features after dropping: \n", self.numericFeatures)
+
       elif self.imputeStrategy in ["mean", "median", "most_frequent"]:  
         ImputeTheData()
 
@@ -123,8 +135,16 @@ class DataPreprocessing:
         print(" The constant  impute strategy affects the numerical and categorical features.")
         ImputeConstant()
 
+    if self.debugMode:
+      print("\n data head after Impute")
+      print(self.df_data.head())
 
-  def ImputeTheData(self):
+
+
+
+
+
+  def ImputeTheData(self): # for impute strategy mean, median, most_frequent
     if self.debugMode:
       print(f"\n Before {self.imputeStrategy} impute for num features: \n", self.df_data[self.numericFeatures_with_missing_data])
 
@@ -142,7 +162,7 @@ class DataPreprocessing:
     if self.debugMode:
       print(f"\n Before {'most_frequent'} impute for categorical features: \n", self.df_data[self.objectFeatures_with_missing_data])
 
-    cat_imputer = SimpleImputer(strategy=self.imputeStrategy, copy=False)
+    cat_imputer = SimpleImputer(strategy='most_frequent', copy=False)
     self.df_data[self.objectFeatures_with_missing_data] = pd.DataFrame(cat_imputer.fit_transform(self.df_data[self.objectFeatures_with_missing_data]), columns = self.objectFeatures_with_missing_data)
     # imputed_cat_features = pd.DataFrame(cat_imputer.fit_transform(self.df_data[self.objectFeatures_with_missing_data]), columns = self.objectFeatures_with_missing_data)
 
@@ -296,7 +316,7 @@ class testData:
 def main():
   #data = DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='y')
   #data = DataPreprocessing(trainfilename="PhishingWebsitesData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='Result')
-  data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", split = 0.8, categoriecalFeatures = 1, imputeStrategy="drop", target='SalePrice', debugMode = True)
+  data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", split = 0.8, categoriecalFeatures = 1, imputeStrategy="drop", target='SalePrice', addImputeCol=True, debugMode = True)
   data.readData()
   data.missingTarget()
 
@@ -304,8 +324,10 @@ def main():
   #data.pickFeatures(feaetures)
 
   data.handleMissingValues()
-  data.normalizeNumericalFeatures()
-  data.categoricalFeatures_processing()
+  
+  
+  #data.normalizeNumericalFeatures()
+  #data.categoricalFeatures_processing()
 
   print("\n ==================")
   print(" end of the code")
