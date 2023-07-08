@@ -25,12 +25,13 @@ class DataPreprocessing:
   dataPath: str = ""
   split: float = 0.8
   debugMode: bool = False
-  categoriecalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
+  categoricalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
   imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features) 
-                                # mean: mean of data (only works with numeric features)
-                                # median: uses the median (only works with numeric features) 
+                                # mean: mean of data (only works with numeric features) - applies most_freq for categorical data
+                                # median: uses the median (only works with numeric features) - applies most_freq for categorical data
                                 # most_frequent: replaces with the most frequent value (works with numeric or object features).
                                 # constant: uses fill_value to replace all nans with a constant fill_value.
+  
   addImputeCol: bool = False    # Ture/False
   
   #missing_values: ? = np.nan # for impute
@@ -41,14 +42,12 @@ class DataPreprocessing:
   def __post_init__(self):
     self.fullpath = os.path.join(self.dataPath, self.trainfilename)
 
-
   # read data -----------------------------------
   def readData(self):
     self.df_data = pd.read_csv(self.fullpath)
     
     print("\n data frame info: ")
     print(self.df_data.info())
-
 
     if self.target not in self.df_data.columns:
       #raise ValueError(f"The target columns '{self.target}' does not exist in the data.")
@@ -118,7 +117,15 @@ class DataPreprocessing:
 
       if self.imputeStrategy == "drop": # for categorical and numerical features
         print(" impute strategy: drop features with missing data (categorical and numerical)")
-        self.df_data = self.df_data.drop(self.Features_with_missing_data, axis=1)
+
+        if self.debugMode:
+          print(" features to be dropped: \n", self.Features_with_missing_data)
+          print(f"\n before impute: \n", self.df_data.to_string())
+
+          print(type(self.Features_with_missing_data))
+
+        # self.df_data = self.df_data.drop(self.Features_with_missing_data, axis=1)
+        self.df_data.drop(self.Features_with_missing_data, axis=1, inplace=True)
 
         # removing deleted features from the list
         self.objectFeatures = [item for item in self.objectFeatures if item not in self.objectFeatures_with_missing_data]
@@ -127,6 +134,7 @@ class DataPreprocessing:
         if self.debugMode:
           print("\n object features after dropping: \n", self.objectFeatures)
           print("\n numerical features after dropping: \n", self.numericFeatures)
+          print(f"\n After impute: \n", self.df_data.to_string())
 
       elif self.imputeStrategy in ["mean", "median", "most_frequent"]:  
         self.ImputeTheData()
@@ -219,19 +227,31 @@ class DataPreprocessing:
     # features that will be dropped from the dataset
     high_cardinality_cols = list(set(self.objectFeatures)-set(low_cardinality_cols))
 
-    print(f'Categorical columns that will be one-hot encoded (less than {self.cardinalityThreshold} unique categories):', low_cardinality_cols)
-    print('\nCategorical columns that will be dropped from the dataset  (more than {self.cardinalityThreshold} unique categories):', high_cardinality_cols)
+    if self.debugMode:
+      print(f'\n object features (total {len(self.objectFeatures)}):\n', self.objectFeatures)
+      print(f'\n Low cardinality categorical columns (candidates for one-hot encoding if selected (less than {self.cardinalityThreshold} unique categories)): \n', low_cardinality_cols)
+      print(f'\n Categorical columns that will be dropped from the dataset (more than {self.cardinalityThreshold} unique categories):\n', high_cardinality_cols)
 
-    if self.categoriecalFeatures == 1:
+    if self.categoricalFeatures == 1: # drop
       if self.debugMode:
         print("\n Before drop categorical features: \n", self.df_data[self.objectFeatures].to_string())
 
-      self.df_data.drop(self.objectFeatures, axis=1)
+      count = 0
+      for col in self.objectFeatures:
+        count = count + 1
+        print(f'{count} {col} exits in data: {True if col in self.df_data.columns else False}')
+        # self.df_data.drop(col, axis=1, inplace=True)
+      
+      print(type(self.objectFeatures), len(self.objectFeatures))
+      print("objects\n", self.objectFeatures)
+      # self.df_data=self.df_data.drop(self.objectFeatures, axis=1)
+      self.df_data.drop(self.objectFeatures, axis=1, inplace=True)
+      # self.df_data.drop(['MSZoning'], axis=1, inplace=True)
 
       if self.debugMode:
-        print("\n After drop categorical features: \n", self.df_data[self.objectFeatures].to_string())
+        print("\n After drop categorical features: \n", self.df_data.to_string())
 
-    elif self.categoriecalFeatures == 2: # ordinal numbering of the categorical features
+    elif self.categoricalFeatures == 2: # ordinal numbering of the categorical features
       ordinal_encoder = OrdinalEncoder()
       if self.debugMode:
         print("\n Before ordinal encoding: \n", self.df_data[self.objectFeatures].to_string())
@@ -241,7 +261,7 @@ class DataPreprocessing:
       if self.debugMode:
         print("\n After ordinal encoding: \n", self.df_data[self.objectFeatures].to_string())
 
-    elif self.categoriecalFeatures == 3: # One-hot encoding of the categorical features
+    elif self.categoricalFeatures == 3: # One-hot encoding of the categorical features
 
       if self.debugMode:
         print("\n Before one-hot encoding: \n", self.df_data[low_cardinality_cols].to_string())
@@ -307,7 +327,7 @@ class crossValidation:
 
 #================================================
 #================================================
-# reading the test data
+# reading the test dataobject fea
 class testData:
   pass
 
@@ -319,10 +339,10 @@ class testData:
 
 #************************************************
 def main():
-  #data = DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='y')
-  #data = DataPreprocessing(trainfilename="PhishingWebsitesData.csv", dataPath="../data", split = 0.8, categoriecalFeatures = 3, imputeStrategy="fix", target='Result')
+  #data = DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoricalFeatures = 3, imputeStrategy="fix", target='y')
+  #data = DataPreprocessing(trainfilename="PhishingWebsitesData.csv", dataPath="../data", split = 0.8, categoricalFeatures = 3, imputeStrategy="fix", target='Result')
   data = DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="../data/home-data-kaggle", 
-                           split = 0.8, categoriecalFeatures = 1, imputeStrategy="mean", target='SalePrice', 
+                           split = 0.8, categoricalFeatures = 1, imputeStrategy="drop", target='SalePrice', 
                            addImputeCol=True, debugMode = True)
   
   data.readData()
