@@ -16,7 +16,6 @@ def main():
   
   #data = rd.DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoricalFeatures = 3, imputeStrategy="fix", target='y')
   data = rd.DataPreprocessing(trainfilename="PhishingWebsitesData.csv", testfilename="", dataPath="./data", split = 0.2, categoricalFeatures = 3, imputeStrategy="mean", target='Result', addImputeCol=True, debugMode = False)
-  # data = rd.DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="./data/home-data-kaggle", split = 0.8, categoricalFeatures = 3, imputeStrategy="drop", target='SalePrice', addImputeCol=True, debugMode = False)
   
   data.readData()
   data.missingTarget()
@@ -26,7 +25,7 @@ def main():
 
   data.handleMissingValues()
   data.categoricalFeatures_processing()
-  data.normalizeNumericalFeatures()
+  # data.normalizeNumericalFeatures()
 
   data.splitData()
 
