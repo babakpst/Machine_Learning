@@ -12,9 +12,10 @@ class myRandomForestClassifier:
 
   x_test: pd.DataFrame = None
   y_test: pd.DataFrame = None
+  n_estimators: int = 50
 
   def train(self):
-    forest_model = RandomForestClassifier(random_state=1)
+    forest_model = RandomForestClassifier(n_estimators = self.n_estimators, random_state=1)
     forest_model.fit(self.x_train, self.y_train)
     y_pred = forest_model.predict(self.x_test)
 

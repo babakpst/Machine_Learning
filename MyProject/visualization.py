@@ -194,3 +194,9 @@ class visualization:
     plt.plot(train_sizes, pred_std, 'o-', color="r", label="Prediction Time (s)")
     plt.legend(loc="best")
     plt.show()    
+
+
+  @staticmethod
+  def dictionary(results):
+    plt.plot(list(results.keys()), list(results.values()))
+    plt.show()

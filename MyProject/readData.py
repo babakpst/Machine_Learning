@@ -11,26 +11,12 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import f1_score
-from sklearn.model_selection import GridSearchCV
 
-
-
-from sklearn.model_selection import cross_validate
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 from sklearn import tree
 import itertools
 import timeit
-from matplotlib import pyplot as plt
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import mean_absolute_error
 
-#================================================
-#================================================
-# reading the trainging data
 @dataclass
 class DataPreprocessing:
   """_summary_
@@ -305,7 +291,7 @@ class DataPreprocessing:
   # split train to train and validate
   def splitData(self):
     train, test = train_test_split(self.df_data, train_size=self.split , random_state=50, shuffle=True)
-    print(type(train))
+    #print(type(train))
        
     self.x_train = train.loc[:, train.columns != self.target]
     self.y_train = train.loc[:, train.columns == self.target]
@@ -322,8 +308,17 @@ class DataPreprocessing:
 
     return self
 
-  # separate target from the data.
+  # separate target from the data without split.
+  def SeparateTarget(self):       
+    self.X = self.df_data.loc[:, self.df_data.columns != self.target]
+    # self.y = self.df_data.loc[:, self.df_data.columns == self.target]
+    self.y = pd.DataFrame(self.df_data.loc[:, self.df_data.columns == self.target])
 
+    if self.debugMode:
+      print("\nX: \n", self.X)
+      print("\ny: \n", self.y)
+
+    return self
 
 
 
