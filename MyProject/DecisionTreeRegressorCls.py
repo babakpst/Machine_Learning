@@ -10,6 +10,9 @@ class myDecisionTreeRegressor:
   """
   x_train: pd.DataFrame = None
   y_train: pd.DataFrame = None
+  
+  x_valid: pd.DataFrame = None
+  y_valid: pd.DataFrame = None
 
   x_test: pd.DataFrame = None
   y_test: pd.DataFrame = None  
@@ -21,6 +24,6 @@ class myDecisionTreeRegressor:
   def trainDecisionTreeRegressor(self, max_leaf_nodes):
     model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
     model.fit(self.x_train, self.y_train)
-    y_preds = model.predict(self.x_test)
-    mae = mean_absolute_error(self.y_test, y_preds)
+    y_preds = model.predict(self.x_valid)
+    mae = helpers.MAE(self.y_valid, y_preds)
     return (mae)

@@ -11,9 +11,13 @@ class myRandomForestRegressor:
   x_train: pd.DataFrame = None
   y_train: pd.DataFrame = None
 
+  x_valid: pd.DataFrame = None
+  y_valid: pd.DataFrame = None
+
   x_test: pd.DataFrame = None
   y_test: pd.DataFrame = None  
-  n_estimators = 50
+
+  n_estimators: int = 50
 
   def __post_init__(self):
     pass
@@ -22,7 +26,7 @@ class myRandomForestRegressor:
     rf_model = RandomForestRegressor(n_estimators=self.n_estimators, random_state=1)
 
     rf_model.fit(self.x_train, self.y_train)
-    rf_val_mae = mean_absolute_error(rf_model.predict(self.x_test),self.y_test)
+    rf_val_mae = mean_absolute_error(rf_model.predict(self.x_valid),self.y_valid)
 
     print("Validation MAE for Random Forest Model: {}".format(rf_val_mae))
 

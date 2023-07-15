@@ -23,6 +23,9 @@ class myDecisionTreeClassifier:
   x_train: pd.DataFrame = None
   y_train: pd.DataFrame = None
 
+  x_valid: pd.DataFrame = None
+  y_valid: pd.DataFrame = None
+
   x_test: pd.DataFrame = None
   y_test: pd.DataFrame = None
 
@@ -49,8 +52,8 @@ class myDecisionTreeClassifier:
         y_pred_train = DTclassifier.predict(self.x_train)
         f1_train.append(f1_score(self.y_train, y_pred_train,pos_label=1))
 
-        y_pred_test = DTclassifier.predict(self.x_test)
-        newScore = f1_score(self.y_test, y_pred_test,pos_label=1)
+        y_pred_test = DTclassifier.predict(self.x_valid)
+        newScore = f1_score(self.y_valid, y_pred_test,pos_label=1)
         if newScore>maxScore: bestDT = DTclassifier
         f1_test.append(newScore)
 
@@ -65,17 +68,17 @@ class myDecisionTreeClassifier:
     featuresDF.head(10).plot(kind='bar')
     
     
-    print(f"\n probabilities: {DTclassifier.predict_proba(self.x_test)}")
+    print(f"\n probabilities: {DTclassifier.predict_proba(self.x_valid)}")
     
     bestScore = max(f1_test) # should be equal to maxScore
     bestIndex = f1_test.index(bestScore)
     print(f"best tree is {bestIndex} level deep with a score of { bestScore }.")
 
-    y_pred = bestDT.predict(self.x_test)
+    y_pred = bestDT.predict(self.x_valid)
     
-    visualization.model_evaluation(self.y_test, y_pred)
+    visualization.model_evaluation(self.y_valid, y_pred)
     
-    cm = confusion_matrix(self.y_test, y_pred)    
+    cm = confusion_matrix(self.y_valid, y_pred)    
     visualization.plot_confusion_matrix(cm, classes=["0","1"], title='Confusion Matrix')
 
 #     plotDecisionTree(bestDT, feature_names)

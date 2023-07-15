@@ -11,6 +11,7 @@ from visualization import *
 #************************************************
 def main():
   
+  #  input params -----------
   # ARGUMENTS:  
   # "DTC": DecisionTree Classifier
   # "DTR": DecisionTree Regressor
@@ -21,7 +22,8 @@ def main():
   # MLType = "RFR"
   MLType = "CrossValidation"
   
-  data = rd.DataPreprocessing(trainfilename="train.csv", testfilename="test.csv", dataPath="./data/home-data-kaggle", split = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='SalePrice', addImputeCol=True, debugMode = False)
+  # reading data ------------
+  data = rd.DataPreprocessing(train_filename="train.csv", test_filename="test.csv", dataPath="./data/home-data-kaggle", split = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='SalePrice', addImputeCol=True, debugMode = False)
   
   data.readData()
   data.missingTarget()
@@ -37,7 +39,7 @@ def main():
   # decition tree classifier ---------------------------
   if MLType == "DTR":  
     data.splitData()
-    myDecisionTree = dtr.myDecisionTreeRegressor(x_train = data.x_train, y_train = data.y_train, x_test = data.x_test, y_test = data.y_test)
+    myDecisionTree = dtr.myDecisionTreeRegressor(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
     lowest_mae = 1e10
     best_tree_size = 0
 
@@ -56,7 +58,7 @@ def main():
   elif MLType == "RFR":
     data.splitData()
   
-    myRF = rfr.myRandomForestRegressor(x_train = data.x_train, y_train = data.y_train, x_test = data.x_test, y_test = data.y_test)
+    myRF = rfr.myRandomForestRegressor(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
     myRF.trainRandomForestRegressor()
 
   elif MLType == "CrossValidation":

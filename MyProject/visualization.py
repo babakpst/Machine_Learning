@@ -61,14 +61,14 @@ class visualization:
     plt.show()    
 
   @staticmethod
-  def model_evaluation(y_test, y_pred):
-    auc = roc_auc_score(y_test, y_pred)
-    f1 = f1_score(y_test,y_pred,pos_label=1)
-    accuracy = accuracy_score(y_test,y_pred)
-    precision = precision_score(y_test,y_pred,pos_label=1)
-    recall = recall_score(y_test,y_pred,pos_label=1)
+  def model_evaluation(y_valid, y_pred):
+    auc = roc_auc_score(y_valid, y_pred)
+    f1 = f1_score(y_valid,y_pred,pos_label=1)
+    accuracy = accuracy_score(y_valid,y_pred)
+    precision = precision_score(y_valid,y_pred,pos_label=1)
+    recall = recall_score(y_valid,y_pred,pos_label=1)
     
-    print("mean abs error:  "+"{:.2f}".format(mean_absolute_error(y_test, y_pred)))
+    print("mean abs error:  "+"{:.2f}".format(mean_absolute_error(y_valid, y_pred)))
     print("F1 Score:  "+"{:.2f}".format(f1))
     print("Accuracy:  "+"{:.2f}".format(auc)+"     AUC:          "+"{:.2f}".format(auc))
     print("Accuracy:  "+"{:.2f}".format(accuracy)+"  Accuracy:     "+"{:.2f}".format(accuracy))
@@ -111,7 +111,7 @@ class visualization:
   
   
   @staticmethod
-  def final_classifier_evaluation(clf,X_train, X_test, y_train, y_test):
+  def final_classifier_evaluation(clf,X_train, x_valid, y_train, y_valid):
     
     start_time = timeit.default_timer()
     clf.fit(X_train, y_train)
@@ -119,16 +119,16 @@ class visualization:
     training_time = end_time - start_time
     
     start_time = timeit.default_timer()    
-    y_pred = clf.predict(X_test)
+    y_pred = clf.predict(x_valid)
     end_time = timeit.default_timer()
     pred_time = end_time - start_time
     
-    auc = roc_auc_score(y_test, y_pred)
-    f1 = f1_score(y_test,y_pred,pos_label=1)
-    accuracy = accuracy_score(y_test,y_pred)
-    precision = precision_score(y_test,y_pred,pos_label=1)
-    recall = recall_score(y_test,y_pred,pos_label=1)
-    cm = confusion_matrix(y_test,y_pred)
+    auc = roc_auc_score(y_valid, y_pred)
+    f1 = f1_score(y_valid,y_pred,pos_label=1)
+    accuracy = accuracy_score(y_valid,y_pred)
+    precision = precision_score(y_valid,y_pred,pos_label=1)
+    recall = recall_score(y_valid,y_pred,pos_label=1)
+    cm = confusion_matrix(y_valid,y_pred)
 
     print("Model Evaluation Metrics Using Untouched Test Dataset")
     print("*****************************************************")

@@ -13,9 +13,10 @@ def main():
   # "RFC": RandomForest Classifier
   # "RFR": RandomForest Regressor 
   MLType = "DTC"
+  # MLType = "RFC"
   
-  #data = rd.DataPreprocessing(trainfilename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoricalFeatures = 3, imputeStrategy="fix", target='y')
-  data = rd.DataPreprocessing(trainfilename="PhishingWebsitesData.csv", testfilename="", dataPath="./data", split = 0.2, categoricalFeatures = 3, imputeStrategy="mean", target='Result', addImputeCol=True, debugMode = False)
+  #data = rd.DataPreprocessing(train_filename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoricalFeatures = 3, imputeStrategy="fix", target='y')
+  data = rd.DataPreprocessing(train_filename="PhishingWebsitesData.csv", test_filename="", dataPath="./data", split = 0.2, categoricalFeatures = 3, imputeStrategy="mean", target='Result', addImputeCol=True, debugMode = False)
   
   data.readData()
   data.missingTarget()
@@ -31,7 +32,7 @@ def main():
 
   # decition tree classifier ---------------------------
   if MLType == "DTC":
-    myDecisionTree = dtc.myDecisionTreeClassifier(x_train = data.x_train, y_train = data.y_train, x_test = data.x_test, y_test = data.y_test)
+    myDecisionTree = dtc.myDecisionTreeClassifier(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
     
     # training a decision tree classifier with max depth optimizer (simpler decision tree). 
     myDecisionTree.FindBestDTwithDepth()
@@ -50,11 +51,11 @@ def main():
                                             max_leaf_nodes=max_leaf_nodes, random_state=100, criterion='entropy')
 
     # train_samp_data, DT_train_score_data, DT_fit_time_data, DT_pred_time_data = visualization.plot_learning_curve(clf = estimator_data, X=data.x_train, y=data.y_train, title="Decision Tree")
-    visualization.final_classifier_evaluation(clf=estimator_data, X_train = data.x_train, X_test = data.x_test, y_train = data.y_train, y_test = data.y_test)
+    visualization.final_classifier_evaluation(clf=estimator_data, X_train = data.x_train, x_valid = data.x_valid, y_train = data.y_train, y_valid = data.y_valid)
 
   # random forest classifier ---------------------------
   elif MLType == "RFC":
-    myRF = rfc.myRandomForestClassifier(x_train = data.x_train, y_train = data.y_train, x_test = data.x_test, y_test = data.y_test)
+    myRF = rfc.myRandomForestClassifier(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
     myRF.train()
 
   print("\n ==================")
