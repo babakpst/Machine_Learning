@@ -12,11 +12,15 @@ def main():
   # "DTR": DecisionTree Regressor
   # "RFC": RandomForest Classifier
   # "RFR": RandomForest Regressor 
-  MLType = "DTC"
-  # MLType = "RFC"
+  # MLType = "DTC"
+  MLType = "RFC"
   
-  #data = rd.DataPreprocessing(train_filename="BankMarketingData.csv", dataPath="../data", split = 0.8, categoricalFeatures = 3, imputeStrategy="fix", target='y')
-  data = rd.DataPreprocessing(train_filename="PhishingWebsitesData.csv", test_filename="", dataPath="./data", split = 0.2, categoricalFeatures = 3, imputeStrategy="mean", target='Result', addImputeCol=True, debugMode = False)
+  data = rd.DataPreprocessing(train_filename="BankMarketingData.csv", test_filename="", dataPath="./data", 
+                              train_size = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='y',
+                              addImputeCol=True, debugMode = False)
+  # data = rd.DataPreprocessing(train_filename="PhishingWebsitesData.csv", test_filename="", dataPath="./data", 
+  #                             train_size = 0.8, categoricalFeatures = 1, imputeStrategy="mean", target='Result', 
+  #                             addImputeCol=True, debugMode = False)
   
   data.readData()
   data.missingTarget()
@@ -30,9 +34,10 @@ def main():
 
   data.splitData()
 
-  # decition tree classifier ---------------------------
+  # decision tree classifier ---------------------------
   if MLType == "DTC":
-    myDecisionTree = dtc.myDecisionTreeClassifier(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
+    myDecisionTree = dtc.myDecisionTreeClassifier(x_train = data.x_train, y_train = data.y_train, 
+                                                  x_valid = data.x_valid, y_valid = data.y_valid)
     
     # training a decision tree classifier with max depth optimizer (simpler decision tree). 
     myDecisionTree.FindBestDTwithDepth()
@@ -51,7 +56,8 @@ def main():
                                             max_leaf_nodes=max_leaf_nodes, random_state=100, criterion='entropy')
 
     # train_samp_data, DT_train_score_data, DT_fit_time_data, DT_pred_time_data = visualization.plot_learning_curve(clf = estimator_data, X=data.x_train, y=data.y_train, title="Decision Tree")
-    visualization.final_classifier_evaluation(clf=estimator_data, X_train = data.x_train, x_valid = data.x_valid, y_train = data.y_train, y_valid = data.y_valid)
+    visualization.final_classifier_evaluation(clf=estimator_data, X_train = data.x_train, x_valid = data.x_valid, 
+                                              y_train = data.y_train, y_valid = data.y_valid)
 
   # random forest classifier ---------------------------
   elif MLType == "RFC":

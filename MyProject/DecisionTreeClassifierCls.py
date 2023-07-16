@@ -50,10 +50,11 @@ class myDecisionTreeClassifier:
         DTclassifier.fit(self.x_train, self.y_train)
 
         y_pred_train = DTclassifier.predict(self.x_train)
-        f1_train.append(f1_score(self.y_train, y_pred_train,pos_label=1))
+        f1_train.append(f1_score(self.y_train, y_pred_train, pos_label='yes' if self.y_train.dtypes[0] == object else 1) )
 
-        y_pred_test = DTclassifier.predict(self.x_valid)
-        newScore = f1_score(self.y_valid, y_pred_test,pos_label=1)
+        y_pred_valid = DTclassifier.predict(self.x_valid)
+        newScore = f1_score(self.y_valid, y_pred_valid, pos_label='yes' if self.y_valid.dtypes[0] == object else 1)
+
         if newScore>maxScore: bestDT = DTclassifier
         f1_test.append(newScore)
 

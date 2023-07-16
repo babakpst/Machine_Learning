@@ -25,7 +25,7 @@ class DataPreprocessing:
   train_filename: str = ""
   test_filename: str = ""
   dataPath: str = ""
-  split: float = 0.8
+  train_size: float = 0.8
   debugMode: bool = False
   categoricalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
   imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features) 
@@ -57,44 +57,42 @@ class DataPreprocessing:
       print("\n test data frame info: ")
       print(self.df_test.info())
 
-
     if self.target not in self.df_train.columns:
-      #raise ValueError(f"The target columns '{self.target}' does not exist in the data.")
       print(f"Error: The target columns '{self.target}' does not exist in the train data. Check the train data.")
       quit()
 
-    if self.df_test & self.target not in self.df_test.columns:
-      #raise ValueError(f"The target columns '{self.target}' does not exist in the data.")
+    if (not self.df_test is None) and (self.target not in self.df_test.columns):
       print(f"Error: The target columns '{self.target}' does not exist in the test data. Check the test data.")
-      quit()
+      #quit()
 
     print("\n info about the train data: ")
     print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22}\n {len(self.df_train):<22} | {len(self.df_train.columns):<22} | {True if self.df_train.isnull().values.any() else False:<22} | {self.df_train[self.target].isnull().sum()}')
 
     if self.testdata_fullpath:
       print("\n info about the test data: ")
-      print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22}\n {len(self.df_test):<22} | {len(self.df_test.columns):<22} | {True if self.df_test.isnull().values.any() else False:<22} | {self.df_test[self.target].isnull().sum()}')
-    
-    
-    self.objectFeatures = self.df_train.select_dtypes(include=['object']).columns.to_list()# train object features 
-    if self.testdata_fullpath and self.objectFeatures != self.df_test.select_dtypes(include=['object']).columns.to_list():
-      print(f"Error: The train object data features are different from the test data object features.")
-      quit()
+      print(f"{self.df_test[self.target].isnull().sum() if (self.target in self.df_test.columns) else 0 }")
+      print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22}\n {len(self.df_test):<22} | {len(self.df_test.columns):<22} | {True if self.df_test.isnull().values.any() else False:<22} | {self.df_test[self.target].isnull().sum() if (self.target in self.df_test.columns) else 0 }')
 
+    print("checkpoint")
+    self.objectFeatures = self.df_train.select_dtypes(include=['object']).columns.to_list()# train object features 
     if self.target in self.objectFeatures:  # drop the target columns
       self.objectFeatures.remove(self.target)
     if self.debugMode:
       print("\n Here are the object features: \n", self.objectFeatures)
     
     self.numericFeatures = self.df_train.select_dtypes(exclude=['object']).columns.to_list()
-    if self.testdata_fullpath and self.numericFeatures != self.df_test.select_dtypes(exclude=['object']).columns.to_list():
-      print(f"Error: The train numerical data features are different from the test data numerical features.")
-      quit()
-
     if self.target in self.numericFeatures:  # drop the target columns
       self.numericFeatures.remove(self.target)
     if self.debugMode:
       print("\n Here are the numerical features: \n", self.numericFeatures)
+
+    if self.testdata_fullpath and self.objectFeatures != self.df_test.select_dtypes(include=['object']).columns.to_list():
+      print(f"Error: The train object data features are different from the test data object features.")
+      quit()
+
+    if self.testdata_fullpath and self.numericFeatures != self.df_test.select_dtypes(exclude=['object']).columns.to_list():
+      print(f"Error: The train numerical data features are different from the test data numerical features.")
+      quit()
 
     missing_val_count_by_column = (self.df_train.isnull().sum())
     print("\n train data missing values: ")
@@ -105,17 +103,20 @@ class DataPreprocessing:
       print("\n test data missing values: ")
       print(missing_val_count_by_column[missing_val_count_by_column > 0].sort_values(ascending=False))
 
-    self.objectFeatures_with_missing_data_trian = [col for col in self.df_train[self.objectFeatures].columns if self.df_train[col].isnull().any()] # categorrical features with missing data
-    if self.target in self.objectFeatures_with_missing_data_trian:  # target should not be here, but let's check it out. 
-      self.objectFeatures_with_missing_data_trian.remove(self.target)
+    self.objectFeatures_with_missing_data_train = [col for col in self.df_train[self.objectFeatures].columns if self.df_train[col].isnull().any()] # categorrical features with missing data
+    if self.target in self.objectFeatures_with_missing_data_train:  # target should not be here, but let's check it out. 
+      self.objectFeatures_with_missing_data_train.remove(self.target)
 
     self.numericFeatures_with_missing_data_train = [col for col in self.df_train[self.numericFeatures].columns if self.df_train[col].isnull().any()] # numerical features with missing data
     if self.target in self.numericFeatures_with_missing_data_train:  # target should not be here, but let's check it out. 
       self.numericFeatures_with_missing_data_train.remove(self.target)
 
-    self.Features_with_missing_data_train = self.objectFeatures_with_missing_data_trian + self.numericFeatures_with_missing_data_train
-    # self.Features_with_missing_data_train = self.objectFeatures_with_missing_data_trian
+    self.Features_with_missing_data_train = self.objectFeatures_with_missing_data_train + self.numericFeatures_with_missing_data_train
+    # self.Features_with_missing_data_train = self.objectFeatures_with_missing_data_train
 
+    self.objectFeatures_with_missing_data_test = None
+    self.numericFeatures_with_missing_data_test = None
+    self.Features_with_missing_data_test = None
     if self.test_filename !="":
       self.objectFeatures_with_missing_data_test = [col for col in self.df_test[self.objectFeatures].columns if self.df_test[col].isnull().any()] # categorrical features with missing data in test
       if self.target in self.objectFeatures_with_missing_data_test:  # target should not be here, but let's check it out. 
@@ -128,7 +129,7 @@ class DataPreprocessing:
       self.Features_with_missing_data_test = self.objectFeatures_with_missing_data_test + self.numericFeatures_with_missing_data_test
         
     if self.debugMode:
-      print("\n object features with missing data in train: \n", self.objectFeatures_with_missing_data_trian)
+      print("\n object features with missing data in train: \n", self.objectFeatures_with_missing_data_train)
       print("\n numerical features with missing data in train: \n", self.numericFeatures_with_missing_data_train)
       print("\n Features with missing data (total {}) in train: \n".format(len(self.Features_with_missing_data_train)), self.Features_with_missing_data_train)
       print()
@@ -147,7 +148,8 @@ class DataPreprocessing:
     else:
       print("\n There is no missing target in the train data.")
 
-    if self.testdata_fullpath and self.df_test[self.target].isnull().values.any():
+    #TODO Target might not be in test
+    if self.testdata_fullpath and  (self.target in self.df_test.columns) and self.df_test[self.target].isnull().values.any():
       print(f"\n {self.df_test[self.target].isnull().sum()} instances are missing the target value in test data. Dropping the instances." )
       self.df_test.dropna(axis=0, subset=[self.target], how='any', inplace=True)
     elif self.testdata_fullpath:
@@ -159,28 +161,21 @@ class DataPreprocessing:
     if self.testdata_fullpath:
       self.df_test = self.df_test[features]
 
-
-
-
-
-
-
   def handleMissingValues(self):
 
-    isThereAnyMissingDataInTrain = True
-    isThereAnyMissingDataInTest = True
+    isThereAnyMissingDataInTrain = True if self.Features_with_missing_data_train else False
+    isThereAnyMissingDataInTest = True if self.test_filename !="" and  self.Features_with_missing_data_test else False
     # train data
-    if not self.Features_with_missing_data_train:
-      print("There is no missing data in train")
-      isThereAnyMissingDataInTrain = False
-    if not self.Features_with_missing_data_test:
-      print("There is no missing data in test")
-      isThereAnyMissingDataInTest = False
     
+    if not isThereAnyMissingDataInTrain:
+      print("There is no missing data in train")
+    if not isThereAnyMissingDataInTest:
+      print("There is no missing data in test")
+
     if isThereAnyMissingDataInTest or isThereAnyMissingDataInTrain:
-      self.objectFeatures_with_missing_data = list(set(self.objectFeatures_with_missing_data_test) | set(self.objectFeatures_with_missing_data_trian))
-      self.numericFeatures_with_missing_data = list(set(self.numericFeatures_with_missing_data_test) | set(self.numericFeatures_with_missing_data_trian))
-      self.Features_with_missing_data = list(set(self.Features_with_missing_data_test) | set(self.Features_with_missing_data_trian))
+      self.objectFeatures_with_missing_data = list(set(self.objectFeatures_with_missing_data_test) | set(self.objectFeatures_with_missing_data_train)) if self.objectFeatures_with_missing_data_test else self.objectFeatures_with_missing_data_train
+      self.numericFeatures_with_missing_data = list(set(self.numericFeatures_with_missing_data_test) | set(self.numericFeatures_with_missing_data_train)) if self.numericFeatures_with_missing_data_test else self.numericFeatures_with_missing_data_train
+      self.Features_with_missing_data = list(set(self.Features_with_missing_data_test) | set(self.Features_with_missing_data_train)) if self.Features_with_missing_data_test else self.Features_with_missing_data_train
       
       if self.addImputeCol and not self.imputeStrategy == 'drop':
         for col in self.Features_with_missing_data:
@@ -242,17 +237,17 @@ class DataPreprocessing:
         print(f"\n After {self.imputeStrategy} impute for num features in test data: \n", self.df_test[self.numericFeatures_with_missing_data_test].to_string())
 
     if self.debugMode:
-      print(f"\n Before most_frequent impute for categorical features in train data: \n", self.df_train[self.objectFeatures_with_missing_data_trian].to_string())
+      print(f"\n Before most_frequent impute for categorical features in train data: \n", self.df_train[self.objectFeatures_with_missing_data_train].to_string())
       if self.testdata_fullpath:
         print(f"\n Before most_frequent impute for categorical features in test data: \n", self.df_test[self.objectFeatures_with_missing_data_test].to_string())
 
     cat_imputer = SimpleImputer(strategy='most_frequent', copy=False)
-    self.df_train[self.objectFeatures_with_missing_data_trian] = pd.DataFrame(cat_imputer.fit_transform(self.df_train[self.objectFeatures_with_missing_data_trian]), columns = self.objectFeatures_with_missing_data_trian)
+    self.df_train[self.objectFeatures_with_missing_data_train] = pd.DataFrame(cat_imputer.fit_transform(self.df_train[self.objectFeatures_with_missing_data_train]), columns = self.objectFeatures_with_missing_data_train)
     if self.testdata_fullpath:
       self.df_test[self.objectFeatures_with_missing_data_test] = pd.DataFrame(cat_imputer.fit_transform(self.df_test[self.objectFeatures_with_missing_data_test]), columns = self.objectFeatures_with_missing_data_test)
 
     if self.debugMode:
-      print("\n After most frequent impute for categorical features in train data: \n", self.df_train[self.objectFeatures_with_missing_data_trian].to_string())
+      print("\n After most frequent impute for categorical features in train data: \n", self.df_train[self.objectFeatures_with_missing_data_train].to_string())
       if self.testdata_fullpath:
         print("\n After most frequent impute for categorical features in test data: \n", self.df_test[self.objectFeatures_with_missing_data_test].to_string())
 
@@ -271,15 +266,15 @@ class DataPreprocessing:
       print("\n After most frequent impute for num features: \n", self.df_train[self.numericFeatures_with_missing_data_train])
 
     if self.debugMode:
-      print("\n Before most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_trian])
+      print("\n Before most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
 
-    imputed_cat_features = pd.DataFrame(imputer.fit_transform(self.df_train[self.objectFeatures_with_missing_data_trian]), columns = self.objectFeatures_with_missing_data_trian)
+    imputed_cat_features = pd.DataFrame(imputer.fit_transform(self.df_train[self.objectFeatures_with_missing_data_train]), columns = self.objectFeatures_with_missing_data_train)
 
-    self.df_train = self.df_train.drop(self.objectFeatures_with_missing_data_trian,axis=1)
+    self.df_train = self.df_train.drop(self.objectFeatures_with_missing_data_train,axis=1)
     self.df_train = self.df_train.join(imputed_cat_features)
 
     if self.debugMode:
-      print("\n After most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_trian])
+      print("\n After most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
 
   # normalize numerical data
   # TODO: it should not normalize everything (yearbuild, Id). Fix it.
@@ -296,6 +291,7 @@ class DataPreprocessing:
       print("\n After normalization-train data: \n", self.df_train[self.numericFeatures].to_string())
       if self.testdata_fullpath:
         print("\n After normalization-test data: \n", self.df_test[self.numericFeatures].to_string())
+    print("done with normalization")
 
   def categoricalFeatures_processing(self):
 
@@ -329,8 +325,7 @@ class DataPreprocessing:
           print(f'{count} {col} exits in data: {True if col in self.df_train.columns else False}')
           # self.df_train.drop(col, axis=1, inplace=True)
       
-      print(type(self.objectFeatures), len(self.objectFeatures))
-      print("objects\n", self.objectFeatures)
+      print(f"objects features (total {len(self.objectFeatures)}): \n", self.objectFeatures)
       
       self.df_train.drop(self.objectFeatures, axis=1, inplace=True)
       if self.testdata_fullpath:
@@ -393,7 +388,7 @@ class DataPreprocessing:
 
   # split train to train and validate
   def splitData(self):
-    train, valid = train_test_split(self.df_train, train_size=self.split , random_state=50, shuffle=True)
+    train, valid = train_test_split(self.df_train, train_size=self.train_size , random_state=50, shuffle=True)
     #print(type(train))
        
     self.x_train = train.loc[:, train.columns != self.target]
@@ -404,7 +399,7 @@ class DataPreprocessing:
 
     if self.testdata_fullpath:
       self.x_test = self.df_test.loc[:, self.df_test.columns != self.target]
-      self.y_test = self.df_test.loc[:, self.df_test.columns == self.target]
+      self.y_test = self.df_test.loc[:, self.df_test.columns == self.target] # target might not be in test
 
 
     if self.debugMode:
@@ -415,6 +410,7 @@ class DataPreprocessing:
       print("\ny_valid: \n", self.y_valid)
 
       if self.testdata_fullpath:
+        print("split test data")
         print("\nx_test: \n", self.x_test)
         print("\ny_test: \n", self.y_test)
 

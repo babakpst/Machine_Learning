@@ -13,18 +13,15 @@ def main():
   
   #  input params -----------
   # ARGUMENTS:  
-  # "DTC": DecisionTree Classifier
-  # "DTR": DecisionTree Regressor
-  # "RFC": RandomForest Classifier
-  # "RFR": RandomForest Regressor 
-  
-  # MLType = "DTR"
-  # MLType = "RFR"
-  MLType = "CrossValidation"
-  
+  # MLType = "DTR" # Decision Tree Regressor
+  # MLType = "RFR" # Random Forest Regressor
+  MLType = "CV" # cross validation
+
   # reading data ------------
-  data = rd.DataPreprocessing(train_filename="train.csv", test_filename="test.csv", dataPath="./data/home-data-kaggle", split = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='SalePrice', addImputeCol=True, debugMode = False)
-  
+  data = rd.DataPreprocessing(train_filename="train.csv", test_filename="test.csv", dataPath="./data/home-data-kaggle", 
+                              train_size = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='SalePrice', 
+                              # addImputeCol=True, debugMode = True)
+                              addImputeCol=True, debugMode = False)
   data.readData()
   data.missingTarget()
 
@@ -34,9 +31,25 @@ def main():
   data.handleMissingValues()
   data.categoricalFeatures_processing()
   data.normalizeNumericalFeatures()
+  print("done with preprocessing")
 
-
-  # decition tree classifier ---------------------------
+  def RandomForestWithCrossValidation(n_estimators, numberofCrossValidation: int):
+    """Return the average MAE over 3 CV folds of random forest model.
+    
+    Keyword argument:
+    n_estimators -- the number of trees in the forest
+    """
+    # Replace this body with your own code
+    #pass
+    print(f"random foerst with cross validation {n_estimators}: {numberofCrossValidation}")
+    APipeline = Pipeline(steps=[
+                                #('preprocessor', SimpleImputer()),
+                                # ('separate', data.SeparateTarget()),
+                                ('model', RandomForestRegressor(n_estimators=n_estimators, random_state=0))
+                                ])
+    return (-1*cross_val_score(APipeline, data.X, data.y.values.ravel(), cv = numberofCrossValidation, scoring='neg_mean_absolute_error')).mean()
+  
+  # decision tree classifier ---------------------------
   if MLType == "DTR":  
     data.splitData()
     myDecisionTree = dtr.myDecisionTreeRegressor(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
@@ -61,36 +74,24 @@ def main():
     myRF = rfr.myRandomForestRegressor(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
     myRF.trainRandomForestRegressor()
 
-  elif MLType == "CrossValidation":
+  # elif MLType == "CV":
+  else:
     
-    def RandomForestWithCrossValidation(n_estimators, numberofCrossValidation: int):
-      """Return the average MAE over 3 CV folds of random forest model.
-      
-      Keyword argument:
-      n_estimators -- the number of trees in the forest
-      """
-      # Replace this body with your own code
-      #pass
-      APipeline = Pipeline(steps=[
-                                  #('preprocessor', SimpleImputer()),
-                                  # ('separate', data.SeparateTarget()),
-                                  ('model', RandomForestRegressor(n_estimators=n_estimators, random_state=0))
-                                  ])
-      
-      return (-1*cross_val_score(APipeline, data.X, data.y.values.ravel(), cv = numberofCrossValidation, scoring='neg_mean_absolute_error')).mean()
+    print("cross validation in main Regressor")
 
     data.SeparateTarget()
-    
     NumberOfCrossValidation = 5
-    
     results = {i:RandomForestWithCrossValidation(i, NumberOfCrossValidation) for i in [j for j in range(50,450,50)]} 
-
+    # results = {i:RandomForestWithCrossValidation(i, NumberOfCrossValidation) for i in [j for j in range(50,250,100)]} 
     visualization.dictionary(results)
-
-
 
   print("\n ==================")
   print(" end of the code")
+
+
+
+
+
 
 if __name__== "__main__":
   main()

@@ -12,7 +12,7 @@ import timeit
 from matplotlib import pyplot as plt
 
 from sklearn.metrics import mean_absolute_error
-
+from pandas.api.types import is_object_dtype, is_numeric_dtype
 
 class visualization:
   
@@ -62,13 +62,14 @@ class visualization:
 
   @staticmethod
   def model_evaluation(y_valid, y_pred):
-    auc = roc_auc_score(y_valid, y_pred)
-    f1 = f1_score(y_valid,y_pred,pos_label=1)
-    accuracy = accuracy_score(y_valid,y_pred)
-    precision = precision_score(y_valid,y_pred,pos_label=1)
-    recall = recall_score(y_valid,y_pred,pos_label=1)
     
-    print("mean abs error:  "+"{:.2f}".format(mean_absolute_error(y_valid, y_pred)))
+    auc = roc_auc_score(y_valid, y_pred) if not (y_valid.dtypes[0] == object) else 0
+    f1 = f1_score(y_valid,y_pred, pos_label='yes' if y_valid.dtypes[0] == object else 1) # for numerical datatypes should be 1, and 'yes' for object dtypes.
+    accuracy = accuracy_score(y_valid,y_pred)
+    precision = precision_score(y_valid,y_pred, pos_label='yes' if y_valid.dtypes[0] == object else 1)
+    recall = recall_score(y_valid,y_pred, pos_label='yes' if y_valid.dtypes[0] == object else 1)
+    
+    print("mean abs error:  "+"{:.2f}".format(mean_absolute_error(y_valid, y_pred)  if not (y_valid.dtypes[0] == object) else 0  ))
     print("F1 Score:  "+"{:.2f}".format(f1))
     print("Accuracy:  "+"{:.2f}".format(auc)+"     AUC:          "+"{:.2f}".format(auc))
     print("Accuracy:  "+"{:.2f}".format(accuracy)+"  Accuracy:     "+"{:.2f}".format(accuracy))
@@ -123,11 +124,11 @@ class visualization:
     end_time = timeit.default_timer()
     pred_time = end_time - start_time
     
-    auc = roc_auc_score(y_valid, y_pred)
-    f1 = f1_score(y_valid,y_pred,pos_label=1)
+    auc = roc_auc_score(y_valid, y_pred) if not (y_valid.dtypes[0] == object) else 0
+    f1 = f1_score(y_valid,y_pred, pos_label='yes' if y_valid.dtypes[0] == object else 1)
     accuracy = accuracy_score(y_valid,y_pred)
-    precision = precision_score(y_valid,y_pred,pos_label=1)
-    recall = recall_score(y_valid,y_pred,pos_label=1)
+    precision = precision_score(y_valid,y_pred, pos_label='yes' if y_valid.dtypes[0] == object else 1)
+    recall = recall_score(y_valid,y_pred, pos_label='yes' if y_valid.dtypes[0] == object else 1)
     cm = confusion_matrix(y_valid,y_pred)
 
     print("Model Evaluation Metrics Using Untouched Test Dataset")
