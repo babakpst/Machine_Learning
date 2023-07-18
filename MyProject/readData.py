@@ -373,21 +373,25 @@ class DataPreprocessing:
         print("\n dropping high cardinality features: \n", high_cardinality_cols)
 
       # 'ignore' to avoid errors when the validation data contains classes that aren't represented in the training data
-      OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False) # 
-      
+      OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False) #, feature_name_combiner='concat')
+      # OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False, feature_name_combiner=self.custom_combiner)
+
       OH_encoder.fit(self.df_train[low_cardinality_cols])
-      OH_df_train = pd.DataFrame(OH_encoder.transform(self.df_train[low_cardinality_cols]))
-      OH_df_train.columns = OH_df_train.columns.astype(str) # convert the name of one-hot features from int to string
+      new_feature_names= OH_encoder.get_feature_names_out(low_cardinality_cols)
+      
+      OH_df_train = pd.DataFrame(OH_encoder.transform(self.df_train[low_cardinality_cols]), columns=new_feature_names )
+      # OH_df_train.columns = OH_df_train.columns.astype(str) # convert the name of one-hot features from int to string
       self.df_train.drop(self.objectFeatures, axis=1,inplace=True)
       self.df_train = self.df_train.join(OH_df_train)
 
       if self.testdata_fullpath:
-        OH_df_test = pd.DataFrame(OH_encoder.transform(self.df_test[low_cardinality_cols]))
-        OH_df_test.columns = OH_df_test.columns.astype(str) # convert the name of one-hot features from int to string
+        OH_df_test = pd.DataFrame(OH_encoder.transform(self.df_test[low_cardinality_cols]), columns=new_feature_names )
+        # OH_df_test.columns = OH_df_test.columns.astype(str) # convert the name of one-hot features from int to string
         self.df_test.drop(self.objectFeatures, axis=1,inplace=True)
         self.df_test = self.df_test.join(OH_df_test)    
 
       if self.debugMode:
+        print("\nnew feature names after encoding: \n", new_feature_names)
         print("\n After one-hot encoding-train: \n", self.df_train.to_string())
         if self.testdata_fullpath:
           print("\n After one-hot encoding-test: \n", self.df_test.to_string())
@@ -428,8 +432,8 @@ class DataPreprocessing:
 
   def alignDataframes(self):
 
-    print(" before alignment: ")
     if self.debugMode:
+      print(" before alignment: ")
       print("\nx_train: \n", self.x_train)
       print("\ny_train: \n", self.y_train)
 
@@ -444,8 +448,8 @@ class DataPreprocessing:
     self.x_train, self.x_valid = self.x_train.align(self.x_valid, join='left', axis=1)
     self.x_train, self.x_test = self.x_train.align(self.x_test, join='left', axis=1)
 
-    print(" after alignment: ")
     if self.debugMode:
+      print(" after alignment: ")
       print("\nx_train: \n", self.x_train)
       print("\ny_train: \n", self.y_train)
 
@@ -456,9 +460,6 @@ class DataPreprocessing:
         print("split test data")
         print("\nx_test: \n", self.x_test)
         print("\ny_test: \n", self.y_test)
-
-
-
 
 
   # separate target from the data without split.

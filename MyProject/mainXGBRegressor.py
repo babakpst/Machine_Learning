@@ -45,12 +45,12 @@ def main():
   learning_rate = 0.05
 
   # On larger datasets where runtime is a consideration, you can use parallelism to build your models faster.
-  n_jobs = 4
+  n_jobs = 1
 
   # reading data ------------
   data = rd.DataPreprocessing(train_filename="train2.csv", test_filename="test2.csv", dataPath="./data/home-data-kaggle", 
                               train_size = 0.8, categoricalFeatures = 3, imputeStrategy="mean", Index_col = "Id",
-                              target='SalePrice', addImputeCol=True, debugMode = True)
+                              target='SalePrice', addImputeCol=False, cardinalityThreshold = 10, debugMode = False)
   
   data.readData()
   data.missingTarget()
@@ -64,25 +64,25 @@ def main():
   data.splitData()
   data.alignDataframes()
   
-  print("done with preprocessing")
+  print("done with preprocessing\n")
 
   # xg boosting -----------------------------------------------------
   if MLType:
 
-    my_model = XGBRegressor(n_estimators=n_estimators, learning_rate=learning_rate, n_jobs = n_jobs)
+    # simple extended gradient boost model
+    # my_model = XGBRegressor(random_state=0)
+    # my_model.fit(data.x_train, data.y_train)
 
+    # complex extended gradient boost model
+    my_model = XGBRegressor(n_estimators=n_estimators, learning_rate=learning_rate, n_jobs = n_jobs, random_state=0)
     my_model.fit(data.x_train, data.y_train,
              early_stopping_rounds=early_stopping_rounds, 
-             eval_set=[(data.x_test, data.y_valid)],
+             eval_set=[(data.x_valid, data.y_valid)],
              verbose=False)
 
-    predictions = my_model.predict(data.x_test)
+
+    predictions = my_model.predict(data.x_valid)
     print("Mean Absolute Error: " + str(helpers.MAE(predictions, data.y_valid)))
-
-
-    helpers.MAE(self.y_valid, y_preds)
-
-
 
   print("\n ==================")
   print(" end of the code")

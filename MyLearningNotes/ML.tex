@@ -613,6 +613,29 @@ Generally, there are three approaches deal with the missing data:
 
 In pandas, we can use .isnul() to detect columns with missing data. We can use .drop to drop columns. We can also use dropna to either drop columns or instances.
 
+\section{Ensemble methods}
+Ensemble methods combine the predictions of several models (e.g., several trees, in the case of random forests).
+
+\subsection{Gradient Boosting}
+Gradient boosting is a method that goes through cycles to iteratively add models into an ensemble.
+
+It begins by initializing the ensemble with a single model, whose predictions can be pretty naive. (Even if its predictions are wildly inaccurate, subsequent additions to the ensemble will address those errors.)
+
+Then, we start the cycle:
+\begin{itemize}
+  \item First, we use the current ensemble to generate predictions for each observation in the dataset. To make a prediction, we add the predictions from all models in the ensemble.
+  \item These predictions are used to calculate a loss function (like mean squared error, for instance).
+  \item Then, we use the loss function to fit a new model that will be added to the ensemble. Specifically, we determine model parameters so that adding this new model to the ensemble will reduce the loss. (Side note: The "gradient" in "gradient boosting" refers to the fact that we'll use gradient descent on the loss function to determine the parameters in this new model.)
+  \item Finally, we add the new model to ensemble,
+  \item repeat!
+\end{itemize}
+
+XGBoost stands for extreme gradient boosting, which is an implementation of gradient boosting with several additional features focused on performance and speed. (Scikit-learn has another version of gradient boosting, but XGBoost has some technical advantages.) scikit-learn API for XGBoost (xgboost.XGBRegressor) allows us to build and fit a model just as we would in scikit-learn. The XGBRegressor class has many tunable parameters. In general, a small
+# learning rate and large number of estimators will yield more accurate XGBoost models, though it will also
+# take the model longer to train since it does more iterations through the cycle. As default, XGBoost sets
+# learning_rate=0.1.
+
+
 
 % Appendix ==========================================================
 %\appendices
