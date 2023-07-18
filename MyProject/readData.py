@@ -26,6 +26,7 @@ class DataPreprocessing:
   test_filename: str = ""
   dataPath: str = ""
   train_size: float = 0.8
+  Index_col: str = "" # Index col should start from 0 if it is integer! Check it out. 
   debugMode: bool = False
   categoricalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
   imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features) 
@@ -47,8 +48,8 @@ class DataPreprocessing:
 
   # read data -----------------------------------
   def readData(self):
-    self.df_train = pd.read_csv(self.traindata_fullpath)
-    self.df_test = pd.read_csv(self.testdata_fullpath) if self.testdata_fullpath else None
+    self.df_train = pd.read_csv(self.traindata_fullpath, index_col=self.Index_col)
+    self.df_test = pd.read_csv(self.testdata_fullpath, index_col=self.Index_col) if self.testdata_fullpath else None
     
     print("\n train data frame info: ")
     print(self.df_train.info())
@@ -165,7 +166,13 @@ class DataPreprocessing:
 
     isThereAnyMissingDataInTrain = True if self.Features_with_missing_data_train else False
     isThereAnyMissingDataInTest = True if self.test_filename !="" and  self.Features_with_missing_data_test else False
-    # train data
+
+    if self.debugMode:
+      print("\n data head before Impute")
+      print(self.df_train.head())
+      if self.testdata_fullpath:
+        print(self.df_test.head())
+
     
     if not isThereAnyMissingDataInTrain:
       print("There is no missing data in train")
@@ -213,28 +220,32 @@ class DataPreprocessing:
         self.ImputeConstant()
 
     if self.debugMode:
-      print("\n data head after Impute")
+      print("\n data head after Impute-train")
       print(self.df_train.head())
+      print(self.df_train.tail())
       if self.testdata_fullpath:
+        print("\n data head after Impute-test")
         print(self.df_test.head())
+        print(self.df_test.tail())
 
   # TODO: add an option for impute categorical features to drop it if more than half is NaN.
   def ImputeTheData(self): # for impute strategy mean, median, most_frequent
     if self.debugMode:
-      print(f"\n Before {self.imputeStrategy} impute for num features in train data: \n", self.df_train[self.numericFeatures_with_missing_data_train].to_string())
+      print(f"\n Before {self.imputeStrategy} impute for numerical features in train data: \n", self.df_train[self.numericFeatures_with_missing_data_train].to_string())
       if self.testdata_fullpath:
-        print(f"\n Before {self.imputeStrategy} impute for num features in test data: \n", self.df_test[self.numericFeatures_with_missing_data_test].to_string())
+        print(f"\n Before {self.imputeStrategy} impute for numerical features in test data: \n", self.df_test[self.numericFeatures_with_missing_data_test].to_string())
 
-    imputer = SimpleImputer(strategy=self.imputeStrategy, copy=False)
+    imputer_test = SimpleImputer(strategy=self.imputeStrategy, copy=False)
+    imputer_train = SimpleImputer(strategy=self.imputeStrategy, copy=False)
     
-    self.df_train[self.numericFeatures_with_missing_data_train] = pd.DataFrame(imputer.fit_transform(self.df_train[self.numericFeatures_with_missing_data_train]), columns = self.numericFeatures_with_missing_data_train)
+    self.df_train[self.numericFeatures_with_missing_data_train] = pd.DataFrame(imputer_train.fit_transform(self.df_train[self.numericFeatures_with_missing_data_train]), columns = self.numericFeatures_with_missing_data_train)
     if self.testdata_fullpath:
-      self.df_test[self.numericFeatures_with_missing_data_test] = pd.DataFrame(imputer.fit_transform(self.df_test[self.numericFeatures_with_missing_data_test]), columns = self.numericFeatures_with_missing_data_test)
+      self.df_test[self.numericFeatures_with_missing_data_test] = pd.DataFrame(imputer_test.fit_transform(self.df_test[self.numericFeatures_with_missing_data_test]), columns = self.numericFeatures_with_missing_data_test)
 
     if self.debugMode:
-      print(f"\n After {self.imputeStrategy} impute for num features in train data: \n", self.df_train[self.numericFeatures_with_missing_data_train].to_string())
+      print(f"\n After {self.imputeStrategy} impute for numerical features in train data: \n", self.df_train[self.numericFeatures_with_missing_data_train].to_string())
       if self.testdata_fullpath:
-        print(f"\n After {self.imputeStrategy} impute for num features in test data: \n", self.df_test[self.numericFeatures_with_missing_data_test].to_string())
+        print(f"\n After {self.imputeStrategy} impute for numerical features in test data: \n", self.df_test[self.numericFeatures_with_missing_data_test].to_string())
 
     if self.debugMode:
       print(f"\n Before most_frequent impute for categorical features in train data: \n", self.df_train[self.objectFeatures_with_missing_data_train].to_string())
@@ -410,11 +421,45 @@ class DataPreprocessing:
       print("\ny_valid: \n", self.y_valid)
 
       if self.testdata_fullpath:
-        print("split test data")
         print("\nx_test: \n", self.x_test)
         print("\ny_test: \n", self.y_test)
 
     return self
+
+  def alignDataframes(self):
+
+    print(" before alignment: ")
+    if self.debugMode:
+      print("\nx_train: \n", self.x_train)
+      print("\ny_train: \n", self.y_train)
+
+      print("\nx_valid: \n", self.x_valid)
+      print("\ny_valid: \n", self.y_valid)
+
+      if self.testdata_fullpath:
+        print("\nx_test: \n", self.x_test)
+        print("\ny_test: \n", self.y_test)
+
+
+    self.x_train, self.x_valid = self.x_train.align(self.x_valid, join='left', axis=1)
+    self.x_train, self.x_test = self.x_train.align(self.x_test, join='left', axis=1)
+
+    print(" after alignment: ")
+    if self.debugMode:
+      print("\nx_train: \n", self.x_train)
+      print("\ny_train: \n", self.y_train)
+
+      print("\nx_valid: \n", self.x_valid)
+      print("\ny_valid: \n", self.y_valid)
+
+      if self.testdata_fullpath:
+        print("split test data")
+        print("\nx_test: \n", self.x_test)
+        print("\ny_test: \n", self.y_test)
+
+
+
+
 
   # separate target from the data without split.
   def SeparateTarget(self):       

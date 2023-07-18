@@ -13,15 +13,15 @@ def main():
   
   #  input params -----------
   # ARGUMENTS:  
-  # MLType = "DTR" # Decision Tree Regressor
+  MLType = "DTR" # Decision Tree Regressor
   # MLType = "RFR" # Random Forest Regressor
-  MLType = "CV" # cross validation
+  # MLType = "CV" # cross validation
 
   # reading data ------------
-  data = rd.DataPreprocessing(train_filename="train.csv", test_filename="test.csv", dataPath="./data/home-data-kaggle", 
-                              train_size = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='SalePrice', 
-                              # addImputeCol=True, debugMode = True)
-                              addImputeCol=True, debugMode = False)
+  data = rd.DataPreprocessing(train_filename="train2.csv", test_filename="test2.csv", dataPath="./data/home-data-kaggle", 
+                              train_size = 0.8, categoricalFeatures = 3, imputeStrategy="mean", Index_col = "Id",
+                              target='SalePrice', addImputeCol=True, debugMode = True)
+  
   data.readData()
   data.missingTarget()
 
