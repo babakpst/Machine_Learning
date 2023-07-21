@@ -346,23 +346,59 @@ One successful approach to deal with this is using a formula called GainRatio in
 \item Performs well even if its assumptions are somewhat violated by the true model from which the data were generated.
 \end{itemize}
 
-
-
 \textbf{Disadvantages:}
 
 \begin{itemize}
 \item Can create over-complex trees that do not generalize the data well. This is called overfitting. Mechanisms such as pruning (setting the minimum number of samples required at a leaf node or setting the maximum depth of the tree) are necessary to avoid this problem.
-\item Decision trees can be unstable because small variations in the data might result in a completely different tree being generated. This problem is mitigated by using decision trees within an ensemble.
-\item The problem of learning an optimal decision tree is known to be NP-complete under several aspects of optimality and even for simple concepts. Consequently, practical decision-tree learning algorithms are based on heuristic algorithms such as the greedy algorithm where locally
-optimal decisions are made at each node. Such algorithms cannot guarantee to return the globally optimal decision tree. This can be mitigated by training multiple trees in an ensemble learner, where the features and samples are randomly sampled with replacement.
+\item Decision trees can be unstable because small variations in the data might result in a completely different tree being generated. This problem is mitigated by using decision trees within an ensemble (random forest/XGBoost).
+\item The problem of learning an optimal decision tree is known to be NP-complete under several aspects of optimality and even for simple concepts. Consequently, practical decision-tree learning algorithms are based on heuristic algorithms such as the greedy algorithm where locally optimal decisions are made at each node. Such algorithms cannot guarantee to return the globally optimal decision tree. This can be mitigated by training multiple trees in an ensemble learner, where the features and samples are randomly sampled with replacement.
 \item There are concepts that are hard to learn because decision trees do not express them easily, such as XOR, parity or multiplexer problems.
 \item Decision tree learners create biased trees if some classes dominate. It is therefore recommended to balance the dataset prior to fitting with the decision tree.
 \end{itemize}
 
+\subsection{When to use a decision tree}
+Decision trees and tree ensembles:
+\begin{itemize}
+  \item Works well on tabular/structured data
+  \item Not recommended for unstructured data such as text, image, audio. Use NN here.
+  \item Decision tree is fast in training.
+  \item Small decision trees may be human interpretable.
+\end{itemize}
+Neural Networks
+\begin{itemize}
+  \item Works well on all types of data, including tabular/structured and unstructured data.
+  \item May be slower than the decision tree for training.
+  \item Works with transfer learning.
+  \item When building a system of multiple models working together, it might be easier to string together multiple neural networks.
+\end{itemize}
 
-\subsection{Random forest}
+
+\subsection{Random forest (Tree ensembles)}
+\label{sec:forest}
+A single decision tree can be highly sensitive to small changes in the data.
 The random forest uses many trees, and it makes a prediction by averaging the predictions of each component tree. It generally has much better predictive accuracy than a single decision tree and it works well with default parameters. If you keep modeling, you can learn more models with even better performance, but many of those are sensitive to getting the right parameters.
 
+To build a tree ensemble (random forest), we use a technique called \textit{Sampling With Replacement}. We are going to construct random sets of the same size of the original set, that are slightly different from the original set, by randomly selecting instances from the set (so, some of the training instances might be repeated in each set). Then, we train a decision tree using this data set. We continue this process to build B decision trees (Bagged decision tree). To randomize the feature choice further, at each node, when choosing a feature to use to split, if n features are available, pick a random subset of $k<n$ features and allow the algorithm to only choose from that subset of features. If n is large $\sqrt{n}$ is valid.
+
+\textbf{Pseudo code:} \\
+Given training set of size m \\
+For b=1 to B:
+\begin{itemize}
+  \item use sampling with replacement to create a new training set of size m
+  \item train a decision tree on the new dataset
+\end{itemize}
+
+\subsection{Boosted tree (XGBoost)}
+This is the most commonly used method of decision tree on samples. It requires a modification to the Bagged decision tree from the previous section \ref{sec:forest}. Basically, it is focusing on the part the data that the tree is not doing well.
+
+\textbf{Pseudo code:}\\
+Given training set of size m\\
+For b=1 to B:
+\begin{itemize}
+  \item use sampling with replacement to create a new training set of size m
+  \item \textcolor{orange}{Instead of picking from all examples with equal $1/m$ probability, make it more likely to pick misclassified examples from previously trained trees.}
+  \item train a decision tree on the new dataset
+\end{itemize}
 
 
 \section{SL: Regression and classification}
@@ -651,7 +687,7 @@ A different type of leak occurs when you aren't careful to distinguish training 
 
 Recall that validation is meant to be a measure of how the model does on data that it hasn't considered before. You can corrupt this process in subtle ways if the validation data affects the preprocessing behavior. This is sometimes called train-test contamination.
 
-For example, imagine you run preprocessing (like fitting an imputer for missing values) before calling train_test_split(). The end result? Your model may get good validation scores, giving you great confidence in it, but perform poorly when you deploy it to make decisions.
+For example, imagine you run preprocessing (like fitting an imputer for missing values) before calling train\_test\_split(). The end result? Your model may get good validation scores, giving you great confidence in it, but perform poorly when you deploy it to make decisions.
 
 After all, you incorporated data from the validation or test data into how you make predictions, so the may do well on that particular data even if it can't generalize to new data. This problem becomes even more subtle (and more dangerous) when you do more complex feature engineering.
 

@@ -36,6 +36,7 @@ def main():
 
   # decision tree classifier ---------------------------
   if MLType == "DTC":
+    print("\n Decision Tree Classifier: ")
     myDecisionTree = dtc.myDecisionTreeClassifier(x_train = data.x_train, y_train = data.y_train, 
                                                   x_valid = data.x_valid, y_valid = data.y_valid)
     
@@ -61,6 +62,7 @@ def main():
 
   # random forest classifier ---------------------------
   elif MLType == "RFC":
+    print("\n Random Forest Classifier: ")
     myRF = rfc.myRandomForestClassifier(x_train = data.x_train, y_train = data.y_train, x_valid = data.x_valid, y_valid = data.y_valid)
     myRF.train()
 

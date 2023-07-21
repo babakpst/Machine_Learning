@@ -26,7 +26,7 @@ class DataPreprocessing:
   test_filename: str = ""
   dataPath: str = ""
   train_size: float = 0.8
-  Index_col: str = "" # Index col should start from 0 if it is integer! Check it out. 
+  Index_col: str = None # Index col should start from 0 if it is integer! Check it out. 
   debugMode: bool = False
   categoricalFeatures: int = 3 # 1: drop, 2: ordinal, 3: one-hot ##TODO USE ENUMERATE
   imputeStrategy: str = "drop"  # drop: drop columns (works with numeric or object features) 
@@ -67,14 +67,24 @@ class DataPreprocessing:
       #quit()
 
     print("\n info about the train data: ")
-    print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22}\n {len(self.df_train):<22} | {len(self.df_train.columns):<22} | {True if self.df_train.isnull().values.any() else False:<22} | {self.df_train[self.target].isnull().sum()}')
+    # calculate the percentage of missing samples
+    total = np.product(self.df_train.shape)
+    total_missing = self.df_train[self.target].isnull().sum()
+    percent_missing_in_train = total_missing/total*100
+    
+    if self.testdata_fullpath:
+      total = np.product(self.df_test.shape)
+      total_missing = self.df_test[self.target].isnull().sum()
+      percent_missing_in_test = total_missing/total*100
+    else:
+      percent_missing_in_test = 0
+    print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22} | {"% missing in train":<22} | {"% missing in test":<22}  \n {len(self.df_train):<22} | {len(self.df_train.columns):<22} | {True if self.df_train.isnull().values.any() else False:<22} | {self.df_train[self.target].isnull().sum():<22} | {percent_missing_in_train:<22} | {percent_missing_in_test:<22}')
 
     if self.testdata_fullpath:
       print("\n info about the test data: ")
       print(f"{self.df_test[self.target].isnull().sum() if (self.target in self.df_test.columns) else 0 }")
       print(f' {"number of samples":<22} | {"number of features":<22} | {"Any missing data":<22} | {"Missing target data":<22}\n {len(self.df_test):<22} | {len(self.df_test.columns):<22} | {True if self.df_test.isnull().values.any() else False:<22} | {self.df_test[self.target].isnull().sum() if (self.target in self.df_test.columns) else 0 }')
 
-    print("checkpoint")
     self.objectFeatures = self.df_train.select_dtypes(include=['object']).columns.to_list()# train object features 
     if self.target in self.objectFeatures:  # drop the target columns
       self.objectFeatures.remove(self.target)
@@ -175,9 +185,9 @@ class DataPreprocessing:
 
     
     if not isThereAnyMissingDataInTrain:
-      print("There is no missing data in train")
+      print(" There is no missing data in train")
     if not isThereAnyMissingDataInTest:
-      print("There is no missing data in test")
+      print(" There is no missing data in test")
 
     if isThereAnyMissingDataInTest or isThereAnyMissingDataInTrain:
       self.objectFeatures_with_missing_data = list(set(self.objectFeatures_with_missing_data_test) | set(self.objectFeatures_with_missing_data_train)) if self.objectFeatures_with_missing_data_test else self.objectFeatures_with_missing_data_train
@@ -474,6 +484,14 @@ class DataPreprocessing:
     return self
 
 
+
+  #Convert the target variable from {no,yes} to {0,1} 
+  def ConvertToBinary(self):
+    self.y_train[self.target].replace("no",0,inplace=True)
+    self.y_train[self.target].replace("yes",1,inplace=True)
+
+    self.y_valid[self.target].replace("no",0,inplace=True)
+    self.y_valid[self.target].replace("yes",1,inplace=True)
 
 
 #================================================

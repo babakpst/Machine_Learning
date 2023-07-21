@@ -71,10 +71,10 @@ class visualization:
     
     print("mean abs error:  "+"{:.2f}".format(mean_absolute_error(y_valid, y_pred)  if not (y_valid.dtypes[0] == object) else 0  ))
     print("F1 Score:  "+"{:.2f}".format(f1))
-    print("Accuracy:  "+"{:.2f}".format(auc)+"     AUC:          "+"{:.2f}".format(auc))
-    print("Accuracy:  "+"{:.2f}".format(accuracy)+"  Accuracy:     "+"{:.2f}".format(accuracy))
-    print("Precision: "+"{:.2f}".format(precision)+"  Precision: "+"{:.2f}".format(precision))
-    print("Precision: "+"{:.2f}".format(recall)+"     Recall:    "+"{:.2f}".format(recall))
+    print("Accuracy:  "+"{:.2f}".format(auc))
+    print("Accuracy:  "+"{:.2f}".format(accuracy))
+    print("Precision: "+"{:.2f}".format(precision))
+    print("Recall: "+"{:.2f}".format(recall))
 
   @staticmethod
   def plot_learning_curve(clf, X, y, title="Insert Title"):

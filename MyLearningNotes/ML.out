@@ -14,36 +14,38 @@
 \BOOKMARK [2][-]{subsection.2.2.8}{Regression with Decision tree}{section.2.2}% 14
 \BOOKMARK [2][-]{subsection.2.2.9}{Changing the information gain formula is another option}{section.2.2}% 15
 \BOOKMARK [2][-]{subsection.2.2.10}{Advantages and Disadvantages of Decision Trees \(copied from a text\)}{section.2.2}% 16
-\BOOKMARK [2][-]{subsection.2.2.11}{Random forest}{section.2.2}% 17
-\BOOKMARK [1][-]{section.2.3}{SL: Regression and classification}{chapter.2}% 18
-\BOOKMARK [2][-]{subsection.2.3.1}{Linear regression}{section.2.3}% 19
-\BOOKMARK [2][-]{subsection.2.3.2}{Non-linear regression}{section.2.3}% 20
-\BOOKMARK [2][-]{subsection.2.3.3}{Error}{section.2.3}% 21
-\BOOKMARK [2][-]{subsection.2.3.4}{Other cases}{section.2.3}% 22
-\BOOKMARK [1][-]{section.2.4}{SL: Neural network}{chapter.2}% 23
-\BOOKMARK [2][-]{subsection.2.4.1}{Perceptron}{section.2.4}% 24
-\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 25
-\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 26
-\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 27
-\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 28
-\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 29
-\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 30
-\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 31
-\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 32
-\BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 33
-\BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 34
-\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 35
-\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 36
-\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 37
-\BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 38
-\BOOKMARK [1][-]{section.5.2}{Cross validation}{chapter.5}% 39
-\BOOKMARK [1][-]{section.5.3}{F1 score, precision, and recall}{chapter.5}% 40
-\BOOKMARK [1][-]{section.5.4}{Overfitting vs underfitting}{chapter.5}% 41
-\BOOKMARK [1][-]{section.5.5}{Cost function}{chapter.5}% 42
-\BOOKMARK [1][-]{section.5.6}{Gradient descent \(or steepest descent\)}{chapter.5}% 43
-\BOOKMARK [1][-]{section.5.7}{Model validation}{chapter.5}% 44
-\BOOKMARK [1][-]{section.5.8}{Data processing/cleaning: Missing Values}{chapter.5}% 45
-\BOOKMARK [1][-]{section.5.9}{Ensemble methods}{chapter.5}% 46
-\BOOKMARK [2][-]{subsection.5.9.1}{Gradient Boosting}{section.5.9}% 47
-\BOOKMARK [2][-]{subsection.5.9.2}{Data leakage}{section.5.9}% 48
-\BOOKMARK [0][-]{subsection.5.9.2}{Bibliography}{}% 49
+\BOOKMARK [2][-]{subsection.2.2.11}{When to use a decision tree}{section.2.2}% 17
+\BOOKMARK [2][-]{subsection.2.2.12}{Random forest \(Tree ensembles\)}{section.2.2}% 18
+\BOOKMARK [2][-]{subsection.2.2.13}{Boosted tree \(XGBoost\)}{section.2.2}% 19
+\BOOKMARK [1][-]{section.2.3}{SL: Regression and classification}{chapter.2}% 20
+\BOOKMARK [2][-]{subsection.2.3.1}{Linear regression}{section.2.3}% 21
+\BOOKMARK [2][-]{subsection.2.3.2}{Non-linear regression}{section.2.3}% 22
+\BOOKMARK [2][-]{subsection.2.3.3}{Error}{section.2.3}% 23
+\BOOKMARK [2][-]{subsection.2.3.4}{Other cases}{section.2.3}% 24
+\BOOKMARK [1][-]{section.2.4}{SL: Neural network}{chapter.2}% 25
+\BOOKMARK [2][-]{subsection.2.4.1}{Perceptron}{section.2.4}% 26
+\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 27
+\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 28
+\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 29
+\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 30
+\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 31
+\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 32
+\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 33
+\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 34
+\BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 35
+\BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 36
+\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 37
+\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 38
+\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 39
+\BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 40
+\BOOKMARK [1][-]{section.5.2}{Cross validation}{chapter.5}% 41
+\BOOKMARK [1][-]{section.5.3}{F1 score, precision, and recall}{chapter.5}% 42
+\BOOKMARK [1][-]{section.5.4}{Overfitting vs underfitting}{chapter.5}% 43
+\BOOKMARK [1][-]{section.5.5}{Cost function}{chapter.5}% 44
+\BOOKMARK [1][-]{section.5.6}{Gradient descent \(or steepest descent\)}{chapter.5}% 45
+\BOOKMARK [1][-]{section.5.7}{Model validation}{chapter.5}% 46
+\BOOKMARK [1][-]{section.5.8}{Data processing/cleaning: Missing Values}{chapter.5}% 47
+\BOOKMARK [1][-]{section.5.9}{Ensemble methods}{chapter.5}% 48
+\BOOKMARK [2][-]{subsection.5.9.1}{Gradient Boosting}{section.5.9}% 49
+\BOOKMARK [2][-]{subsection.5.9.2}{Data leakage}{section.5.9}% 50
+\BOOKMARK [0][-]{subsection.5.9.2}{Bibliography}{}% 51
