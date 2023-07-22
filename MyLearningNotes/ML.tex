@@ -628,6 +628,8 @@ Mini-batch gradient descent updates the parameters using a subset of training sa
 
 \section{Model validation}
 
+Always start with the dataset documentation.
+
 In most (though not all) applications, the relevant measure of model quality is predictive accuracy. In other words, will the model's predictions be close to what actually happens.
 
 There are many metrics for summarizing model quality, but we'll start with one called Mean Absolute Error (also called MAE). With the MAE metric, we take the absolute value of each error. This converts each error to a positive number. We then take the average of those absolute errors. This is our measure of model quality. sklearn has a function, mean\_absolute\_error, to calculate MAE.
@@ -638,16 +640,30 @@ Many people make a mistake when measuring predictive accuracy. They make predict
 \section{Data processing/cleaning: Missing Values}
 \label{sec:missing}
 
-There are many ways the data misses: wrong measurement, data is private, data is not available, etc.
+Before we treat missing data, we need to know \textbf{Is this value missing because it wasn't recorded or because it doesn't exist?} If a value is missing becuase it doesn't exist (like the height of the oldest child of someone who doesn't have any children) then it doesn't make sense to try and guess what it might be. These values you probably do want to keep as NaN. On the other hand, if a value is missing because it wasn't recorded, then you can try to guess what it might have been based on the other values in that column and row.  There are many ways the data misses: wrong measurement, data is private, data is not available, etc.
 
-Generally, there are three approaches deal with the missing data:
+Generally, there are three approaches deal with the missing data. These are quick and dirty approaches that probably remove some useful info or adding some noise to your dataset.
 \begin{itemize}
-  \item The simplest option: drop columns/features with missing values. Unless most values in the dropped columns are missing, the model loses access to a lot of (potentially useful!) information with this approach.
+  \item The simplest option: drop columns or features with missing values. Unless most values in the dropped columns are missing, the model loses access to a lot of (potentially useful!) information with this approach.
   \item Imputation: fills in the missing values with some number. For instance, we can fill in the mean value along each column, or we can choose the most popular data for the missing item. We can also assign the probability of each value of the attribute to the missing entries. The imputed value won't be exactly right in most cases, but it usually leads to more accurate models than you would get from dropping the column entirely.
   \item Extending imputation: we impute the missing values, as before. And, additionally, for each column with missing entries in the original dataset, we add a new column that shows the location of the imputed entries. For example, if the size of bedroom is missing for some instances, we add a new column, missing\_bedromm\_size, and set it to FALSE for all valid instances and TRUE for all missing instances. This will meaningfully improve results. In other cases, it doesn't help at all.
 \end{itemize}
 
 In pandas, we can use .isnul() to detect columns with missing data. We can use .drop to drop columns. We can also use dropna to either drop columns or instances.
+
+\section{Data processing: scaling vs normalization}
+
+In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in normalization\textbf{normalization}, you're changing the shape of the distribution of your data.
+
+
+\subsection{scaling}
+This means that you're transforming your data so that it fits within a specific scale, like 0-100 or 0-1. You want to scale data when you're using methods based on measures of how far apart data points are, like support vector machines (SVM) or k-nearest neighbors (KNN). With these algorithms, a change of "1" in any numeric feature is given the same importance. By scaling your variables, you can help compare different variables on equal footing.
+
+
+\subsection{normalization}
+Scaling just changes the range of your data. Normalization is a more radical transformation. The point of normalization is to change your observations so that they can be described as a normal distribution.
+
+In general, you'll normalize your data if you're going to be using a machine learning or statistics technique that assumes your data is normally distributed. Some examples of these include linear discriminant analysis (LDA) and Gaussian naive Bayes. (Pro tip: any method with "Gaussian" in the name probably assumes normality.)
 
 \section{Ensemble methods}
 Ensemble methods combine the predictions of several models (e.g., several trees, in the case of random forests).

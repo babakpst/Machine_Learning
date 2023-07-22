@@ -30,7 +30,8 @@ def main():
 
   data.handleMissingValues()
   data.categoricalFeatures_processing()
-  data.normalizeNumericalFeatures()
+  # data.normalizeNumericalFeatures()
+  data.scaleNumericalFeatures
   print("done with preprocessing")
 
   def RandomForestWithCrossValidation(n_estimators, numberofCrossValidation: int):

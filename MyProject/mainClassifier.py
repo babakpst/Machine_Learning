@@ -30,7 +30,6 @@ def main():
 
   data.handleMissingValues()
   data.categoricalFeatures_processing()
-  # data.normalizeNumericalFeatures()
 
   data.splitData()
 

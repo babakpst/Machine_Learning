@@ -60,7 +60,7 @@ def main():
 
   data.handleMissingValues()
   data.categoricalFeatures_processing()
-  # data.normalizeNumericalFeatures()
+  data.scaleNumericalFeatures()
   data.splitData()
   # data.alignDataframes()
   data.ConvertToBinary()

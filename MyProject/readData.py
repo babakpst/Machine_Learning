@@ -10,7 +10,9 @@ from IPython.display import display # to display dataframe
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
-
+# from mlxtend.preprocessing import minmax_scaling
+from sklearn.preprocessing import minmax_scale
+from sklearn.preprocessing import normalize
 
 from sklearn import tree
 import itertools
@@ -69,12 +71,12 @@ class DataPreprocessing:
     print("\n info about the train data: ")
     # calculate the percentage of missing samples
     total = np.product(self.df_train.shape)
-    total_missing = self.df_train[self.target].isnull().sum()
+    total_missing = self.df_train.isnull().sum().sum()
     percent_missing_in_train = total_missing/total*100
     
     if self.testdata_fullpath:
       total = np.product(self.df_test.shape)
-      total_missing = self.df_test[self.target].isnull().sum()
+      total_missing = self.df_test.isnull().sum().sum()
       percent_missing_in_test = total_missing/total*100
     else:
       percent_missing_in_test = 0
@@ -297,22 +299,61 @@ class DataPreprocessing:
     if self.debugMode:
       print("\n After most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
 
+  
   # normalize numerical data
   # TODO: it should not normalize everything (yearbuild, Id). Fix it.
+  # has not been tested
   def normalizeNumericalFeatures(self):
     if self.debugMode:
       print("\n Before normalization-train data: \n", self.df_train[self.numericFeatures].to_string())
       if self.testdata_fullpath:
         print("\n Before normalization-test data: \n", self.df_test[self.numericFeatures].to_string())
-    self.df_train[self.numericFeatures] = (self.df_train[self.numericFeatures]-self.df_train[self.numericFeatures].min()) / (self.df_train[self.numericFeatures].max()-self.df_train[self.numericFeatures].min())
+
+    self.df_train[self.numericFeatures] = normalize(self.df_train[self.numericFeatures], norm='l2',axis = 0, copy=True)
     if self.testdata_fullpath:
-      self.df_test[self.numericFeatures] = (self.df_test[self.numericFeatures]-self.df_test[self.numericFeatures].min()) / (self.df_test[self.numericFeatures].max()-self.df_test[self.numericFeatures].min())
+      self.df_test[self.numericFeatures] = normalize(self.df_test[self.numericFeatures], norm='l2',axis = 0, copy=True)
 
     if self.debugMode:
       print("\n After normalization-train data: \n", self.df_train[self.numericFeatures].to_string())
       if self.testdata_fullpath:
         print("\n After normalization-test data: \n", self.df_test[self.numericFeatures].to_string())
     print("done with normalization")
+
+  def scaleNumericalFeatures(self):
+    # if self.debugMode:
+    if True:
+      print("\n Before scaling-train data: \n", self.df_train[self.numericFeatures].to_string())
+      if self.testdata_fullpath:
+        print("\n Before scaling-test data: \n", self.df_test[self.numericFeatures].to_string())
+
+    print(" min/max of training data before scaling: ")
+    print('Minimum value:\n', self.df_train[self.numericFeatures].min(),
+          '\n\nMaximum value:\n', self.df_train[self.numericFeatures].max())
+
+    if self.testdata_fullpath:
+      print(" min/max of testing data before scaling: ")
+      print('Minimum value:\n', self.df_test[self.numericFeatures].min(),
+            '\n\nMaximum value:\n', self.df_test[self.numericFeatures].max())
+
+    self.df_train[self.numericFeatures] = minmax_scale(self.df_train[self.numericFeatures], feature_range=(0,1), axis=0, copy=False) # false means inplace, but for nparray
+    if self.testdata_fullpath:
+      self.df_test[self.numericFeatures] = minmax_scale(self.df_test[self.numericFeatures], feature_range=(0,1), axis=0, copy=False) # false means inplace
+
+    print(" min/max of training data after scaling: ")
+    print('Minimum value:\n', self.df_train[self.numericFeatures].min(),
+          '\n\nMaximum value:\n', self.df_train[self.numericFeatures].max())
+    
+    if self.testdata_fullpath:
+      print(" min/max of testing data after scaling: ")
+      print('Minimum value:\n', self.df_test[self.numericFeatures].min(),
+            '\n\nMaximum value:\n', self.df_test[self.numericFeatures].max())
+
+    if self.debugMode:
+      print("\n After scaling-train data: \n", self.df_train[self.numericFeatures].to_string())
+      if self.testdata_fullpath:
+        print("\n After scaling-test data: \n", self.df_test[self.numericFeatures].to_string())
+    print("done with scaling")
+
 
   def categoricalFeatures_processing(self):
 
@@ -494,25 +535,21 @@ class DataPreprocessing:
     self.y_valid[self.target].replace("yes",1,inplace=True)
 
 
-#================================================
-#================================================
-class parser:
-  pass
+#============================
+# data parser
+# create a new column, date_parsed, with the parsed dates-this will convert the dtype from object to datetime64
+# df['date_parsed'] = pd.to_datetime(df['date'], format="%m/%d/%y") # mm/dd/yy
+# df['date_parsed'] = pd.to_datetime(df['date'], format="%m/%d/%Y") # mm/dd/yyyy
 
-#================================================
-#================================================
-class crossValidation:
-  pass
+#if there are multiple dataformat in the dataframe, we can let pandas decide about the data format.
+# Don't use this option, unless you have to, because it is slow, and inaccurate.
+# df['date_parsed'] = pd.to_datetime(df['Date'], infer_datetime_format=True)
 
-
-#================================================
-#================================================
-# reading the test dataobject fea
-class testData:
-  pass
-
-
-
+# review the object files:
+# convert to lower case
+#professors['Country'] = professors['Country'].str.lower()
+# remove trailing white spaces
+#professors['Country'] = professors['Country'].str.strip()
 
 
 
