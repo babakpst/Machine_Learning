@@ -84,6 +84,7 @@ def main():
 
 
     predictions = my_model.predict(data.x_valid)
+    
     print("Mean Absolute Error: " + str(helpers.MAE(predictions, data.y_valid)))
     visualization.model_evaluation(data.y_valid, predictions)
 

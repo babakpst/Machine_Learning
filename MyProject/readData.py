@@ -174,6 +174,13 @@ class DataPreprocessing:
     if self.testdata_fullpath:
       self.df_test = self.df_test[features]
 
+  #  a subset of features in the data
+  def deleteFeatures(self, features):
+    self.df_train = self.df_train.drop(features, axis=1)
+    if self.testdata_fullpath:
+      self.df_test = self.df_test.drop(features, axis=1)
+
+
   def handleMissingValues(self):
 
     isThereAnyMissingDataInTrain = True if self.Features_with_missing_data_train else False
@@ -198,9 +205,9 @@ class DataPreprocessing:
       
       if self.addImputeCol and not self.imputeStrategy == 'drop':
         for col in self.Features_with_missing_data:
-          self.df_train[col + '_was_missing'] = self.df_train[col].isnull()
+          self.df_train[col + '_was_missing'] = self.df_train[col].isnull().astype(int)
           if self.testdata_fullpath:
-            self.df_test[col + '_was_missing'] = self.df_test[col].isnull()
+            self.df_test[col + '_was_missing'] = self.df_test[col].isnull().astype(int)
 
       if self.imputeStrategy == "drop": # for categorical and numerical features
         print(" impute strategy: drop features with missing data (categorical and numerical)")
