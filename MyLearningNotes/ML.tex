@@ -577,47 +577,57 @@ Since we care about accuracy on new data, which we estimate from our validation 
 
 \section{Cost function}
 \label{sec:cost}
-Let's use the concept of linear regression to discuss the cost function.
-Here is the model:
+Let's use the concept of multiple linear regression to discuss the cost function.
 
+Parameters/coefficients/weights of the model (In ML, parameters of a model are the variables that you can do training in order to improve the model):
 \begin{equation}
-	f_{w,b} (x) = wx + b
+  w_1, . . . , w_n , b \equiv \overrightarrow{w} ,b
 \end{equation}
 
-$w, b$ are the parameters/coefficients/weights of the model. In ML, parameters of a model are the variables that you can do training in order to improve the model.
+Here is the model:
+\begin{equation}
+	f_{\overrightarrow{w},b} (\overrightarrow{x}) = w_1x_1 +  ... + w_nx_n + b
+\end{equation}
 
 \begin{multline}
 		\text{data points } \{(x_i, y_i): i=1 ... m \} \\
-    \hat{y}^{(i)} = f_{w,b} (x^{(i)}) = wx ^ {(i)} + b \\
+    \hat{y}^{(i)} = f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  = \overrightarrow{w} \overrightarrow{x} ^ {(i)} + b \\
 \end{multline}
 
-Problem statement: find $w, b$ such that $\hat{y}^{(i)}$ is close to $y^{(i)}$ for all $(x^{(i)}, y^{(i)} )$. $\big(\hat{y}^{(i)}  - y^{(i)} \big) ^2$, the error for one single sample is called the loss function.
+Problem statement: find $\overrightarrow{w},b$ such that $\hat{y}^{(i)}$ is close to $y^{(i)}$ for all $(x^{(i)}, y^{(i)} )$. $\big(\hat{y}^{(i)}  - y^{(i)} \big) ^2$, the error for one single sample is called the loss function.
 
 
 
-To find $w, b$, we form the the cost function:
+To find $\overrightarrow{w},b$, we form the the cost function:
 
 \begin{multline}
-	\text{find $w, b$:} \\
-	\text{minimize:  }  J(w ,b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
+	\text{find $\overrightarrow{w},b$:} \\
+	\text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
 \end{multline}
 m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. However, there are other options for the cost functions as well.
 
-\section{Gradient descent (or steepest descent)}
+\section{Gradient descent (steepest descent)}
 \label{sec:gradient}
 
-An optimization method to minimize any function. Depending on the initial starting point, the method may end up at a different local minimum.
+An optimization method to minimize any function. Depending on the initial starting point, the method may end up at a different local minimum. \\
 
-For a cost function $J(p1, p2, ...)$,  we want to find  $p1, p2, ...$ to minimize $J$.
+Method: \\
+For a cost function $J(\overrightarrow{w},b)$,  we want to find  $w_1, w_2, ...$ to minimize $J$.\\
 
-Algorithm:
-start with some initial $p1, p2, ...$.
-update $p_i$ \textit{simultaneously} until the algorithm converges, meaning you reach a local minimum, where additional iteration does not change the point. It is incorrect to use new values of $p_i$ to update other parameters in the same iteration.
-\begin{equation}
-  p_i = p_i - \alpha \frac{\partial  }{\partial p_i} J(p_i) \text{for each i}
-\end{equation}
+Algorithm: \\
+\begin{itemize}
+\item start with some initial $\overrightarrow{w}, b$.
+\item update $w_j$ \textit{simultaneously} until the algorithm converges, meaning you reach a local minimum, where additional iteration does not change the point. It is incorrect to use new values of $w_j$ to update other parameters in the same iteration.
+\begin{multline}
+  w_j = w_j - \alpha \frac{\partial}{\partial w_j} J(\overrightarrow{w},b) = w_j - \alpha  \frac{1}{m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) x_j^{(i)}  \\
+  = w_j - \alpha  \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  - y^{(i)} \big) x_j^{(i)}    \text{\: \: for each j} \\
+  b = b - \alpha \frac{\partial  }{\partial b} J(\overrightarrow{w},b) = b - \alpha \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  - y^{(i)} \big) \text{\: \: for each i}
+\end{multline}
+\end{itemize}
 
-The negative is because we want to move in the opposite direction. $\alpha$ is the learning rate (step size). The choice of learning rate affects the efficiency of gradient descent. If it is too small, it converges very slowly. If it is too large (overshoot), may cause divergence and never reaches the minimum. If we are exactly at the minimum, since slope is zero, the value of the learning does not affect the results. Thus, even a fixed learning can reach the minimum.
+The negative is because we want to move in the opposite direction.
+
+$\alpha$ is the learning rate (step size). The choice of learning rate affects the efficiency of gradient descent. If it is too small, it converges very slowly. If it is too large (overshoot), may cause divergence and never reaches the minimum. If we are exactly at the minimum, since slope is zero, the value of the learning does not affect the results. Thus, even a fixed learning can reach the minimum.
 
 \textbf{Various types of gradient descent: }
 
