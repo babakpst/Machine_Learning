@@ -33,6 +33,8 @@ def main():
 
   data.splitData()
 
+  data.make_mi_scores()
+
   # decision tree classifier ---------------------------
   if MLType == "DTC":
     print("\n Decision Tree Classifier: ")

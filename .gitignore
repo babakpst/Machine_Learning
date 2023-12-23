@@ -141,3 +141,5 @@ dmypy.json
 # general
 *.zip
 *.xopp
+.vscode/*
+*/.vscode/*

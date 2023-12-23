@@ -19,36 +19,43 @@
 \BOOKMARK [2][-]{subsection.2.2.13}{Boosted tree \(XGBoost\)}{section.2.2}% 19
 \BOOKMARK [1][-]{section.2.3}{SL: Regression and classification}{chapter.2}% 20
 \BOOKMARK [2][-]{subsection.2.3.1}{Linear regression}{section.2.3}% 21
-\BOOKMARK [2][-]{subsection.2.3.2}{Non-linear regression}{section.2.3}% 22
+\BOOKMARK [2][-]{subsection.2.3.2}{Non-linear/polynomial regression}{section.2.3}% 22
 \BOOKMARK [2][-]{subsection.2.3.3}{Error}{section.2.3}% 23
-\BOOKMARK [2][-]{subsection.2.3.4}{Other cases}{section.2.3}% 24
-\BOOKMARK [1][-]{section.2.4}{SL: Neural network}{chapter.2}% 25
-\BOOKMARK [2][-]{subsection.2.4.1}{Perceptron}{section.2.4}% 26
-\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 27
-\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 28
-\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 29
-\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 30
-\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 31
-\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 32
-\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 33
-\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 34
-\BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 35
-\BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 36
-\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 37
-\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 38
-\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 39
-\BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 40
-\BOOKMARK [1][-]{section.5.2}{Cross validation}{chapter.5}% 41
-\BOOKMARK [1][-]{section.5.3}{F1 score, precision, and recall}{chapter.5}% 42
-\BOOKMARK [1][-]{section.5.4}{Overfitting vs underfitting}{chapter.5}% 43
-\BOOKMARK [1][-]{section.5.5}{Cost function}{chapter.5}% 44
-\BOOKMARK [1][-]{section.5.6}{Gradient descent \(steepest descent\)}{chapter.5}% 45
-\BOOKMARK [1][-]{section.5.7}{Model validation}{chapter.5}% 46
-\BOOKMARK [1][-]{section.5.8}{Data processing/cleaning: Missing Values}{chapter.5}% 47
-\BOOKMARK [1][-]{section.5.9}{Data processing: scaling vs normalization}{chapter.5}% 48
-\BOOKMARK [2][-]{subsection.5.9.1}{scaling}{section.5.9}% 49
-\BOOKMARK [2][-]{subsection.5.9.2}{normalization}{section.5.9}% 50
-\BOOKMARK [1][-]{section.5.10}{Ensemble methods}{chapter.5}% 51
-\BOOKMARK [2][-]{subsection.5.10.1}{Gradient Boosting}{section.5.10}% 52
-\BOOKMARK [2][-]{subsection.5.10.2}{Data leakage}{section.5.10}% 53
-\BOOKMARK [0][-]{subsection.5.10.2}{Bibliography}{}% 54
+\BOOKMARK [2][-]{subsection.2.3.4}{Multiple Linear regression \(multiple features\)}{section.2.3}% 24
+\BOOKMARK [2][-]{subsection.2.3.5}{Other cases}{section.2.3}% 25
+\BOOKMARK [1][-]{section.2.4}{SL: Neural network}{chapter.2}% 26
+\BOOKMARK [2][-]{subsection.2.4.1}{Perceptron}{section.2.4}% 27
+\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 28
+\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 29
+\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 30
+\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 31
+\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 32
+\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 33
+\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 34
+\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 35
+\BOOKMARK [1][-]{section.3.1}{Random optimization}{chapter.3}% 36
+\BOOKMARK [1][-]{section.3.2}{Clustering}{chapter.3}% 37
+\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 38
+\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 39
+\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 40
+\BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 41
+\BOOKMARK [1][-]{section.5.2}{Cross validation}{chapter.5}% 42
+\BOOKMARK [1][-]{section.5.3}{F1 score, precision, and recall}{chapter.5}% 43
+\BOOKMARK [1][-]{section.5.4}{Overfitting vs underfitting}{chapter.5}% 44
+\BOOKMARK [1][-]{section.5.5}{Gradient descent \(steepest descent\)}{chapter.5}% 45
+\BOOKMARK [2][-]{subsection.5.5.1}{Cost function}{section.5.5}% 46
+\BOOKMARK [2][-]{subsection.5.5.2}{Gradient descent method}{section.5.5}% 47
+\BOOKMARK [2][-]{subsection.5.5.3}{learning rate selection}{section.5.5}% 48
+\BOOKMARK [1][-]{section.5.6}{Model validation}{chapter.5}% 49
+\BOOKMARK [1][-]{section.5.7}{Data processing/cleaning: Missing Values}{chapter.5}% 50
+\BOOKMARK [1][-]{section.5.8}{Data processing \046 Feature engineering}{chapter.5}% 51
+\BOOKMARK [2][-]{subsection.5.8.1}{scaling vs normalization}{section.5.8}% 52
+\BOOKMARK [2][-]{subsection.5.8.2}{Scaling a feature}{section.5.8}% 53
+\BOOKMARK [2][-]{subsection.5.8.3}{Mean normalization}{section.5.8}% 54
+\BOOKMARK [2][-]{subsection.5.8.4}{z-score normalization}{section.5.8}% 55
+\BOOKMARK [2][-]{subsection.5.8.5}{combining features}{section.5.8}% 56
+\BOOKMARK [1][-]{section.5.9}{Ensemble methods}{chapter.5}% 57
+\BOOKMARK [2][-]{subsection.5.9.1}{Gradient Boosting}{section.5.9}% 58
+\BOOKMARK [2][-]{subsection.5.9.2}{Data leakage}{section.5.9}% 59
+\BOOKMARK [1][-]{section.5.10}{Python}{chapter.5}% 60
+\BOOKMARK [0][-]{section.5.10}{Bibliography}{}% 61

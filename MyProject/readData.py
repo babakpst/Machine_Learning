@@ -5,16 +5,17 @@ from dataclasses import dataclass, field
 import numpy as np
 import os
 #import argparser
-from sklearn.impute import SimpleImputer
 from IPython.display import display # to display dataframe
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
-# from mlxtend.preprocessing import minmax_scaling
 from sklearn.preprocessing import minmax_scale
 from sklearn.preprocessing import normalize
-
 from sklearn import tree
+from sklearn.feature_selection import mutual_info_regression
+
+# from mlxtend.preprocessing import minmax_scaling
 import itertools
 import timeit
 
@@ -191,7 +192,6 @@ class DataPreprocessing:
       print(self.df_train.head())
       if self.testdata_fullpath:
         print(self.df_test.head())
-
     
     if not isThereAnyMissingDataInTrain:
       print(" There is no missing data in train")
@@ -519,7 +519,6 @@ class DataPreprocessing:
         print("\nx_test: \n", self.x_test)
         print("\ny_test: \n", self.y_test)
 
-
   # separate target from the data without split.
   def SeparateTarget(self):       
     self.X = self.df_train.loc[:, self.df_train.columns != self.target]
@@ -531,8 +530,6 @@ class DataPreprocessing:
 
     return self
 
-
-
   #Convert the target variable from {no,yes} to {0,1} 
   def ConvertToBinary(self):
     self.y_train[self.target].replace("no",0,inplace=True)
@@ -540,6 +537,18 @@ class DataPreprocessing:
 
     self.y_valid[self.target].replace("no",0,inplace=True)
     self.y_valid[self.target].replace("yes",1,inplace=True)
+
+  # function to calculate mutual information for discrete values
+  # def make_mi_scores(self, X, y, discrete_features):
+  def make_mi_scores(self, discrete_features):
+      mi_scores = mutual_info_regression(self.x_train, self.y_train, discrete_features=discrete_features)
+      mi_scores = pd.Series(mi_scores, name="MI Scores", index=self.x_train.columns)
+      mi_scores = mi_scores.sort_values(ascending=False)
+      return mi_scores
+
+
+
+
 
 
 #============================

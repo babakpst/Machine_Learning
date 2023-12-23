@@ -422,7 +422,7 @@ To find the line:
 \end{equation}
 To find the the two unknowns of the linear fit, a and b, take the derivative of the error with respect to a and b and set it zero. That would be a system of equations with two unknowns. After solving the equation you have the fit. To have a nonlinear fit, we can use a polynomial model:
 
-\subsection{Non-linear regression}
+\subsection{Non-linear/polynomial regression}
 \begin{equation}
 	f(x_i) = a_0 + a_1 x_i + a_2 x_i^2 + ...
 \end{equation}
@@ -434,12 +434,15 @@ To better fit the regression model, we can use higher order polynomial, but it l
 \subsection{Error}
 Training data has errors due to various reasons such as reading errors, sensor errors, transcription error, maliciously given data, etc. This is the reason we are using the regression not the interpolation.
 
-To calculate the parameters of the model, we need to form the cost function (see \ref{sec:cost}) and minimize the error using an optimization technique, such as gradient descent \ref{}.
+To calculate the parameters of the model, we need to form the cost function (see \ref{sec:cost}) and minimize the error using an optimization technique, such as gradient descent \ref{sec:gradient}.
+
+\subsection{Multiple Linear regression (multiple features)}
+
+For the regression, we can have multiple independent variables/features for the regression ($x_1, ..., x_n$).
+
+
 
 \subsection{Other cases}
-
-For the regression, we can have multiple independent variables/features for the regression.
-
 Using discrete numbers is also possible for regression, however this is no trivial. We need to encode the attributes. For example, by enumerating the categories (giving a number to each possible value of this feature). It is a bit misleading because a correlation between the ordering of the
 enumeration and the its value can be interpolated. The other option is represent the value of the feature as a Boolean.
 
@@ -566,7 +569,6 @@ $F1 = 2 \frac{R * P}{ P + R } $.
 
 The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
 
-
 \section{Overfitting vs underfitting}
 This is a phenomenon called overfitting, where a model matches the training data almost perfectly, but does poorly in validation and other new data. On the flip side, if we make our tree very shallow, it doesn't divide up the houses into very distinct groups.
 
@@ -574,8 +576,9 @@ At an extreme, if a tree divides houses into only 2 or 4, each group still has a
 
 Since we care about accuracy on new data, which we estimate from our validation data, we want to find the sweet spot between underfitting and overfitting. Visually, we want the low point of the (red) validation curve in the figure below.
 
+\section{Gradient descent (steepest descent)}
 
-\section{Cost function}
+\subsection{Cost function}
 \label{sec:cost}
 Let's use the concept of multiple linear regression to discuss the cost function.
 
@@ -596,8 +599,6 @@ Here is the model:
 
 Problem statement: find $\overrightarrow{w},b$ such that $\hat{y}^{(i)}$ is close to $y^{(i)}$ for all $(x^{(i)}, y^{(i)} )$. $\big(\hat{y}^{(i)}  - y^{(i)} \big) ^2$, the error for one single sample is called the loss function.
 
-
-
 To find $\overrightarrow{w},b$, we form the the cost function:
 
 \begin{multline}
@@ -606,7 +607,7 @@ To find $\overrightarrow{w},b$, we form the the cost function:
 \end{multline}
 m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. However, there are other options for the cost functions as well.
 
-\section{Gradient descent (steepest descent)}
+\subsection{Gradient descent method}
 \label{sec:gradient}
 
 An optimization method to minimize any function. Depending on the initial starting point, the method may end up at a different local minimum. \\
@@ -635,6 +636,13 @@ Batch gradient descent: each step of gradient descent uses all the training exam
 
 Mini-batch gradient descent updates the parameters using a subset of training samples.
 
+\subsection{learning rate selection}
+If the learning rate is too small, it would be very slow, and if it too large, it may diverge. To start, we can set the learning rate to a very small number, and check if the cost function decreases with every single iteration. If not, there is bug in the code. We can plot the cost function (learning curve) with each iteration of the gradient descent. The learning rate $\alpha$ should be selected such that the cost function decreases as iterations increases. If this is not the case, then the learning rate is high. Generally, we need to test many learning rates and select the most optimized one.
+
+\includegraphics[scale=0.12]{pics/LearningRate.png}
+
+\includegraphics[scale=0.12]{pics/learningrate2.png}
+
 
 \section{Model validation}
 
@@ -661,19 +669,67 @@ Generally, there are three approaches deal with the missing data. These are quic
 
 In pandas, we can use .isnul() to detect columns with missing data. We can use .drop to drop columns. We can also use dropna to either drop columns or instances.
 
-\section{Data processing: scaling vs normalization}
+\section{Data processing \& Feature engineering}
 
-In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in normalization\textbf{normalization}, you're changing the shape of the distribution of your data.
+\subsection{Feature engineering}
+The goal of feature engineering is simply to make your data better suited to the problem at hand. You might perform feature engineering to:
+\begin{itemize}
+  \item improve a model's predictive performance
+  \item reduce computational or data needs
+  \item improve interpretability of the results
+\end{itemize}
+
+Feature engineering is possible through:
+\begin{itemize}
+  \item determine which features are the most important with mutual information
+  \item invent new features in several real-world problem domains (e.g. square the length of land, to get area, which is a more reasonable feature. It can predicate parabola now.)
+  \item encode high-cardinality categoricals with a target encoding
+  \item create segmentation features with k-means clustering
+  \item decompose a dataset's variation into features with principal component analysis
+\end{itemize}
+
+A great first step is to construct a ranking with a feature utility metric, a function measuring associations between a feature and the target. Then you can choose a smaller set of the most useful features to develop initially and have more confidence that your time will be well spent. The metric we'll use is called "mutual information". It can \textbf{detect any kind of relationship, while correlation only detects linear relationships.} The mutual information (MI) between two quantities is a measure of the extent to which knowledge of one quantity reduces uncertainty about the other. Mutual Info varies between 0 (independent quantities) to $+ \infty $. It is a logarithmic func, and barely reaches to 2. It's possible for a feature to be very informative when interacting with other features, but not so informative all alone. MI can't detect interactions between features. It is a univariate metric.
+The actual usefulness of a feature depends on the model you use it with. A feature is only useful to the extent that its relationship with the target is one your model can learn.
+
+Scikit-learn has two mutual information metrics in its feature_selection module: one for real-valued targets (mutual_info_regression) and one for categorical targets (mutual_info_classif).
+
+\subsection{scaling vs normalization}
+
+In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties. The point is to help with the gradient descent to converge faster. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in \textbf{normalization}, you're changing the shape of the distribution of your data.
 
 
-\subsection{scaling}
+\subsubsection{scaling}
 This means that you're transforming your data so that it fits within a specific scale, like 0-100 or 0-1. You want to scale data when you're using methods based on measures of how far apart data points are, like support vector machines (SVM) or k-nearest neighbors (KNN). With these algorithms, a change of "1" in any numeric feature is given the same importance. By scaling your variables, you can help compare different variables on equal footing.
 
-
-\subsection{normalization}
+\subsubsection{normalization}
 Scaling just changes the range of your data. Normalization is a more radical transformation. The point of normalization is to change your observations so that they can be described as a normal distribution.
 
 In general, you'll normalize your data if you're going to be using a machine learning or statistics technique that assumes your data is normally distributed. Some examples of these include linear discriminant analysis (LDA) and Gaussian naive Bayes. (Pro tip: any method with "Gaussian" in the name probably assumes normality.)
+
+
+\subsection{Scaling a feature}
+Having two features with large and small values may have adverse impact on our training. For example, for regression, it may cause large round off error, or affects the shape of gradient descent contours and as a result may cause slow convergence or even divergence. To avoid that, it is recommended to scale features so that they have the same range. After scaling, the data range would be 0 to 1.
+
+\includegraphics[scale=0.12]{pics/scalingforGD.png}
+
+\subsection{Mean normalization}
+In this method, we first find the average of the feature ($\mu$). Each item of the feature is normalized as:
+\begin{equation}
+  x_i = \frac{x_i-\mu}{max-min}
+\end{equation}
+
+Then, we have the range for each feature between -1 and 1.
+
+\subsection{z-score normalization}
+In this method, we first find the standard deviation ($\sigma$) and the average ($\mu$) of the feature. Each item of the feature is normalized as:
+\begin{equation}
+  x_i = \frac{x_i-\mu}{\sigma}
+\end{equation}
+
+Then, we have the range for each feature between -1 and 1.
+
+\subsection{combining features}
+Using intuition to design new features by transforming or combining original features.
 
 \section{Ensemble methods}
 Ensemble methods combine the predictions of several models (e.g., several trees, in the case of random forests).
@@ -718,6 +774,14 @@ For example, imagine you run preprocessing (like fitting an imputer for missing 
 After all, you incorporated data from the validation or test data into how you make predictions, so the may do well on that particular data even if it can't generalize to new data. This problem becomes even more subtle (and more dangerous) when you do more complex feature engineering.
 
 If your validation is based on a simple train-test split, exclude the validation data from any type of fitting, including the fitting of preprocessing steps. This is easier if you use scikit-learn pipelines. When using cross-validation, it's even more critical that you do your preprocessing inside the pipeline!
+
+
+
+\section{Python}
+
+Use vectorization in python to improve the performance (for example: np.dot(W,x)).
+
+
 
 % Appendix ==========================================================
 %\appendices
