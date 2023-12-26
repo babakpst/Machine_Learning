@@ -15,6 +15,22 @@ from sklearn.preprocessing import normalize
 from sklearn import tree
 from sklearn.feature_selection import mutual_info_regression
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set Matplotlib defaults
+plt.style.use("seaborn-whitegrid")
+plt.rc("figure", autolayout=True)
+plt.rc(
+    "axes",
+    labelweight="bold",
+    labelsize="large",
+    titleweight="bold",
+    titlesize=14,
+    titlepad=10,
+)
+
+
 # from mlxtend.preprocessing import minmax_scaling
 import itertools
 import timeit
@@ -379,12 +395,11 @@ class DataPreprocessing:
 
     if self.debugMode:
       print(f'\n object features (total {len(self.objectFeatures)}):\n', self.objectFeatures)
-      print(f'\n Low cardinality categorical columns (candidates for one-hot encoding if selected (less than {self.cardinalityThreshold} unique categories)): \n', low_cardinality_cols)
-      print(f'\n Categorical columns that will be dropped from the dataset (more than {self.cardinalityThreshold} unique categories):\n', high_cardinality_cols)
 
     if self.categoricalFeatures == 1: # drop
       if self.debugMode:
-        print("\n Before drop categorical features-train: \n", self.df_train[self.objectFeatures].to_string())
+        #print("\n Before drop categorical features-train: \n", self.df_train[self.objectFeatures].to_string()) # print all data
+        print("\n Before drop categorical features-train: \n", self.df_train[self.objectFeatures].head()) # print all data
         if self.testdata_fullpath:
           print("\n Before drop categorical features-test: \n", self.df_test[self.objectFeatures].to_string())
 
@@ -394,23 +409,34 @@ class DataPreprocessing:
           print(f'{count} {col} exits in data: {True if col in self.df_train.columns else False}')
           # self.df_train.drop(col, axis=1, inplace=True)
       
-      print(f"objects features (total {len(self.objectFeatures)}): \n", self.objectFeatures)
+      print(f"\n objects features (total {len(self.objectFeatures)}): \n", self.objectFeatures)
       
       self.df_train.drop(self.objectFeatures, axis=1, inplace=True)
       if self.testdata_fullpath:
         self.df_test.drop(self.objectFeatures, axis=1, inplace=True)
 
       if self.debugMode:
-        print("\n After drop categorical features-train: \n", self.df_train.to_string())
+        # print("\n After drop categorical features-train: \n", self.df_train.to_string()) # to print all data
+        print("\n After drop categorical features-train: \n", self.df_train.head())  
         if self.testdata_fullpath:
           print("\n After drop categorical features-test: \n", self.df_test.to_string())
 
+      # set object features to null after dropping all features
+      self.objectFeatures = []
+      if self.debugMode:
+        print(f"\n objects features after drop (total {len(self.objectFeatures)}): \n", self.objectFeatures)
+
     elif self.categoricalFeatures == 2: # ordinal numbering of the categorical features
+      
+      print(f"\n objects features (total {len(self.objectFeatures)}): \n", self.objectFeatures)
+
       ordinal_encoder = OrdinalEncoder()
       if self.debugMode:
-        print("\n Before ordinal encoding-train: \n", self.df_train[self.objectFeatures].to_string())
+        # print("\n Before ordinal encoding-train: \n", self.df_train[self.objectFeatures].to_string()) # print all data
+        print("\n Before ordinal encoding-train: \n", self.df_train[self.objectFeatures].head())
         if self.testdata_fullpath:
-          print("\n Before ordinal encoding-test: \n", self.df_test[self.objectFeatures].to_string())
+          # print("\n Before ordinal encoding-test: \n", self.df_test[self.objectFeatures].to_string()) # print all dadta
+          print("\n Before ordinal encoding-test: \n", self.df_test[self.objectFeatures].head())
   
       ordinal_encoder.fit(self.df_train[self.objectFeatures])
       self.df_train[self.objectFeatures] = ordinal_encoder.transform(self.df_train[self.objectFeatures])
@@ -418,20 +444,34 @@ class DataPreprocessing:
         self.df_test[self.objectFeatures] = ordinal_encoder.transform(self.df_test[self.objectFeatures])
 
       if self.debugMode:
-        print("\n After ordinal encoding-train: \n", self.df_train[self.objectFeatures].to_string())
+        # print("\n After ordinal encoding-train: \n", self.df_train[self.objectFeatures].to_string()) # to print all data
+        print("\n After ordinal encoding-train: \n", self.df_train[self.objectFeatures].head())
         if self.testdata_fullpath:
-          print("\n After ordinal encoding-test: \n", self.df_test[self.objectFeatures].to_string())
+          #print("\n After ordinal encoding-test: \n", self.df_test[self.objectFeatures].to_string()) # to print all data
+          print("\n After ordinal encoding-test: \n", self.df_test[self.objectFeatures].head())
+      
+      # set object features to null, and add object features to numerics
+      self.numericFeatures.extend(self.objectFeatures)
+      self.objectFeatures = []
+      
+      if self.debugMode:
+        print(f"\n objects features after ordinal numbering (total {len(self.objectFeatures)}): \n", self.objectFeatures)
+        print(f"\n numerical features after ordinal numbering (total {len(self.numericFeatures)}): \n", self.numericFeatures)
 
     elif self.categoricalFeatures == 3: # One-hot encoding of the categorical features
 
       if self.debugMode:
-        print("\n Before one-hot encoding-train: \n", self.df_train[low_cardinality_cols].to_string())
+        print(f'\n Low cardinality categorical columns (candidates for one-hot encoding if selected (less than {self.cardinalityThreshold} unique categories)): \n', low_cardinality_cols)
+        print(f'\n Categorical columns that will be dropped from the dataset (more than {self.cardinalityThreshold} unique categories):\n', high_cardinality_cols)
+        # print("\n Before one-hot encoding-train: \n", self.df_train[low_cardinality_cols].to_string()) # to print all data
+        print("\n Before one-hot encoding-train: \n", self.df_train[low_cardinality_cols].head())
         if self.testdata_fullpath:
-          print("\n Before one-hot encoding-test: \n", self.df_test[low_cardinality_cols].to_string())
+          #print("\n Before one-hot encoding-test: \n", self.df_test[low_cardinality_cols].to_string()) # to print all data
+          print("\n Before one-hot encoding-test: \n", self.df_test[low_cardinality_cols].head())
         print("\n dropping high cardinality features: \n", high_cardinality_cols)
 
       # 'ignore' to avoid errors when the validation data contains classes that aren't represented in the training data
-      OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False) #, feature_name_combiner='concat')
+      OH_encoder = OneHotEncoder(handle_unknown='ignore', dtype='int', sparse_output=False) #, feature_name_combiner='concat')
       # OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False, feature_name_combiner=self.custom_combiner)
 
       OH_encoder.fit(self.df_train[low_cardinality_cols])
@@ -448,11 +488,26 @@ class DataPreprocessing:
         self.df_test.drop(self.objectFeatures, axis=1,inplace=True)
         self.df_test = self.df_test.join(OH_df_test)    
 
+      # set object features to null, and add object features to numerics
+      self.numericFeatures.extend(new_feature_names)
+      self.objectFeatures = []
+      
+      if self.debugMode:
+        print(f"\n objects features after one-hot (total {len(self.objectFeatures)}): \n", self.objectFeatures)
+        print(f"\n numerical features after one-hot (total {len(self.numericFeatures)}): \n", self.numericFeatures)
+
+
       if self.debugMode:
         print("\nnew feature names after encoding: \n", new_feature_names)
-        print("\n After one-hot encoding-train: \n", self.df_train.to_string())
+
+        print(f"\n objects features after one-hot (total {len(self.objectFeatures)}): \n", self.objectFeatures)
+        print(f"\n numerical features after one-hot (total {len(self.numericFeatures)}): \n", self.numericFeatures)
+
+        # print("\n After one-hot encoding-train: \n", self.df_train.to_string()) # to print all data
+        print("\n After one-hot encoding-train: \n", self.df_train.head()) 
         if self.testdata_fullpath:
-          print("\n After one-hot encoding-test: \n", self.df_test.to_string())
+          # print("\n After one-hot encoding-test: \n", self.df_test.to_string()) # to print all data
+          print("\n After one-hot encoding-test: \n", self.df_test.head())
 
     return self
 
@@ -538,18 +593,48 @@ class DataPreprocessing:
     self.y_valid[self.target].replace("no",0,inplace=True)
     self.y_valid[self.target].replace("yes",1,inplace=True)
 
+  
   # function to calculate mutual information for discrete values
   # def make_mi_scores(self, X, y, discrete_features):
-  def make_mi_scores(self, discrete_features):
-      mi_scores = mutual_info_regression(self.x_train, self.y_train, discrete_features=discrete_features)
-      mi_scores = pd.Series(mi_scores, name="MI Scores", index=self.x_train.columns)
-      mi_scores = mi_scores.sort_values(ascending=False)
-      return mi_scores
+  def make_mi_scores(self):
+      
+      def plot_mi_scores(scores):
+        scores = scores.sort_values(ascending=True)
+        width = np.arange(len(scores))
+        ticks = list(scores.index)
+        plt.barh(width, scores)
+        plt.yticks(width, ticks)
+        plt.title("Mutual Information Scores")
 
 
+      if self.debugMode:
+        print("MI_score")
+        print(self.x_train.to_string())
+        print("MI_score_here")
+        print(self.y_train)
+      
 
+      discrete_features = [pd.api.types.is_integer_dtype(t) for t in self.x_train.dtypes] # select int data columns
 
+      mi_scores_numeric = mutual_info_regression(self.x_train, self.y_train, discrete_features=discrete_features)
+      # mi_scores_numeric = mutual_info_regression(self.x_train, self.y_train)
+      mi_scores_numeric = pd.Series(mi_scores_numeric, name="MI Scores", index=self.x_train.columns)
+      mi_scores_numeric = mi_scores_numeric.sort_values(ascending=False)
 
+      print("Mutual Information for numeric features:")
+      print(mi_scores_numeric)
+
+      plt.figure(dpi=100, figsize=(8, 5))
+      plot_mi_scores(mi_scores_numeric.head(20))
+
+      #return mi_scores_numeric
+
+    # convert target col to ordinal
+  def convert_target_to_ordinal(self):
+      print(" convert target to ordinal")
+      ordinal_encoder = OrdinalEncoder()
+      ordinal_encoder.fit(self.y_train)
+      self.y_train = ordinal_encoder.transform(self.y_train)
 
 #============================
 # data parser

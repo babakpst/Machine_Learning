@@ -17,7 +17,7 @@ def main():
   
   data = rd.DataPreprocessing(train_filename="BankMarketingData.csv", test_filename="", dataPath="./data", 
                               train_size = 0.8, categoricalFeatures = 3, imputeStrategy="mean", target='y',
-                              addImputeCol=True, debugMode = False)
+                              addImputeCol=True, debugMode = True)
   # data = rd.DataPreprocessing(train_filename="PhishingWebsitesData.csv", test_filename="", dataPath="./data", 
   #                             train_size = 0.8, categoricalFeatures = 1, imputeStrategy="mean", target='Result', 
   #                             addImputeCol=True, debugMode = False)
@@ -29,11 +29,14 @@ def main():
   #data.pickFeatures(feaetures)
 
   data.handleMissingValues()
+  
+  
   data.categoricalFeatures_processing()
 
   data.splitData()
-
+  data.convert_target_to_ordinal()
   data.make_mi_scores()
+
 
   # decision tree classifier ---------------------------
   if MLType == "DTC":

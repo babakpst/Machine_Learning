@@ -490,8 +490,13 @@ It works by dividing the data into smaller subsets, learn over each individual s
 %===============================================================================
 \chapter[Unsupervised learning]{Unsupervised learning (UL)}
 
+Unsupervised algorithms don't make use of a target; instead, their purpose is to learn some property of the data, to represent the structure of the features in a certain way. In the context of feature engineering for prediction, you could think of an unsupervised algorithm as a "feature discovery" technique.
+
 \section{Random optimization}
-\section{Clustering}
+
+\section{K-means clustering}
+
+
 
 \chapter[Reinforced Learning]{Reinforced Learning (RL)}
 
@@ -658,7 +663,7 @@ Many people make a mistake when measuring predictive accuracy. They make predict
 \section{Data processing/cleaning: Missing Values}
 \label{sec:missing}
 
-Before we treat missing data, we need to know \textbf{Is this value missing because it wasn't recorded or because it doesn't exist?} If a value is missing becuase it doesn't exist (like the height of the oldest child of someone who doesn't have any children) then it doesn't make sense to try and guess what it might be. These values you probably do want to keep as NaN. On the other hand, if a value is missing because it wasn't recorded, then you can try to guess what it might have been based on the other values in that column and row.  There are many ways the data misses: wrong measurement, data is private, data is not available, etc.
+Before we treat missing data, we need to know \textbf{Is this value missing because it wasn't recorded or because it doesn't exist?} If a value is missing because it doesn't exist (like the height of the oldest child of someone who doesn't have any children) then it doesn't make sense to try and guess what it might be. These values you probably do want to keep as NaN. On the other hand, if a value is missing because it wasn't recorded, then you can try to guess what it might have been based on the other values in that column and row.  There are many ways the data misses: wrong measurement, data is private, data is not available, etc.
 
 Generally, there are three approaches deal with the missing data. These are quick and dirty approaches that probably remove some useful info or adding some noise to your dataset.
 \begin{itemize}
@@ -691,7 +696,22 @@ Feature engineering is possible through:
 A great first step is to construct a ranking with a feature utility metric, a function measuring associations between a feature and the target. Then you can choose a smaller set of the most useful features to develop initially and have more confidence that your time will be well spent. The metric we'll use is called "mutual information". It can \textbf{detect any kind of relationship, while correlation only detects linear relationships.} The mutual information (MI) between two quantities is a measure of the extent to which knowledge of one quantity reduces uncertainty about the other. Mutual Info varies between 0 (independent quantities) to $+ \infty $. It is a logarithmic func, and barely reaches to 2. It's possible for a feature to be very informative when interacting with other features, but not so informative all alone. MI can't detect interactions between features. It is a univariate metric.
 The actual usefulness of a feature depends on the model you use it with. A feature is only useful to the extent that its relationship with the target is one your model can learn.
 
-Scikit-learn has two mutual information metrics in its feature_selection module: one for real-valued targets (mutual_info_regression) and one for categorical targets (mutual_info_classif).
+Scikit-learn has two mutual information metrics in its feature\_selection module: one for real-valued targets (mutual\_info\_regression) and one for categorical targets (mutual\_info\_classification).
+
+\subsection{how to create new features}
+
+\subsubsection{mathematical transform}
+Use arithmetic operations to create new features based on other features. For example, find the area of land by multiplying width by length.
+
+\subsubsection{count}
+Features describing the presence or absence of something often come in sets, the set of risk factors for a disease, say. You can aggregate such features by creating a count. These features will be binary (1 for Present, 0 for Absent) or boolean (True or False). In Python, booleans can be added up just as if they were integers.
+
+Example:
+
+accidents["RoadwayFeatures"] = accidents[roadwayFeatures].sum(axis=1)
+
+\subsubsection{building up and breaking down features}
+Add or breakdown strings to create new features. For example, break down phone numbers to area codes.
 
 \subsection{scaling vs normalization}
 
