@@ -442,9 +442,13 @@ For the regression, we can have multiple independent variables/features for the 
 
 
 
+
 \subsection{Other cases}
 Using discrete numbers is also possible for regression, however this is no trivial. We need to encode the attributes. For example, by enumerating the categories (giving a number to each possible value of this feature). It is a bit misleading because a correlation between the ordering of the
 enumeration and the its value can be interpolated. The other option is represent the value of the feature as a Boolean.
+
+
+\subsection{Classification}
 
 \section{SL: Neural network}
 
@@ -492,9 +496,26 @@ It works by dividing the data into smaller subsets, learn over each individual s
 
 Unsupervised algorithms don't make use of a target; instead, their purpose is to learn some property of the data, to represent the structure of the features in a certain way. In the context of feature engineering for prediction, you could think of an unsupervised algorithm as a "feature discovery" technique.
 
-\section{Random optimization}
+\section{Clustering}
+Clustering simply means the assigning of data points to groups based upon how similar the points are to each other. When used for feature engineering, we could attempt to discover groups of customers representing a market segment, for instance, or geographic areas that share similar weather patterns. The motivating idea for adding cluster labels is that the clusters will break up complicated relationships across features into simpler chunks. Our model can then just learn the simpler chunks one-by-one instead having to learn the complicated whole all at once. It's a "divide and conquer" strategy.
 
-\section{K-means clustering}
+There are \href{https://www.geeksforgeeks.org/different-types-clustering-algorithm/#}{multiple methods} for clustering. They differ primarily in how they measure \textit{similarity} or \textit{proximity} and in what kinds of features they work with. Clustering algorithms include: Distribution-based methods (expectation-maximization algorithm), Centroid-based methods (K-means), Connectivity-based methods (hierarchical algorithms), Density model (DBSCAN), and subspace clustering.
+
+\subsection{K-means clustering}
+It measures similarity using ordinary straight-line distance (Euclidean distance). It creates clusters by placing a number of points, called centroids, inside the feature-space. Each point in the dataset is assigned to the cluster of whichever centroid it's closest to. The "k" in "k-means" is how many centroids it creates.
+
+The k-means algorithm is sensitive to scale. This means we need to be thoughtful about how and whether we rescale our features since we might get very different results depending on our choices. As a rule of thumb, if the features are already directly comparable (like a test result at different times), then you would *not* want to rescale. On the other hand, features that aren't on comparable scales (like height and weight) will usually benefit from rescaling. Sometimes, the choice won't be clear though. In that case, you should try to use common sense, remembering that features with larger values will be weighted more heavily.
+
+What you should take away from this is that the decision of whether and how to rescale features is rarely automatic -- it will usually depend on some domain knowledge about your data and what you're trying to predict. Comparing different rescaling schemes through cross-validation can also be helpful.
+
+To find out the best K for a data set, we can test various K numbers and plot K vs variance, this is called an elbow plot. The best K is the one that the slope of variance reduces. If K is equal to the number of items in the dataset, then, the variance would be zero.
+
+
+\subsection{Principal Component Analysis (PCA)}
+Just like clustering is a partitioning of the dataset based on proximity, you could think of PCA as a partitioning of the variation in the data. PCA is a great tool to help you discover important relationships in the data and can also be used to create more informative features. PCA is typically applied to standardized data. With standardized data "variation" means "correlation". With unstandardized data "variation" means "covariance". All data in this course will be standardized before applying PCA. The main idea of PCA: instead of describing the data with the original features, we describe it with its axes of variation. The axes of variation become the new features. The new features PCA constructs are actually just linear combinations (weighted sums) of the original features. These new features are called the principal components of the data. The weights themselves are called loadings.
+
+PCA also tells us the amount of variation in each component. We can see from the figures that there is more variation in the data along the Size component than along the Shape component. PCA makes this precise through each component's percent of explained variance. It's important to remember, however, that the amount of variance in a component doesn't necessarily correspond to how good it is as a predictor: it depends on what you're trying to predict.
+
 
 
 
@@ -698,7 +719,7 @@ The actual usefulness of a feature depends on the model you use it with. A featu
 
 Scikit-learn has two mutual information metrics in its feature\_selection module: one for real-valued targets (mutual\_info\_regression) and one for categorical targets (mutual\_info\_classification).
 
-\subsection{how to create new features}
+\subsection{How to create new features}
 
 \subsubsection{mathematical transform}
 Use arithmetic operations to create new features based on other features. For example, find the area of land by multiplying width by length.
@@ -713,10 +734,36 @@ accidents["RoadwayFeatures"] = accidents[roadwayFeatures].sum(axis=1)
 \subsubsection{building up and breaking down features}
 Add or breakdown strings to create new features. For example, break down phone numbers to area codes.
 
+\subsubsection{clustering}
+Use, for example, K-means to cluster data points and add it as a feature. It requires a knowledge about the domain.
+
+
+\subsubsection{Principal Component Analysis (PCA)}
+There are two ways you could use PCA for feature engineering.
+
+\begin{itemize}
+  \item The first way is to use it as a descriptive technique. Since the components tell you about the variation, you could compute the MI scores for the components and see what kind of variation is most predictive of your target. That could give you ideas for kinds of features to create.
+  \item The second way is to use the components themselves as features. Because the components expose the variational structure of the data directly, they can often be more informative than the original features. Here are some use-cases:
+  \begin{itemize}
+    \item Dimensionality reduction: When your features are highly redundant (multicollinear, specifically), PCA will partition out the redundancy into one or more near-zero variance components, which you can then drop since they will contain little or no information.
+    \item Anomaly detection: Unusual variation, not apparent from the original features, will often show up in the low-variance components. These components could be highly informative in an anomaly or outlier detection task.
+    \item Noise reduction: A collection of sensor readings will often share some common background noise. PCA can sometimes collect the (informative) signal into a smaller number of features while leaving the noise alone, thus boosting the signal-to-noise ratio.
+    \item Decorrelation: Some ML algorithms struggle with highly-correlated features. PCA transforms correlated features into uncorrelated components, which could be easier for your algorithm to work with.
+  \end{itemize}
+\end{itemize}
+
+PCA basically gives you direct access to the correlational structure of your data. You'll no doubt come up with applications of your own!
+
+PCA Best Practices- there are a few things to keep in mind when applying PCA:
+\begin{itemize}
+\item PCA only works with numeric features, like continuous quantities or counts.
+\item PCA is sensitive to scale. It's good practice to standardize your data before applying PCA, unless you know you have good reason not to.
+\item Consider removing or constraining outliers, since they can have an undue influence on the results.
+\end{itemize}
+
 \subsection{scaling vs normalization}
 
 In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties. The point is to help with the gradient descent to converge faster. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in \textbf{normalization}, you're changing the shape of the distribution of your data.
-
 
 \subsubsection{scaling}
 This means that you're transforming your data so that it fits within a specific scale, like 0-100 or 0-1. You want to scale data when you're using methods based on measures of how far apart data points are, like support vector machines (SVM) or k-nearest neighbors (KNN). With these algorithms, a change of "1" in any numeric feature is given the same importance. By scaling your variables, you can help compare different variables on equal footing.
@@ -725,7 +772,6 @@ This means that you're transforming your data so that it fits within a specific 
 Scaling just changes the range of your data. Normalization is a more radical transformation. The point of normalization is to change your observations so that they can be described as a normal distribution.
 
 In general, you'll normalize your data if you're going to be using a machine learning or statistics technique that assumes your data is normally distributed. Some examples of these include linear discriminant analysis (LDA) and Gaussian naive Bayes. (Pro tip: any method with "Gaussian" in the name probably assumes normality.)
-
 
 \subsection{Scaling a feature}
 Having two features with large and small values may have adverse impact on our training. For example, for regression, it may cause large round off error, or affects the shape of gradient descent contours and as a result may cause slow convergence or even divergence. To avoid that, it is recommended to scale features so that they have the same range. After scaling, the data range would be 0 to 1.
@@ -748,8 +794,15 @@ In this method, we first find the standard deviation ($\sigma$) and the average 
 
 Then, we have the range for each feature between -1 and 1.
 
-\subsection{combining features}
+\subsection{Combining features}
 Using intuition to design new features by transforming or combining original features.
+
+
+
+
+
+
+
 
 \section{Ensemble methods}
 Ensemble methods combine the predictions of several models (e.g., several trees, in the case of random forests).
@@ -769,6 +822,10 @@ Then, we start the cycle:
 \end{itemize}
 
 XGBoost stands for extreme gradient boosting, which is an implementation of gradient boosting with several additional features focused on performance and speed. (Scikit-learn has another version of gradient boosting, but XGBoost has some technical advantages.) scikit-learn API for XGBoost (xgboost.XGBRegressor) allows us to build and fit a model just as we would in scikit-learn. The XGBRegressor class has many tunable parameters. See the code.
+
+
+
+
 
 \subsection{Data leakage}
 
