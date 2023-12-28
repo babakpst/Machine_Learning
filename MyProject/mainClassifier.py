@@ -34,8 +34,8 @@ def main():
   data.categoricalFeatures_processing()
 
   data.splitData()
-  data.convert_target_to_ordinal()
-  data.make_mi_scores()
+  # data.convert_target_to_ordinal()
+  # data.make_mi_scores()
 
 
   # decision tree classifier ---------------------------

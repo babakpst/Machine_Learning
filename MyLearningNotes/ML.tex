@@ -662,13 +662,12 @@ Batch gradient descent: each step of gradient descent uses all the training exam
 
 Mini-batch gradient descent updates the parameters using a subset of training samples.
 
-\subsection{learning rate selection}
+\subsection{Learning rate selection}
 If the learning rate is too small, it would be very slow, and if it too large, it may diverge. To start, we can set the learning rate to a very small number, and check if the cost function decreases with every single iteration. If not, there is bug in the code. We can plot the cost function (learning curve) with each iteration of the gradient descent. The learning rate $\alpha$ should be selected such that the cost function decreases as iterations increases. If this is not the case, then the learning rate is high. Generally, we need to test many learning rates and select the most optimized one.
 
 \includegraphics[scale=0.12]{pics/LearningRate.png}
 
 \includegraphics[scale=0.12]{pics/learningrate2.png}
-
 
 \section{Model validation}
 

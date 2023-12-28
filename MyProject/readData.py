@@ -65,7 +65,7 @@ class DataPreprocessing:
     self.traindata_fullpath = os.path.join(self.dataPath, self.train_filename)
     self.testdata_fullpath = os.path.join(self.dataPath, self.test_filename) if self.test_filename !="" else ""
 
-  # read data -----------------------------------
+  # read data from csv file, get numerical/categorical features, and find missing data -------------
   def readData(self):
     self.df_train = pd.read_csv(self.traindata_fullpath, index_col=self.Index_col)
     self.df_test = pd.read_csv(self.testdata_fullpath, index_col=self.Index_col) if self.testdata_fullpath else None
@@ -170,7 +170,7 @@ class DataPreprocessing:
     print("\n data head")
     print(self.df_train.head())
 
-  # remove rows/instances with missing target ---
+  # remove rows/instances with missing target --------------------------------------------------------------------------
   def missingTarget(self):
     if self.df_train[self.target].isnull().values.any():
       print(f"\n {self.df_train[self.target].isnull().sum()} instances are missing the target value in train data. Dropping the instances." )
@@ -185,21 +185,21 @@ class DataPreprocessing:
     elif self.testdata_fullpath:
       print("\n There is no missing target in the test data.")
 
-  #  a subset of features in the data
+  # pick a subset of features in the dataset ---------------------------------------------------------------------------
   def pickFeatures(self, features):
     self.df_train = self.df_train[features]
     if self.testdata_fullpath:
       self.df_test = self.df_test[features]
 
-  #  a subset of features in the data
+  # delete a subset of features in the dataset -------------------------------------------------------------------------
   def deleteFeatures(self, features):
     self.df_train = self.df_train.drop(features, axis=1)
     if self.testdata_fullpath:
       self.df_test = self.df_test.drop(features, axis=1)
 
 
+  # impute missing values in the dataset, there a couple of options ----------------------------------------------------
   def handleMissingValues(self):
-
     isThereAnyMissingDataInTrain = True if self.Features_with_missing_data_train else False
     isThereAnyMissingDataInTest = True if self.test_filename !="" and  self.Features_with_missing_data_test else False
 
@@ -264,7 +264,8 @@ class DataPreprocessing:
         print(self.df_test.tail())
 
   # TODO: add an option for impute categorical features to drop it if more than half is NaN.
-  def ImputeTheData(self): # for impute strategy mean, median, most_frequent
+  # impute missing values for mean, median, most_frequent methods ------------------------------------------------------
+  def ImputeTheData(self): 
     if self.debugMode:
       print(f"\n Before {self.imputeStrategy} impute for numerical features in train data: \n", self.df_train[self.numericFeatures_with_missing_data_train].to_string())
       if self.testdata_fullpath:
@@ -298,9 +299,10 @@ class DataPreprocessing:
         print("\n After most frequent impute for categorical features in test data: \n", self.df_test[self.objectFeatures_with_missing_data_test].to_string())
 
   # TODO add test data + check the entire function
+  # impute missing values for const methods ----------------------------------------------------------------------------
   def ImputeConstant(self):
     if self.debugMode:
-      print("\n Before most frequent impute for num features: \n", self.df_train[self.numericFeatures_with_missing_data_train])
+      print("\n Before const impute for num features: \n", self.df_train[self.numericFeatures_with_missing_data_train])
 
     imputer = SimpleImputer(strategy='constant', fill_value=self.fill_value, copy=False)
     imputed_num_features = pd.DataFrame(imputer.fit_transform(self.df_train[self.numericFeatures_with_missing_data_train]), columns = self.numericFeatures_with_missing_data_train)
@@ -309,10 +311,10 @@ class DataPreprocessing:
     self.df_train = self.df_train.join(imputed_num_features)
 
     if self.debugMode:
-      print("\n After most frequent impute for num features: \n", self.df_train[self.numericFeatures_with_missing_data_train])
+      print("\n After const impute for num features: \n", self.df_train[self.numericFeatures_with_missing_data_train])
 
     if self.debugMode:
-      print("\n Before most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
+      print("\n Before const impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
 
     imputed_cat_features = pd.DataFrame(imputer.fit_transform(self.df_train[self.objectFeatures_with_missing_data_train]), columns = self.objectFeatures_with_missing_data_train)
 
@@ -320,12 +322,11 @@ class DataPreprocessing:
     self.df_train = self.df_train.join(imputed_cat_features)
 
     if self.debugMode:
-      print("\n After most frequent impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
-
+      print("\n After const impute for categorical features: \n", self.df_train[self.objectFeatures_with_missing_data_train])
   
-  # normalize numerical data
+
   # TODO: it should not normalize everything (yearbuild, Id). Fix it.
-  # has not been tested
+  # normalize numerical data (has not been tested) -------------------------------------------------------------------
   def normalizeNumericalFeatures(self):
     if self.debugMode:
       print("\n Before normalization-train data: \n", self.df_train[self.numericFeatures].to_string())
@@ -342,6 +343,7 @@ class DataPreprocessing:
         print("\n After normalization-test data: \n", self.df_test[self.numericFeatures].to_string())
     print("done with normalization")
 
+  # scale numerical features (minmax method) ---------------------------------------------------------------------------
   def scaleNumericalFeatures(self):
     # if self.debugMode:
     if True:
@@ -378,6 +380,7 @@ class DataPreprocessing:
     print("done with scaling")
 
 
+  # convert categorical features to numerical features (cordinal, one-hot, etc.)
   def categoricalFeatures_processing(self):
 
     # first find how many categories exist for each col
@@ -514,7 +517,7 @@ class DataPreprocessing:
   def custom_combiner(feature, category):
     return str(feature) + "_" + type(category).__name__ + "_" + str(category)
 
-  # split train to train and validate
+  # split train to train and validate ----------------------------------------------------------------------------------
   def splitData(self):
     train, valid = train_test_split(self.df_train, train_size=self.train_size , random_state=50, shuffle=True)
     #print(type(train))
@@ -543,6 +546,7 @@ class DataPreprocessing:
 
     return self
 
+  # ?
   def alignDataframes(self):
 
     if self.debugMode:
@@ -574,7 +578,7 @@ class DataPreprocessing:
         print("\nx_test: \n", self.x_test)
         print("\ny_test: \n", self.y_test)
 
-  # separate target from the data without split.
+  # separate target from the data before split -------------------------------------------------------------------------
   def SeparateTarget(self):       
     self.X = self.df_train.loc[:, self.df_train.columns != self.target]
     self.y = pd.DataFrame(self.df_train.loc[:, self.df_train.columns == self.target])
@@ -585,17 +589,23 @@ class DataPreprocessing:
 
     return self
 
-  #Convert the target variable from {no,yes} to {0,1} 
-  def ConvertToBinary(self):
+  # Convert the target variable from {no,yes} to {0,1} -----------------------------------------------------------------
+  def convert_target_to_binary(self):
     self.y_train[self.target].replace("no",0,inplace=True)
     self.y_train[self.target].replace("yes",1,inplace=True)
 
     self.y_valid[self.target].replace("no",0,inplace=True)
     self.y_valid[self.target].replace("yes",1,inplace=True)
 
-  
-  # function to calculate mutual information for discrete values
-  # def make_mi_scores(self, X, y, discrete_features):
+    # convert target col/feature to ordinal
+  def convert_target_to_ordinal(self):
+      print(" convert target to ordinal")
+      ordinal_encoder = OrdinalEncoder()
+      ordinal_encoder.fit(self.y_train)
+      self.y_train = ordinal_encoder.transform(self.y_train)
+
+
+  # calculate mutual information for discrete values -------------------------------------------------------------------
   def make_mi_scores(self):
       
       def plot_mi_scores(scores):
@@ -629,12 +639,37 @@ class DataPreprocessing:
 
       #return mi_scores_numeric
 
-    # convert target col to ordinal
-  def convert_target_to_ordinal(self):
-      print(" convert target to ordinal")
-      ordinal_encoder = OrdinalEncoder()
-      ordinal_encoder.fit(self.y_train)
-      self.y_train = ordinal_encoder.transform(self.y_train)
+  def apply_pca(X, standardize=True):
+      # Standardize
+      if standardize:
+          X = (X - X.mean(axis=0)) / X.std(axis=0)
+
+      print("original dataframe")
+      print(X)
+
+      # Create principal components
+      pca = PCA()
+      
+      # transform X dataframe to pca table of data (the output is not a dataframe)
+      X_pca = pca.fit_transform(X)
+
+      print("pca dataframe before feature names")
+      print(X_pca)
+
+      # Convert to PCA output to a dataframe
+      component_names = [f"PC{i+1}" for i in range(X_pca.shape[1])]
+      X_pca = pd.DataFrame(X_pca, columns=component_names)
+
+      print("pca dataframe after feature names")
+      print(X_pca)
+
+      # Create loadings
+      loadings = pd.DataFrame(
+          pca.components_.T,  # transpose the matrix of loadings
+          columns=component_names,  # so the columns are the principal components
+          index=X.columns,  # and the rows are the original features
+      )
+      return pca, X_pca, loadings
 
 #============================
 # data parser

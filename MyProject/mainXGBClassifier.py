@@ -63,7 +63,7 @@ def main():
   data.scaleNumericalFeatures()
   data.splitData()
   # data.alignDataframes()
-  data.ConvertToBinary()
+  data.convert_target_to_binary()
   
   print("done with preprocessing\n")
 
