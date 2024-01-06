@@ -137,6 +137,9 @@ dmypy.json
 *.synctex.gz
 *.toc
 
+# large files:
+MyPracticeCodes/data/flu-trends.csv
+MyPracticeCodes/data/train.csv
 
 # general
 *.zip
