@@ -47,7 +47,7 @@
 \BOOKMARK [1][-]{section.5.5}{Gradient descent \(steepest descent\)}{chapter.5}% 47
 \BOOKMARK [2][-]{subsection.5.5.1}{Cost function}{section.5.5}% 48
 \BOOKMARK [2][-]{subsection.5.5.2}{Gradient descent method}{section.5.5}% 49
-\BOOKMARK [2][-]{subsection.5.5.3}{learning rate selection}{section.5.5}% 50
+\BOOKMARK [2][-]{subsection.5.5.3}{Learning rate selection}{section.5.5}% 50
 \BOOKMARK [1][-]{section.5.6}{Model validation}{chapter.5}% 51
 \BOOKMARK [1][-]{section.5.7}{Data processing/cleaning: Missing Values}{chapter.5}% 52
 \BOOKMARK [1][-]{section.5.8}{Data processing \046 Feature engineering}{chapter.5}% 53
@@ -62,4 +62,9 @@
 \BOOKMARK [2][-]{subsection.5.9.1}{Gradient Boosting}{section.5.9}% 62
 \BOOKMARK [2][-]{subsection.5.9.2}{Data leakage}{section.5.9}% 63
 \BOOKMARK [1][-]{section.5.10}{Python}{chapter.5}% 64
-\BOOKMARK [0][-]{section.5.10}{Bibliography}{}% 65
+\BOOKMARK [1][-]{section.5.11}{ML Checklist}{chapter.5}% 65
+\BOOKMARK [2][-]{subsection.5.11.1}{Time series}{section.5.11}% 66
+\BOOKMARK [1][-]{section.5.12}{Time series}{chapter.5}% 67
+\BOOKMARK [2][-]{subsection.5.12.1}{Seasonality}{section.5.12}% 68
+\BOOKMARK [2][-]{subsection.5.12.2}{Serial dependence}{section.5.12}% 69
+\BOOKMARK [0][-]{section*.14}{Bibliography}{}% 70

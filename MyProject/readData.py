@@ -639,6 +639,7 @@ class DataPreprocessing:
 
       #return mi_scores_numeric
 
+  # Principal Component Analysis (PCA) --------------------------------------------------------------------------------
   def apply_pca(X, standardize=True):
       # Standardize
       if standardize:
@@ -670,6 +671,18 @@ class DataPreprocessing:
           index=X.columns,  # and the rows are the original features
       )
       return pca, X_pca, loadings
+
+
+  # statistical analysis of the categorical features for target encodeing ----------------------------------------------
+  def review_Categorical_Features(self):
+    print("\n categorical features for target encoding: ")
+    print(self.objectFeatures)
+
+    for item in self.objectFeatures:
+      print("\n", item)
+      print(self.df_train[item].value_counts())
+      print(self.df_train[item].value_counts(normalize=True))
+      print(self.df_train[item].unique())
 
 #============================
 # data parser

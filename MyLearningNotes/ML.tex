@@ -420,7 +420,9 @@ To find the line:
 	\text{such that minimizes error:  } e = \sum_{i=1}^n (y_i -(ax_i+b))^2
 	\end{split}
 \end{equation}
-To find the the two unknowns of the linear fit, a and b, take the derivative of the error with respect to a and b and set it zero. That would be a system of equations with two unknowns. After solving the equation you have the fit. To have a nonlinear fit, we can use a polynomial model:
+To find the the two unknowns of the linear fit, a and b, take the derivative of the error with respect to a and b and set it zero. That would be a system of equations with two unknowns. After solving the equation you have the fit. To have a nonlinear fit, we can use a polynomial model, as discussed in the next section.
+
+To do linear regression, we can use sklearn.linear\_model.LinearRegression.
 
 \subsection{Non-linear/polynomial regression}
 \begin{equation}
@@ -760,6 +762,32 @@ PCA Best Practices- there are a few things to keep in mind when applying PCA:
 \item Consider removing or constraining outliers, since they can have an undue influence on the results.
 \end{itemize}
 
+
+\subsubsection{Target Encoding}
+
+This method, as opposed to all other methods, targets categorical features. It is similar to one-hot or label encoding, with the difference that it also uses the target to create the encoding. This makes it what we call a supervised feature engineering technique.
+
+A target encoding is any kind of encoding that replaces a feature's categories with some number derived from the target. For example, \textit{mean encoding}, takes the average of the numerical target based on a categorical feature (ex. average/mean price of a car brand (make)). \textbf{Bin counting} is the equivalent encoded feature applied to a binary target.
+
+
+Target encoding is great for:
+\begin{itemize}
+  \item High-cardinality features: A feature with a large number of categories can be troublesome to encode: a one-hot encoding would generate too many features and alternatives, like a label encoding, might not be appropriate for that feature. A target encoding derives numbers for the categories using the feature's most important property: its relationship with the target.
+  \item Domain-motivated features: From prior experience, you might suspect that a categorical feature should be important even if it scored poorly with a feature metric. A target encoding can help reveal a feature's true informativeness.
+\end{itemize}
+
+
+
+There are at least two concerns with the target encoding:
+\begin{itemize}
+  \item unknown categories: Target encodings create a special risk of overfitting, which means they need to be trained on an independent "encoding" split. When you join the encoding to future splits, Pandas will fill in missing values for any categories not present in the encoding split. These missing values you would have to impute somehow.
+  \item rare categories: When a category only occurs a few times in the dataset, any statistics calculated on its group are unlikely to be very accurate.
+\end{itemize}
+
+A solution to these problems are \textbf{smoothing}. The idea is to blend the in-category average with the overall average. Rare categories get less weight on their category average, while missing categories just get the overall average.
+
+In pseudocode: encoding = weight * in\_category (ex. mean of the category for that feature) + (1 - weight) * overall (ex. mean of all categories for that feature). Where weight is a value between 0 and 1 calculated from the category frequency. An easy way to determine the value for weight is to compute an m-estimate: weight = n / (n + m), where n is the total number of times that category occurs in the data. The parameter m determines the "smoothing factor". Larger values of m put more weight on the overall estimate. When choosing a value for m, consider how noisy you expect the categories to be. Does the price of a vehicle vary a great deal within each make? Would you need a lot of data to get good estimates? If so, it could be better to choose a larger value for m; if the average price for each make were relatively stable, a smaller value could be okay.
+
 \subsection{scaling vs normalization}
 
 In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties. The point is to help with the gradient descent to converge faster. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in \textbf{normalization}, you're changing the shape of the distribution of your data.
@@ -849,8 +877,9 @@ For example, imagine you run preprocessing (like fitting an imputer for missing 
 
 After all, you incorporated data from the validation or test data into how you make predictions, so the may do well on that particular data even if it can't generalize to new data. This problem becomes even more subtle (and more dangerous) when you do more complex feature engineering.
 
-If your validation is based on a simple train-test split, exclude the validation data from any type of fitting, including the fitting of preprocessing steps. This is easier if you use scikit-learn pipelines. When using cross-validation, it's even more critical that you do your preprocessing inside the pipeline!
+As we discussed in the tutorial, to avoid overfitting, we need to fit the encoder on data heldout from the training set.
 
+If your validation is based on a simple train-test split, exclude the validation data from any type of fitting, including the fitting of preprocessing steps. This is easier if you use scikit-learn pipelines. When using cross-validation, it's even more critical that you do your preprocessing inside the pipeline!
 
 
 \section{Python}
@@ -858,6 +887,91 @@ If your validation is based on a simple train-test split, exclude the validation
 Use vectorization in python to improve the performance (for example: np.dot(W,x)).
 
 
+\section{ML Checklist}
+
+\begin{itemize}
+  \item Inspect all features, look for duplicate features.
+  \item Manage missing data (drop items with missin target, and impute missing items).
+  \item Manage categorical/object feetures (cordinal, one-hot, etc.)
+\end{itemize}
+
+\subsection{Time series}
+
+\begin{itemize}
+  \item Plot lags to find seasonality/cycles and calculate correlation, and add new lag features if there is a high correlation.
+  \item Plot partial autocorrelation, and add new lag features if there is a high correlation.
+\end{itemize}
+
+
+
+\section{Time series}
+The basic object of forecasting is the time series, which is a set of observations recorded over time. In forecasting applications, the observations are typically recorded with a regular frequency, like daily or monthly. Linear regression is a common method for forecasting. There are two kinds of features unique to time series: time-step features and lag features.
+
+Time-step features are features we can derive directly from the time index. The most basic time-step feature is the time dummy, which counts off time steps in the series from beginning to end.
+
+Time-step features let you model time dependence. A series is time dependent if its values can be predicted from the time they occurred.
+
+To make a lag feature, we shift the observations of the target series so that they appear to have occurred later in time. Here we've created a 1-step lag feature, though shifting by multiple steps is possible too. ag features let you model serial dependence. A time series has serial dependence when an observation can be predicted from previous observations. Adapting machine learning algorithms to time series problems is largely about feature engineering with the time index and lags.
+
+\subsection{Seasonality}
+We say that a time series exhibits seasonality whenever there is a regular, periodic change in the mean of the series. Seasonal changes generally follow the clock and calendar -- repetitions over a day, a week, or a year are common.
+
+There are two kinds of features that model seasonality. The first kind, \textit{indicators}, is best for a season with few observations, like a weekly season of daily observations. The second kind, \textit{Fourier features}, is best for a season with many observations, like an annual season of daily observations.
+
+we can use a seasonal plot to discover seasonal patterns. A seasonal plot shows segments of the time series plotted against some common period, the period being the "season" you want to observe.
+
+
+\subsubsection{Seasonal indicators}
+A seasonal plot shows segments of the time series plotted against some common period, the period being the "season" you want to observe. Seasonal indicators are binary features that represent seasonal differences in the level of a time series. Seasonal indicators are what you get if you treat a seasonal period as a categorical feature and apply one-hot encoding. For example, by one-hot encoding days of the week, we get weekly seasonal indicators. Creating weekly indicators for the Trigonometry series will then give us six new "dummy" features. (Linear regression works best if you drop one of the indicators; we chose Monday in the frame below. This means the in the one-hot model, if all Tue ~ Sun is 0, it is Monday.)
+
+
+\subsubsection{Fourier features and periodogram}
+
+The kind of feature we discuss now are better suited for long seasons over many observations where indicators would be impractical. Instead of creating a feature for each date, Fourier features try to capture the overall shape of the seasonal curve with just a few features. It is these frequencies within a season that we attempt to capture with Fourier features. The idea is to include in our training data periodic curves having the same frequencies as the season we are trying to model. Fourier features are pairs of sine and cosine curves, one pair for each potential frequency in the season starting with the longest. Fourier pairs modeling annual seasonality would have frequencies: once per year, twice per year, three times per year, and so on.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/fourier.png}
+    \caption{Fourier features}
+    \label{default}
+  \end{center}
+\end{figure}
+
+If we add a set of these sine / cosine curves to our training data, the linear regression algorithm will figure out the weights that will fit the seasonal component in the target series. The figure illustrates how linear regression used four Fourier pairs to model the annual seasonality in the Wiki Trigonometry series.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 10.0cm 20cm 11cm, clip, scale=0.4]{pics/curves.png}
+    \caption{Fourier features}
+    %\label{default}
+  \end{center}
+\end{figure}
+
+Notice that we only needed eight features (four sine / cosine pairs) to get a good estimate of the annual seasonality. Compare this to the seasonal indicator method which would have required hundreds of features (one for each day of the year). By modeling only the "main effect" of the seasonality with Fourier features, you'll usually need to add far fewer features to your training data, which means reduced computation time and less risk of overfitting.
+
+Choosing Fourier features with the Periodogram:
+How many Fourier pairs should we actually include in our feature set? We can answer this question with the periodogram. The periodogram tells you the strength of the frequencies in a time series. Specifically, the value on the y-axis of the graph is (a ** 2 + b ** 2) / 2, where a and b are the coefficients of the sine and cosine at that frequency (as in the Fourier Components plot above).
+
+Removing from a series its trend or seasons is called \textbf{detrending} or \textbf{deseasonalizing} the series.
+
+
+\subsection{Serial dependence}
+Some time series, have \textit{time dependent properties}, that is, we could derive the feature directly from the time index (for example, weekly dependence). However, some other time series properties can only be modeled as serially dependent properties, that is, using as features past values of the target series. Plotted against past values (with lag) reveals the structure.
+
+\subsubsection{Cycles} One especially common way for serial dependence to manifest is in cycles. Cycles are patterns of growth and decay in a time series associated with how the value in a series at one time depends on values at previous times, but not necessarily on the time step itself. Cyclic behavior is characteristic of systems that can affect themselves or whose reactions persist over time. Economies, epidemics, animal populations, volcano eruptions, and similar natural phenomena often display cyclic behavior. What distinguishes cyclic behavior from seasonality is that cycles are not necessarily time dependent, as seasons are. What happens in a cycle is less about the particular date of occurrence, and more about what has happened in the recent past. The (at least relative) independence from time means that cyclic behavior can be much more irregular than seasonality.
+
+To investigate possible serial dependence (like cycles) in a time series, we need to create "lagged" copies of the series. Lagging a time series means to shift its values forward one or more time steps, or equivalently, to shift the times in its index backward one or more steps. In either case, the effect is that the observations in the lagged series will appear to have happened later in time. The lagged data can be used as a feature to predict the target.
+
+\subsubsection{Lag plot}
+A \textbf{lag plot} of a time series shows its values plotted against its lags. Serial dependence in a time series will often become apparent by looking at a lag plot. The most commonly used measure of serial dependence is known as \textbf{autocorrelation}, which is simply the correlation a time series has with one of its lags. Autocorrelation varies between -1 to +1.
+
+
+\subsubsection{Choosing lags}
+When choosing lags to use as features, it generally won't be useful to include every lag with a large autocorrelation. The partial autocorrelation tells you the correlation of a lag accounting for all of the previous lags -- the amount of "new" correlation the lag contributes, so to speak. Plotting the partial autocorrelation can help you choose which lag features to use.
+
+A plot like that above is known as a correlogram. The correlogram is for lag features essentially what the periodogram is for Fourier features.
+
+Finally, we need to be mindful that autocorrelation and partial autocorrelation are measures of linear dependence. Because real-world time series often have substantial non-linear dependencies, it's best to look at a lag plot (or use some more general measure of dependence, like mutual information) when choosing lag features. The Sunspots series has lags with non-linear dependence which we might overlook with autocorrelation.
 
 % Appendix ==========================================================
 %\appendices

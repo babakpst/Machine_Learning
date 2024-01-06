@@ -30,12 +30,13 @@ def main():
 
   data.handleMissingValues()
   
-  
+  data.review_Categorical_Features() # good to find which feature to select for target encoding
   data.categoricalFeatures_processing()
 
   data.splitData()
   # data.convert_target_to_ordinal()
   # data.make_mi_scores()
+  
 
 
   # decision tree classifier ---------------------------
