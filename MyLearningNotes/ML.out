@@ -65,6 +65,8 @@
 \BOOKMARK [1][-]{section.5.11}{ML Checklist}{chapter.5}% 65
 \BOOKMARK [2][-]{subsection.5.11.1}{Time series}{section.5.11}% 66
 \BOOKMARK [1][-]{section.5.12}{Time series}{chapter.5}% 67
-\BOOKMARK [2][-]{subsection.5.12.1}{Seasonality}{section.5.12}% 68
-\BOOKMARK [2][-]{subsection.5.12.2}{Serial dependence}{section.5.12}% 69
-\BOOKMARK [0][-]{section*.14}{Bibliography}{}% 70
+\BOOKMARK [2][-]{subsection.5.12.1}{Trend}{section.5.12}% 68
+\BOOKMARK [2][-]{subsection.5.12.2}{Seasonality}{section.5.12}% 69
+\BOOKMARK [2][-]{subsection.5.12.3}{Serial dependence}{section.5.12}% 70
+\BOOKMARK [2][-]{subsection.5.12.4}{Components and residuals}{section.5.12}% 71
+\BOOKMARK [0][-]{subsection.5.12.4}{Bibliography}{}% 72

@@ -150,6 +150,13 @@ There are two types of supervised learning:
 \item Testing set: A set of instances with correct labels that was not visible to the learning algorithm during the training phase. It’s used to determine the algorithm performance on novel data. we can argue that we learned something by memorization, but indeed, we just memorized the concepts. What we want is generalization.
 \end{itemize}
 
+\textbf{Remark:}
+
+There are generally two ways a regression algorithm can make predictions: either by transforming the features or by transforming the target. Feature-transforming algorithms learn some mathematical function that takes features as an input and then combines and transforms them to produce an output that matches the target values in the training set. Linear regression and neural nets are of this kind.
+
+Target-transforming algorithms use the features to group the target values in the training set and make predictions by averaging values in a group; a set of feature just indicates which group to average. Decision trees and nearest neighbors are of this kind.
+
+The important thing is this: feature transformers generally can extrapolate target values beyond the training set given appropriate features as inputs, but the predictions of target transformers will always be bound within the range of the training set. If the time dummy continues counting time steps, linear regression continues drawing the trend line. Given the same time dummy, a decision tree will predict the trend indicated by the last step of the training data into the future forever. Decision trees cannot extrapolate trends. Random forests and gradient boosted decision trees (like XGBoost) are ensembles of decision trees, so they also cannot extrapolate trends.
 
 \section{SL: Decision tree}
 
@@ -894,14 +901,12 @@ Use vectorization in python to improve the performance (for example: np.dot(W,x)
   \item Manage missing data (drop items with missin target, and impute missing items).
   \item Manage categorical/object feetures (cordinal, one-hot, etc.)
 \end{itemize}
-
 \subsection{Time series}
 
 \begin{itemize}
   \item Plot lags to find seasonality/cycles and calculate correlation, and add new lag features if there is a high correlation.
   \item Plot partial autocorrelation, and add new lag features if there is a high correlation.
 \end{itemize}
-
 
 
 \section{Time series}
@@ -912,6 +917,9 @@ Time-step features are features we can derive directly from the time index. The 
 Time-step features let you model time dependence. A series is time dependent if its values can be predicted from the time they occurred.
 
 To make a lag feature, we shift the observations of the target series so that they appear to have occurred later in time. Here we've created a 1-step lag feature, though shifting by multiple steps is possible too. ag features let you model serial dependence. A time series has serial dependence when an observation can be predicted from previous observations. Adapting machine learning algorithms to time series problems is largely about feature engineering with the time index and lags.
+
+\subsection{Trend}
+This portion of the time series can be captured by moving average rolling windows.
 
 \subsection{Seasonality}
 We say that a time series exhibits seasonality whenever there is a regular, periodic change in the mean of the series. Seasonal changes generally follow the clock and calendar -- repetitions over a day, a week, or a year are common.
@@ -972,6 +980,19 @@ When choosing lags to use as features, it generally won't be useful to include e
 A plot like that above is known as a correlogram. The correlogram is for lag features essentially what the periodogram is for Fourier features.
 
 Finally, we need to be mindful that autocorrelation and partial autocorrelation are measures of linear dependence. Because real-world time series often have substantial non-linear dependencies, it's best to look at a lag plot (or use some more general measure of dependence, like mutual information) when choosing lag features. The Sunspots series has lags with non-linear dependence which we might overlook with autocorrelation.
+
+
+\subsection{Components and residuals}
+
+There are three patterns of dependence in a time series: Series = trend (moving average) + seasons (weekly, monthly, etc. using extra features (for short seasons) or Fourier method (if season is longer)) + cycles (serial dependence using lag feature) + error (each of which is called component). The residuals of a model are the difference between the target the model was trained on and the predictions the model makes -- the difference between the actual curve and the fitted curve, in other words.
+
+We could imagine learning the components of a time series as an iterative process: first learn the trend and subtract it out from the series, then learn the seasonality from the detrended residuals and subtract the seasons out, then learn the cycles and subtract the cycles out, and finally only the unpredictable error remains. We can use a single algorithm (linear regression) to learn all the components at once. But it's also possible to use one algorithm for some of the components and another algorithm for the rest. This way we can always choose the best algorithm for each component. To do this, we use one algorithm to fit the original series and then the second algorithm to fit the residual series. We'll usually want to use different feature sets (X\_train\_1 and X\_train\_2 above) depending on what we want each model to learn. If we use the first model to learn the trend, we generally wouldn't need a trend feature for the second model, for example.
+
+We use linear regression to extrapolate the trend, transform the target to remove the trend, and apply XGBoost to the detrended residuals. To hybridize a neural net (a feature transformer), you could instead include the predictions of another model as a feature, which the neural net would then include as part of its own predictions. The method of fitting to residuals is actually the same method the gradient boosting algorithm uses, so we will call these \textbf{boosted hybrids}; the method of using predictions as features is known as \textbf{stacking}, so we will call these \textbf{stacked hybrids.}
+
+
+
+
 
 % Appendix ==========================================================
 %\appendices
