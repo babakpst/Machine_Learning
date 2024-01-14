@@ -898,8 +898,8 @@ Use vectorization in python to improve the performance (for example: np.dot(W,x)
 
 \begin{itemize}
   \item Inspect all features, look for duplicate features.
-  \item Manage missing data (drop items with missin target, and impute missing items).
-  \item Manage categorical/object feetures (cordinal, one-hot, etc.)
+  \item Manage missing data (drop items with missing target, and impute missing items).
+  \item Manage categorical/object features (cordinal, one-hot, etc.)
 \end{itemize}
 \subsection{Time series}
 
@@ -910,16 +910,28 @@ Use vectorization in python to improve the performance (for example: np.dot(W,x)
 
 
 \section{Time series}
-The basic object of forecasting is the time series, which is a set of observations recorded over time. In forecasting applications, the observations are typically recorded with a regular frequency, like daily or monthly. Linear regression is a common method for forecasting. There are two kinds of features unique to time series: time-step features and lag features.
+The basic object of forecasting is the time series, which is a set of observations recorded over time. In forecasting applications, the observations are typically recorded with a regular frequency, like daily or monthly.
 
-Time-step features are features we can derive directly from the time index. The most basic time-step feature is the time dummy, which counts off time steps in the series from beginning to end.
+One of the main forecasting approaches is the Linear regression method for forecasting (target = weight\_1 * feature\_1 + weight\_2 * feature\_2 + bias). But, first we need to generate the features corresponding to the time series. There are two kinds of features unique to time series: time-step features and lag features.
 
-Time-step features let you model time dependence. A series is time dependent if its values can be predicted from the time they occurred.
+\textbf{Time-step features} are features we can derive directly from the time index. The most basic time-step feature is the time dummy, which counts off time steps in the series from beginning to end. Time-step features let you model time dependence. A series is time dependent if its values can be predicted from the time they occurred.
 
-To make a lag feature, we shift the observations of the target series so that they appear to have occurred later in time. Here we've created a 1-step lag feature, though shifting by multiple steps is possible too. ag features let you model serial dependence. A time series has serial dependence when an observation can be predicted from previous observations. Adapting machine learning algorithms to time series problems is largely about feature engineering with the time index and lags.
+\textbf{Lag features} are the second types of features that we can generate from the time series. To make a lag feature, we shift the observations of the target series so that they appear to have occurred later in time. Lag features let you model \textit{serial dependence}. A time series has serial dependence when an observation can be predicted from previous observations. \textbf{Adapting machine learning algorithms to time series problems is largely about feature engineering with the time index and lags.}
+
+\textbf{Fourier transform features}
+
 
 \subsection{Trend}
-This portion of the time series can be captured by moving average rolling windows.
+This portion of the time series can be captured by moving average rolling windows, or using linear regressions with the time-step feature.
+
+
+
+
+
+
+
+
+
 
 \subsection{Seasonality}
 We say that a time series exhibits seasonality whenever there is a regular, periodic change in the mean of the series. Seasonal changes generally follow the clock and calendar -- repetitions over a day, a week, or a year are common.
@@ -981,6 +993,9 @@ A plot like that above is known as a correlogram. The correlogram is for lag fea
 
 Finally, we need to be mindful that autocorrelation and partial autocorrelation are measures of linear dependence. Because real-world time series often have substantial non-linear dependencies, it's best to look at a lag plot (or use some more general measure of dependence, like mutual information) when choosing lag features. The Sunspots series has lags with non-linear dependence which we might overlook with autocorrelation.
 
+Lag features require that the lagged target value is known at the time being forecast. A lag 1 feature shifts the time series forward 1 step, which means you could forecast 1 step into the future but not 2 steps. we just assumed that we could always generate lags up to the period we wanted to forecast (every prediction was for just one step forward, in other words). But, in reality, we need to forecast a few steps ahead. Machine learning can help with this.
+
+
 
 \subsection{Components and residuals}
 
@@ -991,7 +1006,66 @@ We could imagine learning the components of a time series as an iterative proces
 We use linear regression to extrapolate the trend, transform the target to remove the trend, and apply XGBoost to the detrended residuals. To hybridize a neural net (a feature transformer), you could instead include the predictions of another model as a feature, which the neural net would then include as part of its own predictions. The method of fitting to residuals is actually the same method the gradient boosting algorithm uses, so we will call these \textbf{boosted hybrids}; the method of using predictions as features is known as \textbf{stacking}, so we will call these \textbf{stacked hybrids.}
 
 
+\subsection{Forecasting}
 
+There are two things to establish before designing a forecasting model:
+\begin{itemize}
+  \item what information is available at the time a forecast is made (features), and,
+  \item the time period during which you require forecasted values (target).
+\end{itemize}
+
+The \textbf{forecast origin} is time at which you are making a forecast. Practically, you might consider the forecast origin to be the last time for which you have training data for the time being predicted. Everything up to he origin can be used to create features.
+
+The \textbf{forecast horizon} is the time for which you are making a forecast. We often describe a forecast by the number of time steps in its horizon: a "1-step" forecast or "5-step" forecast, say. The forecast horizon describes the target.
+
+The time between the origin and the horizon is the \textbf{lead time} (or sometimes latency) of the forecast. A forecast's lead time is described by the number of steps from origin to horizon: a "1-step ahead" or "3-step ahead" forecast, say. In practice, it may be necessary for a forecast to begin multiple steps ahead of the origin because of delays in data acquisition or processing.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 10.0cm 20cm 19cm, clip, scale=0.3]{pics/forecasting.png}
+    \caption{Fourier features}
+    \label{default}
+  \end{center}
+\end{figure}
+
+
+\subsubsection{Multistep forecasting strategies}
+Here are strategies for producing the multiple target steps required for a forecast.
+
+
+\textbf{Multioutput model:} Use a model that produces multiple outputs naturally. Linear regression and neural networks can both produce multiple outputs. This strategy is simple and efficient, but not possible for every algorithm you might want to use. XGBoost can't do this, for instance.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =35cm 12.0cm 25cm 18cm, clip, scale=0.3]{pics/forecast1.png}
+    \caption{MultiOutput Model}
+    \label{default}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/forecast2.png}
+    \caption{Fourier features}
+    \label{default}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/forecast3.png}
+    \caption{Fourier features}
+    \label{default}
+  \end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/forecast4.png}
+    \caption{Fourier features}
+    \label{default}
+  \end{center}
+\end{figure}
 
 
 % Appendix ==========================================================
