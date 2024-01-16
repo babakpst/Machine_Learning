@@ -26,6 +26,8 @@
 \usepackage{ragged2e}       % Text justifying
 \usepackage{color}
 \usepackage{ctable}
+
+
 %\usepackage{pmat}
 %\usepackage{ulem}
 %\usepackage[retainorgcmds]{IEEEtrantools}
@@ -912,31 +914,31 @@ Use vectorization in python to improve the performance (for example: np.dot(W,x)
 \section{Time series}
 The basic object of forecasting is the time series, which is a set of observations recorded over time. In forecasting applications, the observations are typically recorded with a regular frequency, like daily or monthly.
 
-One of the main forecasting approaches is the Linear regression method for forecasting (target = weight\_1 * feature\_1 + weight\_2 * feature\_2 + bias). But, first we need to generate the features corresponding to the time series. There are two kinds of features unique to time series: time-step features and lag features.
+One of the main forecasting approaches is the Linear regression method for forecasting (target = weight\_1 * feature\_1 + weight\_2 * feature\_2 + bias). But, first we need to generate the features corresponding to the time series. There are three kinds of features unique to time series: time-step features and lag features.
 
 \textbf{Time-step features} are features we can derive directly from the time index. The most basic time-step feature is the time dummy, which counts off time steps in the series from beginning to end. Time-step features let you model time dependence. A series is time dependent if its values can be predicted from the time they occurred.
 
-\textbf{Lag features} are the second types of features that we can generate from the time series. To make a lag feature, we shift the observations of the target series so that they appear to have occurred later in time. Lag features let you model \textit{serial dependence}. A time series has serial dependence when an observation can be predicted from previous observations. \textbf{Adapting machine learning algorithms to time series problems is largely about feature engineering with the time index and lags.}
+\textbf{Lag (and lead) features} are the second types of features that we can generate from the time series. To make a lag feature, we shift the observations of the target series so that they appear to have occurred later in time. Lag features let you model \textit{serial dependence}. A time series has serial dependence when an observation can be predicted from previous observations. \textbf{Adapting machine learning algorithms to time series problems is largely about feature engineering with the time index and lags.}
 
-\textbf{Fourier transform features}
 
+\textbf{Seasonal features} such as seasonal \textit{indicators} or Fourier transform features (will be discussed later).
+
+There are three patterns/components of dependence in a time series:
+
+Series = \textbf{trend }(moving average or linear regression (with different polynomial order) with time-step feature) + \textbf{seasonality} (weekly, monthly, etc. using indicator features (for short seasons) or Fourier method (if season is longer)) + \textbf{cycles} (serial dependence using lag feature) + \textbf{error}. Each of these items is called a component.
+
+The residuals of a model are the difference between the target the model was trained on and the predictions the model makes -- the difference between the actual curve and the fitted curve, in other words.
+
+
+Trend, seasonality, and cycles will be discussed next.
 
 \subsection{Trend}
-This portion of the time series can be captured by moving average rolling windows, or using linear regressions with the time-step feature.
-
-
-
-
-
-
-
-
-
+This portion of the time series can be captured by moving average rolling windows, or using linear regressions with the time-step feature. The trend models we learned about in this lesson turn out to be useful for a number of reasons. Besides acting as a baseline or starting point for more sophisticated models, we can also use them as a component in a "hybrid model" with algorithms unable to learn trends (like XGBoost and random forests).
 
 \subsection{Seasonality}
 We say that a time series exhibits seasonality whenever there is a regular, periodic change in the mean of the series. Seasonal changes generally follow the clock and calendar -- repetitions over a day, a week, or a year are common.
 
-There are two kinds of features that model seasonality. The first kind, \textit{indicators}, is best for a season with few observations, like a weekly season of daily observations. The second kind, \textit{Fourier features}, is best for a season with many observations, like an annual season of daily observations.
+There are two kinds of features that model seasonality. The first kind, \textit{indicators}, is best for a season with few observations, like a weekly season of daily observations (7 observation in the season). The second kind, \textit{Fourier features}, is best for a season with many observations, like an annual season of daily observations (365 observations per season).
 
 we can use a seasonal plot to discover seasonal patterns. A seasonal plot shows segments of the time series plotted against some common period, the period being the "season" you want to observe.
 
@@ -944,6 +946,13 @@ we can use a seasonal plot to discover seasonal patterns. A seasonal plot shows 
 \subsubsection{Seasonal indicators}
 A seasonal plot shows segments of the time series plotted against some common period, the period being the "season" you want to observe. Seasonal indicators are binary features that represent seasonal differences in the level of a time series. Seasonal indicators are what you get if you treat a seasonal period as a categorical feature and apply one-hot encoding. For example, by one-hot encoding days of the week, we get weekly seasonal indicators. Creating weekly indicators for the Trigonometry series will then give us six new "dummy" features. (Linear regression works best if you drop one of the indicators; we chose Monday in the frame below. This means the in the one-hot model, if all Tue ~ Sun is 0, it is Monday.)
 
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 8.0cm 20cm 15cm, clip, scale=0.4]{pics/seasonal_indicator.png}
+    \caption{seasonal indicators}
+    %\label{}
+  \end{center}
+\end{figure}
 
 \subsubsection{Fourier features and periodogram}
 
@@ -969,13 +978,16 @@ If we add a set of these sine / cosine curves to our training data, the linear r
 
 Notice that we only needed eight features (four sine / cosine pairs) to get a good estimate of the annual seasonality. Compare this to the seasonal indicator method which would have required hundreds of features (one for each day of the year). By modeling only the "main effect" of the seasonality with Fourier features, you'll usually need to add far fewer features to your training data, which means reduced computation time and less risk of overfitting.
 
-Choosing Fourier features with the Periodogram:
+\subsubsection{Choosing Fourier features with the Periodogram:}
+
 How many Fourier pairs should we actually include in our feature set? We can answer this question with the periodogram. The periodogram tells you the strength of the frequencies in a time series. Specifically, the value on the y-axis of the graph is (a ** 2 + b ** 2) / 2, where a and b are the coefficients of the sine and cosine at that frequency (as in the Fourier Components plot above).
 
 Removing from a series its trend or seasons is called \textbf{detrending} or \textbf{deseasonalizing} the series.
 
+Once Fourier or seasonal indicator features created, we can use the linear (nonlinear/polynomial) regression for forecasting.
 
-\subsection{Serial dependence}
+
+\subsection{Cycles: serial dependence (time series as features)}
 Some time series, have \textit{time dependent properties}, that is, we could derive the feature directly from the time index (for example, weekly dependence). However, some other time series properties can only be modeled as serially dependent properties, that is, using as features past values of the target series. Plotted against past values (with lag) reveals the structure.
 
 \subsubsection{Cycles} One especially common way for serial dependence to manifest is in cycles. Cycles are patterns of growth and decay in a time series associated with how the value in a series at one time depends on values at previous times, but not necessarily on the time step itself. Cyclic behavior is characteristic of systems that can affect themselves or whose reactions persist over time. Economies, epidemics, animal populations, volcano eruptions, and similar natural phenomena often display cyclic behavior. What distinguishes cyclic behavior from seasonality is that cycles are not necessarily time dependent, as seasons are. What happens in a cycle is less about the particular date of occurrence, and more about what has happened in the recent past. The (at least relative) independence from time means that cyclic behavior can be much more irregular than seasonality.
@@ -997,11 +1009,51 @@ Lag features require that the lagged target value is known at the time being for
 
 
 
-\subsection{Components and residuals}
+\subsection{Forecasting with hybrid models: Components and residuals}
 
-There are three patterns of dependence in a time series: Series = trend (moving average) + seasons (weekly, monthly, etc. using extra features (for short seasons) or Fourier method (if season is longer)) + cycles (serial dependence using lag feature) + error (each of which is called component). The residuals of a model are the difference between the target the model was trained on and the predictions the model makes -- the difference between the actual curve and the fitted curve, in other words.
+We could imagine learning the components of a time series as an iterative process: first learn the trend and subtract it out from the series, then learn the seasonality from the detrended residuals and subtract the seasons out, then learn the cycles and subtract the cycles out, and finally only the unpredictable error remains. Add together all the components we learned and we get the complete model. This is essentially what linear regression would do if you trained it on a complete set of features modeling trend, seasons, and cycles.
 
-We could imagine learning the components of a time series as an iterative process: first learn the trend and subtract it out from the series, then learn the seasonality from the detrended residuals and subtract the seasons out, then learn the cycles and subtract the cycles out, and finally only the unpredictable error remains. We can use a single algorithm (linear regression) to learn all the components at once. But it's also possible to use one algorithm for some of the components and another algorithm for the rest. This way we can always choose the best algorithm for each component. To do this, we use one algorithm to fit the original series and then the second algorithm to fit the residual series. We'll usually want to use different feature sets (X\_train\_1 and X\_train\_2 above) depending on what we want each model to learn. If we use the first model to learn the trend, we generally wouldn't need a trend feature for the second model, for example.
+
+We can use a single algorithm (linear regression) to learn all the components at once. But it's also possible to use one algorithm for some of the components and another algorithms for the rest. This way we can always choose the best algorithm for each component. To do this, we use one algorithm to fit the original series and then the second algorithm to fit the residual series. We'll usually want to use different feature sets (X\_train\_1 and X\_train\_2 above) depending on what we want each model to learn. If we use the first model to learn the trend, we generally wouldn't need a trend feature for the second model, for example.
+
+%\begin{mintedbox}{python}
+\# 1. Train and predict with first model
+model\_1.fit(X\_train\_1, y\_train)
+y\_pred\_1 = model\_1.predict(X\_train)
+
+\# 2. Train and predict with second model on residuals
+model\_2.fit(X\_train\_2, y\_train - y\_pred\_1)
+y\_pred\_2 = model\_2.predict(X\_train\_2)
+
+\# 3. Add to get overall predictions
+y\_pred = y\_pred\_1 + y\_pred\_2
+%\end{minted%box}
+
+While it's possible to use more than two models, in practice it doesn't seem to be especially helpful. In fact, the most common strategy for constructing hybrids is the one we've just described: a simple (usually linear) learning algorithm followed by a complex, non-linear learner like GBDTs or a deep neural net, the simple model typically designed as a "helper" for the powerful algorithm that follows.
+
+
+There are many ways you could combine machine learning models besides the way we've outlined in this lesson. Successfully combining models, though, requires that we dig a bit deeper into how these algorithms operate.
+
+\textbf{Important remark:} there are generally two ways a regression algorithm can make predictions: either by \textit{transforming the features} or by transforming the target. Feature-transforming algorithms learn some mathematical function that takes features as an input and then combines and transforms them to produce an output that matches the target values in the training set. Linear regression and neural nets are of this kind. \textit{Target-transforming} algorithms use the features to group the target values in the training set and make predictions by averaging values in a group; a set of feature just indicates which group to average. Decision trees and nearest neighbors are of this kind.
+
+
+Feature transformers generally can extrapolate target values beyond the training set given appropriate features as inputs, but the predictions of target transformers will always be bound within the range of the training set. If the time dummy continues counting time steps, linear regression continues drawing the trend line. Given the same time dummy, a decision tree will predict the trend indicated by the last step of the training data into the future forever. Decision trees cannot extrapolate trends. Random forests and gradient boosted decision trees (like XGBoost) are ensembles of decision trees, so they also cannot extrapolate trends.
+
+This difference is what motivates the hybrid design in this lesson: use linear regression to extrapolate the trend, transform the target to remove the trend, and apply XGBoost to the detrended residuals. To hybridize a neural net (a feature transformer), you could instead include the predictions of another model as a feature, which the neural net would then include as part of its own predictions. The method of fitting to residuals is actually the same method the gradient boosting algorithm uses, so we will call these boosted hybrids; the method of using predictions as features is known as "stacking", so we will call these stacked hybrids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 We use linear regression to extrapolate the trend, transform the target to remove the trend, and apply XGBoost to the detrended residuals. To hybridize a neural net (a feature transformer), you could instead include the predictions of another model as a feature, which the neural net would then include as part of its own predictions. The method of fitting to residuals is actually the same method the gradient boosting algorithm uses, so we will call these \textbf{boosted hybrids}; the method of using predictions as features is known as \textbf{stacking}, so we will call these \textbf{stacked hybrids.}
 
