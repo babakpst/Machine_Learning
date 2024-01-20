@@ -1042,19 +1042,6 @@ Feature transformers generally can extrapolate target values beyond the training
 This difference is what motivates the hybrid design in this lesson: use linear regression to extrapolate the trend, transform the target to remove the trend, and apply XGBoost to the detrended residuals. To hybridize a neural net (a feature transformer), you could instead include the predictions of another model as a feature, which the neural net would then include as part of its own predictions. The method of fitting to residuals is actually the same method the gradient boosting algorithm uses, so we will call these boosted hybrids; the method of using predictions as features is known as "stacking", so we will call these stacked hybrids.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 We use linear regression to extrapolate the trend, transform the target to remove the trend, and apply XGBoost to the detrended residuals. To hybridize a neural net (a feature transformer), you could instead include the predictions of another model as a feature, which the neural net would then include as part of its own predictions. The method of fitting to residuals is actually the same method the gradient boosting algorithm uses, so we will call these \textbf{boosted hybrids}; the method of using predictions as features is known as \textbf{stacking}, so we will call these \textbf{stacked hybrids.}
 
 
@@ -1075,47 +1062,65 @@ The time between the origin and the horizon is the \textbf{lead time} (or someti
 \begin{figure}[htbp]
   \begin{center}
     \includegraphics[trim =30cm 10.0cm 20cm 19cm, clip, scale=0.3]{pics/forecasting.png}
-    \caption{Fourier features}
-    \label{default}
+    \caption{Defining a forecast}
+    \label{fig:forecast}
   \end{center}
 \end{figure}
 
+
+\subsubsection{Prepare data for forecasting}
+
+We can create lag/lead features or time steps for linear regression. Additionally, we can create features based on the target for decision tree. How we do this depends on the forecasting task. For example, table \ref{fig:table}, shows the dataframe for \ref{fig:forecast} (I don't know why we need lags 5 and 6!).
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 22.0cm 30cm 16.5cm, clip, scale=0.4]{pics/table.png}
+    \caption{features for a forecast}
+    \label{fig:table}
+  \end{center}
+\end{figure}
 
 \subsubsection{Multistep forecasting strategies}
 Here are strategies for producing the multiple target steps required for a forecast.
 
 
-\textbf{Multioutput model:} Use a model that produces multiple outputs naturally. Linear regression and neural networks can both produce multiple outputs. This strategy is simple and efficient, but not possible for every algorithm you might want to use. XGBoost can't do this, for instance.
+\textbf{Multioutput model:} Use a model that produces multiple outputs naturally. Linear regression and neural networks can both produce multiple outputs (extrapolation). This strategy is simple and efficient, but not possible for every algorithm you might want to use. XGBoost can't do this, for instance (XGBoost is only for interpolation).
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =35cm 12.0cm 25cm 18cm, clip, scale=0.3]{pics/forecast1.png}
+    \includegraphics[trim =35cm 14.0cm 33cm 19cm, clip, scale=0.3]{pics/forecast1.png}
     \caption{MultiOutput Model}
-    \label{default}
+    \label{fig:multiouput}
   \end{center}
 \end{figure}
 
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/forecast2.png}
-    \caption{Fourier features}
-    \label{default}
-  \end{center}
-\end{figure}
+\textbf{Direct strategy} Train a separate model for each step in the horizon: one model forecasts 1-step ahead, another 2-steps ahead, and so on. Forecasting 1-step ahead is a different problem than 2-steps ahead (and so on), so it can help to have a different model make forecasts for each step. The downside is that training lots of models can be computationally expensive.
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/forecast3.png}
-    \caption{Fourier features}
-    \label{default}
+    \includegraphics[trim =24cm 17.0cm 22cm 20cm, clip, scale=0.4]{pics/forecast2.png}
+    \caption{Direct strategy}
+    \label{fig:direct}
   \end{center}
 \end{figure}
 
+\textbf{Recursive strategy} Train a single one-step model and use its forecasts to update the lag features for the next step. With the recursive method, we feed a model's 1-step forecast back in to that same model to use as a lag feature for the next forecasting step. We only need to train one model, but \textit{since errors will propagate from step to step, forecasts can be inaccurate for long horizons}.
+
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =30cm 10.0cm 20cm 15cm, clip, scale=0.4]{pics/forecast4.png}
-    \caption{Fourier features}
-    \label{default}
+    \includegraphics[trim =30cm 14.0cm 28cm 19cm, clip, scale=0.4]{pics/forecast3.png}
+    \caption{Recursive strategy}
+    \label{fig:recursive}
+  \end{center}
+\end{figure}
+
+\textbf{DirRec strategy} A combination of the direct and recursive strategies: train a model for each step and use forecasts from previous steps as new lag features. Step by step, each model gets an additional lag input. Since each model always has an up-to-date set of lag features, \textit{the DirRec strategy can capture serial dependence better than Direct, but it can also suffer from error propagation like Recursive.}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =24cm 17.0cm 22cm 20cm, clip, scale=0.4]{pics/forecast4.png}
+    \caption{DirRec strategy}
+    \label{fig:DirRec}
   \end{center}
 \end{figure}
 
