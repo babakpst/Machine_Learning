@@ -1070,7 +1070,7 @@ The time between the origin and the horizon is the \textbf{lead time} (or someti
 
 \subsubsection{Prepare data for forecasting}
 
-We can create lag/lead features or time steps for linear regression. Additionally, we can create features based on the target for decision tree. How we do this depends on the forecasting task. For example, table \ref{fig:table}, shows the dataframe for \ref{fig:forecast} (I don't know why we need lags 5 and 6!).
+We can create lag/lead features or time steps for linear regression. Additionally, we can create features based on the target for decision tree. How we do this depends on the forecasting task. For example, table \ref{fig:table}, shows the dataframe for \ref{fig:forecast} (I don't know why we need lags 5 and 6!). Note also that the lagged data is used as feature and the lead data is used as the target.
 
 \begin{figure}[htbp]
   \begin{center}
