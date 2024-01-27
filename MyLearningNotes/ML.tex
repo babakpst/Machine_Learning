@@ -461,6 +461,29 @@ enumeration and the its value can be interpolated. The other option is represent
 
 \subsection{Classification}
 
+The output variable y would be a small handful of cases (as opposed to the linear regression with infinite range of numbers). Examples of (binary) classifications, include email spam detection, tumor detection, etc.  One method is to use linear regression and map all predictions greater than 0.5 as a 1 and all less than 0.5 as a 0. This method doesn't work well because classi cation is not actually a linear function. Instead we need logistic regression. Logistic/Sigmoid function is (output values between 0 and 1, which is the probability of each category/class):
+
+\begin{equation}
+g(z) = \frac{1}{1+e^{-z}} \;\; \text{where} \;\; 0<g(z)<1
+\end{equation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/sigmoid.png}
+  \caption{Sigmoid}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+In the language of linear regression, it means we feed the sigmoid func with the output of linear regression:
+
+\begin{equation}
+  f_{\overrightarrow{w},b}(\overrightarrow{x}) = g(\overrightarrow{w} . \overrightarrow{x}+b)
+\end{equation}
+
+In order to get our discrete 0 or 1 classification, we can define a \textit{decision boundary}, such as 0.5, so, if $g(z) > 0.5 \rightarrow y=1$, this means $ z= \overrightarrow{w} . \overrightarrow{x}+b>0$. By setting $\overrightarrow{w} . \overrightarrow{x}+b =0$, we can find/plot the decision boundary.
+
+
 \section{SL: Neural network}
 
 
@@ -948,7 +971,7 @@ A seasonal plot shows segments of the time series plotted against some common pe
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =30cm 8.0cm 20cm 15cm, clip, scale=0.4]{pics/seasonal_indicator.png}
+    \includegraphics[trim =30cm 8.0cm 20cm 27cm, clip, scale=0.4]{pics/seasonal_indicator.png}
     \caption{seasonal indicators}
     %\label{}
   \end{center}
