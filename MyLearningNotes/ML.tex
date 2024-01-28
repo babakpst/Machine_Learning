@@ -242,7 +242,7 @@ Here is the plot of entropy for a binary classifier, as the proportional of yes 
 \begin{figure}[H]
 	\centering
 	\caption{Entropy}
-	\includegraphics[scale=0.5]{entroy.png}
+	\includegraphics[scale=0.5]{pics/entroy.png}
 	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
 	%#\label{XXX}
 \end{figure}
@@ -498,7 +498,7 @@ simplest model of a brain cell. The Perceptron calculates the sum of products of
 \begin{figure}[H]
 	\centering
 	\caption{Perceptron}
-	\includegraphics[trim =20cm 15.0cm 10cm 8cm, clip, scale=0.2]{perceptron.png}
+	\includegraphics[trim =20cm 15.0cm 10cm 8cm, clip, scale=0.2]{pics/perceptron.png}
 	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
 	%#\label{XXX}
 \end{figure}
@@ -640,6 +640,8 @@ Since we care about accuracy on new data, which we estimate from our validation 
 
 \subsection{Cost function}
 \label{sec:cost}
+The cost function gives you a way to measure how well a specific set of parameters fits the training data. Thereby gives you a way to try to choose better parameters.
+
 Let's use the concept of multiple linear regression to discuss the cost function.
 
 Parameters/coefficients/weights of the model (In ML, parameters of a model are the variables that you can do training in order to improve the model):
@@ -659,13 +661,54 @@ Here is the model:
 
 Problem statement: find $\overrightarrow{w},b$ such that $\hat{y}^{(i)}$ is close to $y^{(i)}$ for all $(x^{(i)}, y^{(i)} )$. $\big(\hat{y}^{(i)}  - y^{(i)} \big) ^2$, the error for one single sample is called the loss function.
 
-To find $\overrightarrow{w},b$, we form the the cost function:
+To find $\overrightarrow{w},b$, we form the the cost function using squared error cost:
 
 \begin{multline}
 	\text{find $\overrightarrow{w},b$:} \\
 	\text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
 \end{multline}
 m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. However, there are other options for the cost functions as well.
+
+Loss function: Used when we refer to the error for a single training example. Cost function: Used to refer to an average of the loss functions over an entire training dataset.
+
+The squared error cost function is not an ideal cost function for logistic regression. The reason is that the logistic regression model, which is defined by:
+
+\begin{equation}
+  f_{\overrightarrow{w},b} (\overrightarrow{x}) = \frac{1}{1+e^{-(\overrightarrow{w} \overrightarrow{x} ^ {(i)} + b)}}
+\end{equation}
+
+is non-convex, as opposed to linear regression model which is convex. To have a convergent gradient descent method, the cost function should be convex.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =0cm 6.0cm 0cm 20.0cm, clip, scale=0.15]{pics/logistic.png}
+    \caption{cost function for logistic function}
+    %\label{}
+  \end{center}
+\end{figure}
+
+To convert the logistic function to a convex function, we need to ue the following loss definition (see ML C1W3):
+
+\begin{multline}
+J(\overrightarrow{w},b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(\hat{y}^{(i)}  - y^{(i)} \big) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big)\\
+L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big) =
+\begin{cases}
+  -log\big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big)  \;\; \text{if} \;\; y^{(i)} = 1  \\
+  -log\big(1-f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big)  \;\; \text{if} \;\; y^{(i)} = 0  \\
+\end{cases}
+\end{multline}
+
+If $y^{(i)} = 1$ then, if the predicted value $f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) $ is close to one, the loss function is close to zero (reduces the loss), but if the predicted value is close to zero, then the function penalize the loss function with a large number. The other way around for $y^{(i)} = 0$.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =0cm 6.0cm 0cm 0.0cm, clip, scale=0.15]{pics/logistic2.png}
+    \caption{cost function for logistic function}
+    %\label{}
+  \end{center}
+\end{figure}
+
+
 
 \subsection{Gradient descent method}
 \label{sec:gradient}
@@ -1162,3 +1205,10 @@ Here are strategies for producing the multiple target steps required for a forec
 
 \end{document}
 
+%\begin{figure}[htbp]
+%  \begin{center}
+%    \includegraphics[trim =30cm 8.0cm 20cm 27cm, clip, scale=0.4]{pics/seasonal_indicator.png}
+%    \caption{seasonal indicators}
+%    %\label{}
+%  \end{center}
+%\end{figure}
