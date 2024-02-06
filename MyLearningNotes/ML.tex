@@ -486,10 +486,11 @@ In order to get our discrete 0 or 1 classification, we can define a \textit{deci
 
 \section{SL: Neural network}
 
+Inference is getting the prediction results from a trained model using forward propagation.
 
 \subsection{Perceptron}
 
-simplest model of a brain cell. The Perceptron calculates the sum of products of the inputs X and their corresponding weights W, and then compare the result with an activation threshold. If the sum is greater than or equal the firing threshold $\theta$, the perceptron returns one, otherwise, it is zero.
+Perceptron is the simplest model of a brain cell. The Perceptron calculates the sum of products of the inputs X and their corresponding weights W, and then compare the result with an activation threshold. If the sum is greater than or equal the firing threshold $\theta$, the perceptron returns one, otherwise, it is zero.
 
 \begin{equation}
 \sum_{i=1}^k X_i W_i \ge \theta  \Rightarrow y = 1 \: \text{otherwise} \: y = 0
@@ -502,7 +503,25 @@ simplest model of a brain cell. The Perceptron calculates the sum of products of
 	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
 	%#\label{XXX}
 \end{figure}
+Layer: a group of neurons, which take the same input/features as input. A layer can have multiple or single neurons. We can assume the features as the input layer ($\overrightarrow{x}$) and the last layer as the output layer. All the layers in between (input and output) are called hidden layers.
 
+In practice, each neuron from one layer, has access to all the neurons/inputs from the previous layer. During the training process, the weight of unrelated neurons/features becomes smaller.
+
+Each neuron in the layer computes $\overrightarrow{w} . \overrightarrow{x}+b$ and passes the value to the next layer. Each neuron will learn a feature (such as affordability, quality, vertical line, etc.) by itself.
+
+
+\subsection{Logistic regression algo with Neural Network}
+We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. For example, for sigmoid function in the activation, we have (g can be other functions as well):
+
+\begin{equation}
+  a= f_{\overrightarrow{w},b}(\overrightarrow{x}) = g(z=\overrightarrow{w} . \overrightarrow{x}+b) = \frac{1}{1+e^{-z}}
+\end{equation}
+
+The calculation for the activation j of layer l is:
+
+\begin{equation}
+  a_j^{[l]}= g(\overrightarrow{w}_j^{[l]} . \overrightarrow{a}^{[l-1]}+b_j^{[l]})
+\end{equation}
 
 
 
@@ -629,13 +648,6 @@ $F1 = 2 \frac{R * P}{ P + R } $.
 
 The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
 
-\section{Overfitting vs underfitting}
-This is a phenomenon called overfitting, where a model matches the training data almost perfectly, but does poorly in validation and other new data. On the flip side, if we make our tree very shallow, it doesn't divide up the houses into very distinct groups.
-
-At an extreme, if a tree divides houses into only 2 or 4, each group still has a wide variety of houses. Resulting predictions may be far off for most houses, even in the training data (and it will be bad in validation too for the same reason). When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, that is called underfitting.
-
-Since we care about accuracy on new data, which we estimate from our validation data, we want to find the sweet spot between underfitting and overfitting. Visually, we want the low point of the (red) validation curve in the figure below.
-
 \section{Gradient descent (steepest descent)}
 
 \subsection{Cost function}
@@ -687,7 +699,7 @@ is non-convex, as opposed to linear regression model which is convex. To have a 
   \end{center}
 \end{figure}
 
-To convert the logistic function to a convex function, we need to ue the following loss definition (see ML C1W3):
+To convert the logistic function to a convex function (for a binary classification), we need to ue the following loss definition (see ML C1W3):
 
 \begin{multline}
 J(\overrightarrow{w},b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(\hat{y}^{(i)}  - y^{(i)} \big) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big)\\
@@ -708,7 +720,12 @@ If $y^{(i)} = 1$ then, if the predicted value $f_{\overrightarrow{w},b} (\overri
   \end{center}
 \end{figure}
 
+To simplify this loss and cost functions, we re-write it as follows:
 
+\begin{multline}
+L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big) = - y^{(i)} log\big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) - (1-y^{(i)}) log\big(1-f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) \\
+J(\overrightarrow{w},b)   = -\frac{1}{m} \sum_{i=1}^{m} \big[ y^{(i)} log\big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) + (1-y^{(i)}) log\big(1-f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big)  \big] \\
+\end{multline}
 
 \subsection{Gradient descent method}
 \label{sec:gradient}
@@ -716,22 +733,33 @@ If $y^{(i)} = 1$ then, if the predicted value $f_{\overrightarrow{w},b} (\overri
 An optimization method to minimize any function. Depending on the initial starting point, the method may end up at a different local minimum. \\
 
 Method: \\
-For a cost function $J(\overrightarrow{w},b)$,  we want to find  $w_1, w_2, ...$ to minimize $J$.\\
+For a cost function $J(\overrightarrow{w},b)$,  we want to find  $ \overrightarrow{w} (w_1, w_2, ...) , b$ to minimize $J$.\\
 
 Algorithm: \\
 \begin{itemize}
 \item start with some initial $\overrightarrow{w}, b$.
-\item update $w_j$ \textit{simultaneously} until the algorithm converges, meaning you reach a local minimum, where additional iteration does not change the point. It is incorrect to use new values of $w_j$ to update other parameters in the same iteration.
-\begin{multline}
-  w_j = w_j - \alpha \frac{\partial}{\partial w_j} J(\overrightarrow{w},b) = w_j - \alpha  \frac{1}{m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) x_j^{(i)}  \\
-  = w_j - \alpha  \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  - y^{(i)} \big) x_j^{(i)}    \text{\: \: for each j} \\
-  b = b - \alpha \frac{\partial  }{\partial b} J(\overrightarrow{w},b) = b - \alpha \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  - y^{(i)} \big) \text{\: \: for each i}
-\end{multline}
+\item update $w_j$ \textit{simultaneously} until the algorithm converges, meaning you reach a local minimum, where additional iteration does not change the point. It is incorrect to use new values of $w_j$  (j number of features) to update other parameters in the same iteration.
+\begin{equation}
+\begin{split}
+  w_j =& w_j - \alpha \frac{\partial}{\partial w_j} J(\overrightarrow{w},b) \\
+  b =& b - \alpha \frac{\partial  }{\partial b} J(\overrightarrow{w},b) \\
+\end{split}
+\end{equation}
 \end{itemize}
 
-The negative is because we want to move in the opposite direction.
+The negative is because we want to move in the opposite direction. $\alpha$ is the learning rate (step size), see \ref{sec:learningRate}.
 
-$\alpha$ is the learning rate (step size). The choice of learning rate affects the efficiency of gradient descent. If it is too small, it converges very slowly. If it is too large (overshoot), may cause divergence and never reaches the minimum. If we are exactly at the minimum, since slope is zero, the value of the learning does not affect the results. Thus, even a fixed learning can reach the minimum.
+The derivatives of cost functions for regular regression and logistic regression are:
+\begin{equation}
+\label{eq:derivatives}
+\begin{split}
+\frac{\partial}{\partial w_j} J(\overrightarrow{w},b) =& \frac{1}{m} \sum_{i=1}^{m} \big(\hat{y}^{(i)} - y^{(i)} \big) x_j^{(i)} = \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) - y^{(i)} \big) x_j^{(i)} \text{\: \: for each j} \\
+\frac{\partial}{\partial b} J(\overrightarrow{w},b)   =& \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  - y^{(i)} \big)
+\end{split}
+\end{equation}
+
+But note that the definition of f for the two regressions are different (for logistic, f is the sigmoid function).
+
 
 \textbf{Various types of gradient descent: }
 
@@ -740,11 +768,61 @@ Batch gradient descent: each step of gradient descent uses all the training exam
 Mini-batch gradient descent updates the parameters using a subset of training samples.
 
 \subsection{Learning rate selection}
-If the learning rate is too small, it would be very slow, and if it too large, it may diverge. To start, we can set the learning rate to a very small number, and check if the cost function decreases with every single iteration. If not, there is bug in the code. We can plot the cost function (learning curve) with each iteration of the gradient descent. The learning rate $\alpha$ should be selected such that the cost function decreases as iterations increases. If this is not the case, then the learning rate is high. Generally, we need to test many learning rates and select the most optimized one.
+\label{sec:learningRate}
+The choice of learning rate affects the efficiency of gradient descent. If the learning rate is too small, it would be very slow, and if it too large (overshoot), it may diverge. To start, we can set the learning rate to a very small number, and check if the cost function decreases with every single iteration. If not, there is bug in the code. We can plot the cost function (learning curve) with each iteration of the gradient descent. The learning rate $\alpha$ should be selected such that the cost function decreases as iterations increases. If this is not the case, then the learning rate is high. Generally, we need to test many learning rates and select the most optimized one.
+
+If we are exactly at the minimum, since slope is zero, the value of the learning does not affect the results. Thus, even a fixed learning can reach the minimum.
 
 \includegraphics[scale=0.12]{pics/LearningRate.png}
 
 \includegraphics[scale=0.12]{pics/learningrate2.png}
+
+
+\section{Overfitting (high variance) vs underfitting (high bias)}
+Overfitting (high variance) is the case that a model matches the training data almost perfectly, but does poorly in validation and other new data. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc.
+
+
+Since we care about accuracy on new data, which we estimate from our validation data, we want to find the sweet spot between underfitting and overfitting, so that the model do well on examples that are not in the training set. This is called \textit{generalization}.
+
+To avoid overfitting:
+\begin{itemize}
+\item one method is to collect more training data. If this option is available, probably we should try this first, but this is not always the option.
+\item feature selection: review features, and use fewer features. The down side of this method is that we are throwing away some useful information about the model. See \ref{sec:featureEngineering}.
+\item regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
+\end{itemize}
+
+
+\section{Regularization}
+\label{sec:regularization}
+
+We need to modify the cost function by penalizing/regularize the features/parameters corresponding to over fitting.
+When there are many features for a model, it is prone to overfit. To avoid that, we idea is that to build a model with all features, because initially we don't know which features are important, but we penalize all features.
+
+For a linear regression, we get (we are not penalizing b param, if we do it looks like this):
+
+\begin{equation}
+J(\overrightarrow{w},b) = \underbrace{  \frac{1}{2m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) - y^{(i)} \big) ^2}_\text{squared mean error} + \underbrace{ \frac{\lambda}{2m} \sum_{i=1}^n w_j^2 + \frac{\lambda}{2m} b^2}_\text{regularization term}
+\end{equation}
+
+The regularization term forces the coefficient to remain small and $\lambda$ is the coefficient to control this. A large $\lambda$ results in underfit by reducing weights, but a very small one, leads to overfit.
+
+Gradient descent with cost function (without b), looks like this (rewriting equation \ref{eq:derivatives}):
+\begin{equation}
+\label{eq:libRegReg}
+  \begin{split}
+    \frac{\partial}{\partial w_j} J(\overrightarrow{w},b) =&  \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) - y^{(i)} \big) x_j^{(i)} + \overbrace{\frac{\lambda}{m} w_j}^\text{regularization term} \text{\: \: for each j} \\
+    \frac{\partial}{\partial b} J(\overrightarrow{w},b)   =& \frac{1}{m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})  - y^{(i)} \big)
+  \end{split}
+\end{equation}
+
+For a logistic regression, we get:
+
+\begin{equation}
+  J(\overrightarrow{w},b)   = -\frac{1}{m} \sum_{i=1}^{m} \big[ y^{(i)} log\big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) + (1-y^{(i)}) log\big(1-f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big)  \big]+ \underbrace{ \frac{\lambda}{2m} \sum_{i=1}^n w_j^2}_\text{regularization term}
+\label{eq:logisticReg}
+\end{equation}
+The derivatives of equation \ref{eq:logisticReg} for gradient descent is similar to \ref{eq:libRegReg}, just f is different.
+
 
 \section{Model validation}
 
@@ -772,6 +850,7 @@ Generally, there are three approaches deal with the missing data. These are quic
 In pandas, we can use .isnul() to detect columns with missing data. We can use .drop to drop columns. We can also use dropna to either drop columns or instances.
 
 \section{Data processing \& Feature engineering}
+\label{sec:featureEngineering}
 
 \subsection{Feature engineering}
 The goal of feature engineering is simply to make your data better suited to the problem at hand. You might perform feature engineering to:
