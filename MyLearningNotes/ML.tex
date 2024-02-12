@@ -461,7 +461,7 @@ enumeration and the its value can be interpolated. The other option is represent
 
 \subsection{Classification}
 
-The output variable y would be a small handful of cases (as opposed to the linear regression with infinite range of numbers). Examples of (binary) classifications, include email spam detection, tumor detection, etc.  One method is to use linear regression and map all predictions greater than 0.5 as a 1 and all less than 0.5 as a 0. This method doesn't work well because classi cation is not actually a linear function. Instead we need logistic regression. Logistic/Sigmoid function is (output values between 0 and 1, which is the probability of each category/class):
+The output variable y would be a small handful of cases (as opposed to the linear regression with infinite range of numbers). Examples of (binary) classifications, include email spam detection, tumor detection, etc.  One method is to use linear regression and map all predictions greater than 0.5 as a 1 and all less than 0.5 as a 0. This method doesn't work well because classification is not actually a linear function. Instead we need logistic regression. Logistic/Sigmoid function is (output values between 0 and 1, which is the probability of each category/class):
 
 \begin{equation}
 g(z) = \frac{1}{1+e^{-z}} \;\; \text{where} \;\; 0<g(z)<1
@@ -511,7 +511,7 @@ Each neuron in the layer computes $\overrightarrow{w} . \overrightarrow{x}+b$ an
 
 
 \subsection{Logistic regression algo with Neural Network}
-We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. For example, for sigmoid function in the activation, we have (g can be other functions as well):
+We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. There are several option for the activation function g() (see \ref{sec:activation}), for example, for sigmoid function, we have:
 
 \begin{equation}
   a= f_{\overrightarrow{w},b}(\overrightarrow{x}) = g(z=\overrightarrow{w} . \overrightarrow{x}+b) = \frac{1}{1+e^{-z}}
@@ -524,6 +524,71 @@ The calculation for the activation j of layer l is:
 \end{equation}
 
 For inference (prediction), we only need a forward propagation.
+
+
+
+
+\subsection{Activation functions}
+\label{sec:activation}
+Sigmoid function, for classification:
+\begin{equation}
+  g(z) = \frac{1}{1+e^{-z}} \;\; \text{where} \;\; 0<g(z)<1
+\end{equation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/sigmoid.png}
+  \caption{Sigmoid}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Rectified Linear Unit (ReLU) function results in any non-negative value:
+
+\begin{equation}
+  g(z) = max (0,z) =
+\begin{cases}
+  z \;\; z >= 0  \\
+  0 \;\; z < 0 \\
+\end{cases}
+\end{equation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/sigmoid.png}
+  \caption{Sigmoid}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Linear function, or in another words, not using any activation function:
+
+\begin{equation}
+  g(z) = z
+\end{equation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/sigmoid.png}
+  \caption{Sigmoid}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Softmax function:
+
+Tanh function, LeakyReLU function, and swish function are other choices.
+
+How to select activation function?
+
+The selection of activation function for the final/output layer, depends on the type of target. For example for binary classification, we need sigmoid. For regression, we can use linear activation function. If the target is a positive number, such as the price of a house, ReLU is the natural choice.
+
+For hidden layers though, ReLU is a better choice. The reason is that ReLU function is faster to computer. Next reason is that ReLU is only flat in one side of the function but sigmoid is flat on both sides, which makes gradient descend very slow. .
+
+
+
+Why do we need activation function? A neural network with no activation function is exactly the same as a linear regression method, and multiple layers is not helping to improve the neural net.  To create non-linearity in the cost function.
+
 
 \section{SL: Instance based learning}
 \section{SL: Ensemble B\&B}
@@ -652,9 +717,10 @@ The F1 score can be interpreted as a harmonic mean of the precision and recall, 
 
 \subsection{Cost function}
 \label{sec:cost}
+Loss function: Used when we refer to the error for a single training example. Cost function: Used to refer to an average of the loss functions over an entire training dataset.
 The cost function gives you a way to measure how well a specific set of parameters fits the training data. Thereby gives you a way to try to choose better parameters.
 
-Let's use the concept of multiple linear regression to discuss the cost function.
+Let's use the concept of multiple linear regression (which is the same for NN) to discuss the cost function.
 
 Parameters/coefficients/weights of the model (In ML, parameters of a model are the variables that you can do training in order to improve the model):
 \begin{equation}
@@ -673,17 +739,13 @@ Here is the model:
 
 Problem statement: find $\overrightarrow{w},b$ such that $\hat{y}^{(i)}$ is close to $y^{(i)}$ for all $(x^{(i)}, y^{(i)} )$. $\big(\hat{y}^{(i)}  - y^{(i)} \big) ^2$, the error for one single sample is called the loss function.
 
-To find $\overrightarrow{w},b$, we form the the cost function using squared error cost:
+To find $\overrightarrow{w},b$, we form the the cost function. The cost function depends on the method we measure the error. For example, using \textbf{squared error cost}:
 
 \begin{multline}
 	\text{find $\overrightarrow{w},b$:} \\
 	\text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
 \end{multline}
-m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. However, there are other options for the cost functions as well.
-
-Loss function: Used when we refer to the error for a single training example. Cost function: Used to refer to an average of the loss functions over an entire training dataset.
-
-The squared error cost function is not an ideal cost function for logistic regression. The reason is that the logistic regression model, which is defined by:
+m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression. The reason is that the logistic regression model, which is defined by:
 
 \begin{equation}
   f_{\overrightarrow{w},b} (\overrightarrow{x}) = \frac{1}{1+e^{-(\overrightarrow{w} \overrightarrow{x} ^ {(i)} + b)}}
@@ -699,7 +761,7 @@ is non-convex, as opposed to linear regression model which is convex. To have a 
   \end{center}
 \end{figure}
 
-To convert the logistic function to a convex function (for a binary classification), we need to ue the following loss definition (see ML C1W3):
+To convert the logistic function to a convex function (for a binary classification), we need to ue the following loss definition known as logistic loss. AKA binary cross entropy (see ML C1W3+ML C2W2):
 
 \begin{multline}
 J(\overrightarrow{w},b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(\hat{y}^{(i)}  - y^{(i)} \big) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big)\\
@@ -726,6 +788,15 @@ To simplify this loss and cost functions, we re-write it as follows:
 L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big) = - y^{(i)} log\big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) - (1-y^{(i)}) log\big(1-f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) \\
 J(\overrightarrow{w},b)   = -\frac{1}{m} \sum_{i=1}^{m} \big[ y^{(i)} log\big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big) + (1-y^{(i)}) log\big(1-f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) \big)  \big] \\
 \end{multline}
+
+
+Here is the summary of the steps for training any ML model (nn, linear regression, etc.-see code C2W1\_NN/2\_neuralNet.ipynb):
+\begin{enumerate}
+  \item \textit{Define model} by specify how to compute output given input x and parameters w, and b ($f_{\overrightarrow{w},b} (\overrightarrow{x})$).
+  \item Specify \textit{Loss function} $L (f_{\overrightarrow{w},b} (\overrightarrow{x}) )  $ and \textit{cost function} $J(\overrightarrow{w},b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) - y^{(i)} \big)$
+  \item \textit{Train} on data to minimize $J(\overrightarrow{w},b)$, for example using gradient descent methods and back propagation.
+\end{enumerate}
+
 
 \subsection{Gradient descent method}
 \label{sec:gradient}
