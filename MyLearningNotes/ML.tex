@@ -530,7 +530,8 @@ For inference (prediction), we only need a forward propagation.
 
 \subsection{Activation functions}
 \label{sec:activation}
-Sigmoid function, for classification:
+
+\textbf{Sigmoid function}, for classification:
 \begin{equation}
   g(z) = \frac{1}{1+e^{-z}} \;\; \text{where} \;\; 0<g(z)<1
 \end{equation}
@@ -543,7 +544,7 @@ Sigmoid function, for classification:
   %#\label{XXX}
 \end{figure}
 
-Rectified Linear Unit (ReLU) function results in any non-negative value:
+\textbf{Rectified Linear Unit (ReLU) function} results in any non-negative value:
 
 \begin{equation}
   g(z) = max (0,z) =
@@ -555,13 +556,13 @@ Rectified Linear Unit (ReLU) function results in any non-negative value:
 
 \begin{figure}[H]
   \centering
-  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/sigmoid.png}
-  \caption{Sigmoid}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/ReLU.png}
+  \caption{ReLU}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
 
-Linear function, or in another words, not using any activation function:
+\textbf{Linear function}, or in another words, not using any activation function:
 
 \begin{equation}
   g(z) = z
@@ -569,25 +570,43 @@ Linear function, or in another words, not using any activation function:
 
 \begin{figure}[H]
   \centering
-  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/sigmoid.png}
-  \caption{Sigmoid}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/Linear.png}
+  \caption{Linear function}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
 
-Softmax function:
+\textbf{Multiclass classification} refers to classification problems where you can have more than just two possible output labels. \textbf{Softmax function }is a generalization of the logistic function. The last layer with m activation unit generates a vector by a linear function which is applied to a softmax function. The softmax function converts the last layer into a probability distribution as described below. After applying softmax, each output will be between 0 and 1 and the outputs will add to 1, so that they can be interpreted as probabilities. The larger inputs will correspond to larger output probabilities.
+
+
+The last layer, then, has m activation units, each of which calculated as:
+
+\begin{equation}
+  a_i = \frac{e^{z_i}}{ \sum_{j=1}^{m} e^{z_j} } \;\; \text{where} \;\; z_i= \overrightarrow{w}_i. \overrightarrow{x}+b_j
+\end{equation}
+Note that $\sum_{i = 1}^{m}  a_i = 1$
 
 Tanh function, LeakyReLU function, and swish function are other choices.
 
-How to select activation function?
 
+\textbf{Multi-label classification} (different from multiclass classification): for example, in image processing we want to know if there is a bus/car/pedestrian. One way to have three model/NN for each label. The other way is to train one model/NN to simultaneously detect all three. For that, the last layer should have three units with a sigmoid function for each of those last year units.
+
+
+\textbf{How to select activation function?}
 The selection of activation function for the final/output layer, depends on the type of target. For example for binary classification, we need sigmoid. For regression, we can use linear activation function. If the target is a positive number, such as the price of a house, ReLU is the natural choice.
 
-For hidden layers though, ReLU is a better choice. The reason is that ReLU function is faster to computer. Next reason is that ReLU is only flat in one side of the function but sigmoid is flat on both sides, which makes gradient descend very slow. .
+For hidden layers though, ReLU is a better choice. The reason is that ReLU function is faster to computer. Next reason is that ReLU is only flat in one side of the function but sigmoid is flat on both sides, which makes gradient descend very slow.
 
 
 
-Why do we need activation function? A neural network with no activation function is exactly the same as a linear regression method, and multiple layers is not helping to improve the neural net.  To create non-linearity in the cost function.
+\textbf{Why do we need activation function?}
+A neural network with no activation function is exactly the same as a linear regression method, and multiple layers is not helping to improve the neural net.  To create non-linearity in the cost function.
+
+
+
+\subsection{Convolutional Neural Network (CNN)}
+In this method, each neuron only looks at part of the previous layer's outputs, instead of a regular layer, which each neuron has weights for all previous layer neurons. The main advantage of this method is that 1) it is faster, 2) Need less training data and less prone to overfitting.
+
 
 
 \section{SL: Instance based learning}
@@ -713,7 +732,7 @@ $F1 = 2 \frac{R * P}{ P + R } $.
 
 The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
 
-\section{Gradient descent (steepest descent)}
+\section{Optimization}
 
 \subsection{Cost function}
 \label{sec:cost}
@@ -797,8 +816,24 @@ Here is the summary of the steps for training any ML model (nn, linear regressio
   \item \textit{Train} on data to minimize $J(\overrightarrow{w},b)$, for example using gradient descent methods and back propagation.
 \end{enumerate}
 
+The same way, the loss function for softmax is:
 
-\subsection{Gradient descent method}
+\begin{equation}
+  L\big( a_1, a_2, ..., a_m, y \big) =
+  \begin{cases}
+    -log ( a_1 )  \;\; \text{if} \;\; y = 1  \\
+    -log ( a_2 )  \;\; \text{if} \;\; y = 2  \\
+    \vdots\\
+    -log ( a_m )  \;\; \text{if} \;\; y = m  \\
+  \end{cases}
+\end{equation}
+
+
+For more accurate (less floating point error) calculation in tensorflow, use from\A_logits=True.
+
+
+
+\subsection{Gradient descent (steepest descent) method}
 \label{sec:gradient}
 
 An optimization method to minimize any function. Depending on the initial starting point, the method may end up at a different local minimum. \\
@@ -847,6 +882,9 @@ If we are exactly at the minimum, since slope is zero, the value of the learning
 \includegraphics[scale=0.12]{pics/LearningRate.png}
 
 \includegraphics[scale=0.12]{pics/learningrate2.png}
+
+\subsection{Adam algorithm for optimization}
+Adam (Adaptive Moment estimation) is the same as the gradient descent method, but it adjusts the learning rate (increases or decreases the rate). In practice, this method uses different learning rates for different parameters. The idea is that if gradient descent direction is roughly the same in each iteration, it increases the learning rate, but if direction is changing, the Adam algorithm reduces the learning rate.
 
 
 \section{Overfitting (high variance) vs underfitting (high bias)}
