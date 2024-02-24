@@ -826,10 +826,21 @@ The same way, the loss function for softmax is:
     \vdots\\
     -log ( a_m )  \;\; \text{if} \;\; y = m  \\
   \end{cases}
+  \label{eq:softmaxLoss}
 \end{equation}
 
+Note in \ref{eq:softmaxLoss} above, only the line that corresponds to the target contributes to the loss, other lines are zero. To write the cost equation we need an 'indicator function' that will be 1 when the index matches the target and zero otherwise.
+$$\mathbf{1}\{y == n\} = =\begin{cases}
+  1, & \text{if $y==n$}.\\
+  0, & \text{otherwise}.
+\end{cases}$$
+The cost is (called Sparse Ctegorical Cross Entropy)-SparseCtegoricalCrossentropy):
+\begin{align}
+  J(\mathbf{w},b) = - \left[ \sum_{i=1}^{m} \sum_{j=1}^{N}  1\left\{y^{(i)} == j\right\} \log \frac{e^{z^{(i)}_j}}{\sum_{k=1}^N e^{z^{(i)}_k} }\right] \tag{4}
+\end{align}
+where $m$ is the number of examples, $N$ is the number of outputs. This is the average of all the losses.
 
-For more accurate (less floating point error) calculation in tensorflow, use from\A_logits=True.
+For more accurate (less floating point error) calculation in tensorflow, it is preferred to have a linear activation function for the last layer, instead of a softmax (the output is this form call logits) use from\_logits=True. This informs the loss function that the softmax operation should be included in the loss calculation. This allows for an optimized implementation. Notice that in the preferred model, the outputs are not probabilities, but the output for each data sample is a vector of size the number of neurons in the last year. This vector for each sample can range from large negative numbers to large positive numbers. The output must be sent through a softmax when performing a prediction that expects a probability. However, we really don't need to apply a softmax to select the most likely category, we can just find the index of the largest output using np.argmax(). See 1\_MachineLearning\_Stanford\\Projects\\python\\C2W2\\2\_softmax.ipynb.
 
 
 
