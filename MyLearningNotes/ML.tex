@@ -576,7 +576,9 @@ For inference (prediction), we only need a forward propagation.
   %#\label{XXX}
 \end{figure}
 
-\textbf{Multiclass classification} refers to classification problems where you can have more than just two possible output labels. \textbf{Softmax function }is a generalization of the logistic function. The last layer with m activation unit generates a vector by a linear function which is applied to a softmax function. The softmax function converts the last layer into a probability distribution as described below. After applying softmax, each output will be between 0 and 1 and the outputs will add to 1, so that they can be interpreted as probabilities. The larger inputs will correspond to larger output probabilities.
+\textbf{Multiclass classification} refers to classification problems where you can have more than just two possible output labels. The last layer has m activation units, corresponding to the m required classes, where each output is associated with a category/class.
+
+\textbf{Softmax function} is a generalization of the logistic function. The last layer generates a vector of size m by a linear function which is applied to a softmax function. The softmax function converts the last layer into a probability distribution as described below. After applying softmax, each output will be between 0 and 1 and the outputs will add to 1, so that they can be interpreted as probabilities. The larger inputs will correspond to larger output probabilities. It provides probabilities of the input being in each category.
 
 
 The last layer, then, has m activation units, each of which calculated as:
@@ -876,6 +878,8 @@ The derivatives of cost functions for regular regression and logistic regression
 \end{equation}
 
 But note that the definition of f for the two regressions are different (for logistic, f is the sigmoid function).
+
+Back propagation is used to find the derivatives of cost function with respect to its parameters. This method is cheaper (\#layers + \#parameter) compared to a direct calculation of the derivatives (\#layers $\times$ \#parameter). The idea is to use the chain rule from left to right.
 
 
 \textbf{Various types of gradient descent: }
