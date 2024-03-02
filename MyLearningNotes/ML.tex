@@ -509,6 +509,8 @@ In practice, each neuron from one layer, has access to all the neurons/inputs fr
 
 Each neuron in the layer computes $\overrightarrow{w} . \overrightarrow{x}+b$ and passes the value to the next layer. Each neuron will learn a feature (such as affordability, quality, vertical line, etc.) by itself.
 
+Each perceptron divides the space into two halves.
+
 
 \subsection{Logistic regression algo with Neural Network}
 We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. There are several option for the activation function g() (see \ref{sec:activation}), for example, for sigmoid function, we have:
@@ -604,6 +606,23 @@ For hidden layers though, ReLU is a better choice. The reason is that ReLU funct
 \textbf{Why do we need activation function?}
 A neural network with no activation function is exactly the same as a linear regression method, and multiple layers is not helping to improve the neural net.  To create non-linearity in the cost function.
 
+\subsection{Biases}
+
+What kind of problems are neural networks appropriate for solving?
+
+\textbf{Restriction Bias} A neural network’s restriction bias (which, if you recall, is the representation’s ability to consider hypotheses) is basically non-existent if you use sigmoids, though certain models may require arbitrarily-complex structure. We can clearly represent Boolean functions with threshold-like units. Continuous functions with no “jumps” can actually be represented with a single hidden layer. We can think of a hidden layer as a way to stitch together “patches” of the function as they approach the output layer. Even arbitrary functions can be approximated with a neural network! They require two hidden layers, one stitching at seams and the other stitching patches.
+
+This lack of restriction does mean that there’s a significant danger of overfitting, but by carefully limiting things that add complexity (as before, this might be layers, nodes, or even the weights themselves), we can stay relatively generalized.
+
+
+\textbf{Preference Bias} On the other hand, we can’t yet answer the question of the pref-
+erence bias of a neural network (which, if you recall, describes which hypotheses from
+the restricted space are preferred). We discussed the algorithm for updating weights
+(gradient descent), but have yet to discuss how the weights should be initialized in the first place.
+
+Common practice is choosing small, random values for our initial weights. The randomness allows for variability so that the algorithm doesn’t get stuck at the same local minima each time; the smallness allows for relative adjustments to be impactful and reduces complexity. Given this knowledge, we can say that neural networks—when all other things are equal—prefer simpler explanations to complex ones. This idea is an embodiment of Occam’s Razor: Entities should not be multiplied unnecessarily. More colloquially, it’s often expressed as the idea that the simpler explanation is likelier to be true.
+
+
 
 
 \subsection{Convolutional Neural Network (CNN)}
@@ -689,6 +708,14 @@ There may be problems when there is no ordinal relationship and allowing the rep
 In these cases, we would like to give the network more expressive power to learn a probability-like number for each possible label value. This can help in both making the problem easier for the network to model. When a one hot encoding is used for the output variable, it may offer a more nuanced set of predictions than a single label.
 
 We can use libraries such is scikit-learn and keras to encode a categorical feature for ML.
+
+\section{Evaluating the model}
+
+Partition the data into three sets: training set (60\%), cross validation set (AKA validation/development/dev set) (20\%), and test set (20\%). Train using the training set, but use the cost function with the cross validation set to evaluate the model (without the regularization parameter). To estimate the generalization error use the test set.
+
+The other way to evaluate a classification model is find the fraction of the test set and the fraction of the train set that the algorithm has mis-classified.
+
+When selecting a model, you want to choose one that performs well both on the training and cross validation set. It implies that it is able to learn the patterns from your training set without overfitting. If you used the defaults in this lab, you will notice a sharp drop in cross validation error from the models with degree=1 to degree=2. This is followed by a relatively flat line up to degree=5. After that, however, the cross validation error is generally getting worse as you add more polynomial features. Given these, you can decide to use the model with the lowest `cv_mse` as the one best suited for your application.
 
 \section{Cross validation}
 
@@ -879,7 +906,7 @@ The derivatives of cost functions for regular regression and logistic regression
 
 But note that the definition of f for the two regressions are different (for logistic, f is the sigmoid function).
 
-Back propagation is used to find the derivatives of cost function with respect to its parameters. This method is cheaper (\#layers + \#parameter) compared to a direct calculation of the derivatives (\#layers $\times$ \#parameter). The idea is to use the chain rule from left to right.
+Back propagation is used to find the derivatives of cost function with respect to its parameters. This method is nothing but the chain rule. This method is cheaper (\#layers + \#parameter) compared to a direct calculation of the derivatives (\#layers $\times$ \#parameter). The idea is to use the chain rule from left to right.
 
 
 \textbf{Various types of gradient descent: }
@@ -912,6 +939,8 @@ To avoid overfitting:
 \begin{itemize}
 \item one method is to collect more training data. If this option is available, probably we should try this first, but this is not always the option.
 \item feature selection: review features, and use fewer features. The down side of this method is that we are throwing away some useful information about the model. See \ref{sec:featureEngineering}.
+\item Try getting additional features
+\item Try adding polynomial features $x_1^2, x_2^2, $ etc.
 \item regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
 \end{itemize}
 
@@ -1098,6 +1127,8 @@ In this method, we first find the standard deviation ($\sigma$) and the average 
 \end{equation}
 
 Then, we have the range for each feature between -1 and 1.
+If you partition the set to training, cross validation, and testing sets, and z-score normalize training, you need to normalize testing and cross validation sets with the mean and variance of the training set to ensure that your input features are transformed as expected by the model.
+
 
 \subsection{Combining features}
 Using intuition to design new features by transforming or combining original features.
