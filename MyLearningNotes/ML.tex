@@ -715,7 +715,7 @@ Partition the data into three sets: training set (60\%), cross validation set (A
 
 The other way to evaluate a classification model is find the fraction of the test set and the fraction of the train set that the algorithm has mis-classified.
 
-When selecting a model, you want to choose one that performs well both on the training and cross validation set. It implies that it is able to learn the patterns from your training set without overfitting. If you used the defaults in this lab, you will notice a sharp drop in cross validation error from the models with degree=1 to degree=2. This is followed by a relatively flat line up to degree=5. After that, however, the cross validation error is generally getting worse as you add more polynomial features. Given these, you can decide to use the model with the lowest `cv_mse` as the one best suited for your application.
+When selecting a model, you want to choose one that performs well both on the training and cross validation set. It implies that it is able to learn the patterns from your training set without overfitting. If you used the defaults in this lab, you will notice a sharp drop in cross validation error from the models with degree=1 to degree=2. This is followed by a relatively flat line up to degree=5. After that, however, the cross validation error is generally getting worse as you add more polynomial features. Given these, you can decide to use the model with the lowest cv\_mse as the one best suited for your application.
 
 \section{Cross validation}
 
@@ -930,26 +930,98 @@ Adam (Adaptive Moment estimation) is the same as the gradient descent method, bu
 
 
 \section{Overfitting (high variance) vs underfitting (high bias)}
-Overfitting (high variance) is the case that a model matches the training data almost perfectly, but does poorly in validation and other new data. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc.
+Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc.
+
+
+The case in the middle is "just right" model where $J_{train}$ and $J_{cv}$ are low.
+
+\begin{figure}[H]
+  \centering
+  \caption{Bias vs Variance}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/biasVariance.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+For some neural network applications, there are some cases where the model has the high bias and high variance at the same time.
 
 
 Since we care about accuracy on new data, which we estimate from our validation data, we want to find the sweet spot between underfitting and overfitting, so that the model do well on examples that are not in the training set. This is called \textit{generalization}.
 
-To avoid overfitting:
+\textbf{To avoid underfitting:}
+\begin{itemize}
+\item adding new features: fixes high bias
+\item adding polynomial features fixes high bias
+\item decrease $lambda$ fixes high bias
+\end{itemize}
+
+\textbf{To avoid overfitting:}
 \begin{itemize}
 \item one method is to collect more training data. If this option is available, probably we should try this first, but this is not always the option.
 \item feature selection: review features, and use fewer features. The down side of this method is that we are throwing away some useful information about the model. See \ref{sec:featureEngineering}.
 \item Try getting additional features
 \item Try adding polynomial features $x_1^2, x_2^2, $ etc.
-\item regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
+\item Increasing $lambda$ fixes high variance. regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
 \end{itemize}
+
+One more important topic is the baseline level of performance. In other words, how should one know if the $J_{train}$ is low, or high, or good enough. Once method to find the baseline performance is to compare the error with respect to the human level performance. The other options are competing algorithm performance, or guess based on the past experience.
+
+If there is a gap between the baseline and the training error, then model in underfit (high bias), but if the gap is between the train and cross validation, it is the overfit (high variance) problem.
+
+\begin{figure}[H]
+  \centering
+  \caption{Bias vs Variance}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/biasVariance2.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Note also that as the training set size increases, $J_{train}$ increases, because it is harder to fit the curve, but generally $J_{cv}$ drops.
+
+\begin{figure}[H]
+  \centering
+  \caption{learning curve}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/LearningCurve.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+For a model with high bias, the addition of sampling sizes after certain point, does not help with the performance.
+
+\begin{figure}[H]
+  \centering
+  \caption{High bias}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/highBias.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+For a model with high variance, increase the training set results in converging the errors to the baseline level.
+
+\begin{figure}[H]
+  \centering
+  \caption{High variance}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/highVariance.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+How does a neural network work in terms of bias and variance? Large neural networks are low bias machines, means, they generally fit the model. Using a bigger nn (more hidden layers or more units per layer) reduces the bias. A large neural network will usually do as well or better than a smaller one so long as reqularization is chosen appropriately. A larger neural network does not hurt, just more computationally intense. With neural network, the main problem is high variance rather than high bias.
+
+
+\begin{figure}[H]
+  \centering
+  \caption{Neural network training}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/nn.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
 
 
 \section{Regularization}
 \label{sec:regularization}
 
-We need to modify the cost function by penalizing/regularize the features/parameters corresponding to over fitting.
-When there are many features for a model, it is prone to overfit. To avoid that, we idea is that to build a model with all features, because initially we don't know which features are important, but we penalize all features.
+We need to modify the cost function by penalizing/regularize the features/parameters corresponding to over fitting. When there are many features for a model, it is prone to overfit. To avoid that, the idea is that to build a model with all features, because initially we don't know which features are important, but we penalize all features.
 
 For a linear regression, we get (we are not penalizing b param, if we do it looks like this):
 
@@ -957,7 +1029,17 @@ For a linear regression, we get (we are not penalizing b param, if we do it look
 J(\overrightarrow{w},b) = \underbrace{  \frac{1}{2m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) - y^{(i)} \big) ^2}_\text{squared mean error} + \underbrace{ \frac{\lambda}{2m} \sum_{i=1}^n w_j^2 + \frac{\lambda}{2m} b^2}_\text{regularization term}
 \end{equation}
 
-The regularization term forces the coefficient to remain small and $\lambda$ is the coefficient to control this. A large $\lambda$ results in underfit by reducing weights, but a very small one, leads to overfit.
+The regularization term forces the coefficient to remain small and $\lambda$ is the coefficient to control this. A large $\lambda$ results in underfit by reducing weights, but a very small one, leads to overfit. To find the right value for the regularization parameter, we can train the model with a sweep of $\lambda$ s and calculate $J_{cv}$ for each case, and pick a $\lambda$, corresponding to the lowest cost function.
+
+\begin{figure}[H]
+  \centering
+  \caption{Regularization parameter}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/regularization.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
 
 Gradient descent with cost function (without b), looks like this (rewriting equation \ref{eq:derivatives}):
 \begin{equation}
