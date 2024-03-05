@@ -793,7 +793,7 @@ To find $\overrightarrow{w},b$, we form the the cost function. The cost function
 	\text{find $\overrightarrow{w},b$:} \\
 	\text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
 \end{multline}
-m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression. The reason is that the logistic regression model, which is defined by:
+m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. In sklearn, we can caculate the cost with mean\_squared\_error. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression. The reason is that the logistic regression model, which is defined by:
 
 \begin{equation}
   f_{\overrightarrow{w},b} (\overrightarrow{x}) = \frac{1}{1+e^{-(\overrightarrow{w} \overrightarrow{x} ^ {(i)} + b)}}
@@ -930,7 +930,7 @@ Adam (Adaptive Moment estimation) is the same as the gradient descent method, bu
 
 
 \section{Overfitting (high variance) vs underfitting (high bias)}
-Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc.
+Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc. In sklearn, we can caculate the cost with mean\_squared\_error.
 
 
 The case in the middle is "just right" model where $J_{train}$ and $J_{cv}$ are low.
@@ -1274,8 +1274,11 @@ If your validation is based on a simple train-test split, exclude the validation
 
 
 \section{Python}
+\begin{itemize}
+\item Use vectorization in python to improve the performance (for example: np.dot(W,x)).
+\item To expand the dimension of a numpy array: np.expand\_dims(x, axis=1). This will convert (dim,) to (dim,1). For the reverse action, i.e. converting (dim,1) to (dim,), array[:,0].
+\end{itemize}
 
-Use vectorization in python to improve the performance (for example: np.dot(W,x)).
 
 
 \section{ML Checklist}
