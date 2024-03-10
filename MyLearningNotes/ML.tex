@@ -750,16 +750,21 @@ Observation for using cross validation with linear regression:
 \section{F1 score, precision, and recall}
 Refer to \href{https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html#precision-recall}{this source.}
 
-Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$):
-$P = \frac{T_p}{T_p + F_p} $.
+Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$): $P = \frac{T_p}{T_p + F_p} $. This means if ML detects a class/category, most likely it is correct.
 
-Recall    (R) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$):
-$R = \frac{T_p}{T_p + F_n} $.
+Recall (R) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$): $R = \frac{T_p}{T_p + F_n} $. This means if ML can correctly identify the class even if the class is very rare.
 
-These quantities are also related to the ($F1$) score, which is defined as the harmonic mean of precision and recall:
-$F1 = 2 \frac{R * P}{ P + R } $.
 
-The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0.
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/confusionMatrix.png}
+  \caption{confusion matrix}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
+These quantities are also related to the ($F1$) score, which is defined as the harmonic mean of precision and recall: $F1 = 2 \frac{R * P}{ P + R } $. The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0. F1 score allows us to select the best model among many models with different recall and precision. F1 combines both recall and precision.
 
 \section{Optimization}
 
@@ -930,7 +935,7 @@ Adam (Adaptive Moment estimation) is the same as the gradient descent method, bu
 
 
 \section{Overfitting (high variance) vs underfitting (high bias)}
-Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc. In sklearn, we can caculate the cost with mean\_squared\_error.
+Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc. In sklearn, we can calculate the cost with mean\_squared\_error.
 
 
 The case in the middle is "just right" model where $J_{train}$ and $J_{cv}$ are low.
@@ -963,6 +968,9 @@ Since we care about accuracy on new data, which we estimate from our validation 
 \item Try adding polynomial features $x_1^2, x_2^2, $ etc.
 \item Increasing $lambda$ fixes high variance. regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
 \end{itemize}
+
+
+To add data, we can use the augmentation of data (rotating images, cropping images, etc.). If there is not enough data to train a model, one option is to use the \textbf{\textit{transfer learning}}, in which you train a model using data from a different task (this step is called spervised pretraning), and fine tune the model with the actual data (this step is called fine tuning.). The other option is to use the other model parameters, and use the actual data to train only the last year of the neural network.
 
 One more important topic is the baseline level of performance. In other words, how should one know if the $J_{train}$ is low, or high, or good enough. Once method to find the baseline performance is to compare the error with respect to the human level performance. The other options are competing algorithm performance, or guess based on the past experience.
 
@@ -1112,7 +1120,10 @@ Scikit-learn has two mutual information metrics in its feature\_selection module
 \subsection{How to create new features}
 
 \subsubsection{mathematical transform}
-Use arithmetic operations to create new features based on other features. For example, find the area of land by multiplying width by length.
+Use arithmetic operations to create new features based on other features. For example, find the area of land by multiplying width by length. This will create non-linearity in the date.
+
+For the neural network, you don't need to create non-linear features. Neural networks can learn non-linear relationships between the inputs and outputs. But for linear regression, you need to create non-linear features to capture non-linear relationships between the inputs and outputs.
+
 
 \subsubsection{count}
 Features describing the presence or absence of something often come in sets, the set of risk factors for a disease, say. You can aggregate such features by creating a count. These features will be binary (1 for Present, 0 for Absent) or boolean (True or False). In Python, booleans can be added up just as if they were integers.
