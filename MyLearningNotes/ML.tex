@@ -160,6 +160,8 @@ Target-transforming algorithms use the features to group the target values in th
 
 The important thing is this: feature transformers generally can extrapolate target values beyond the training set given appropriate features as inputs, but the predictions of target transformers will always be bound within the range of the training set. If the time dummy continues counting time steps, linear regression continues drawing the trend line. Given the same time dummy, a decision tree will predict the trend indicated by the last step of the training data into the future forever. Decision trees cannot extrapolate trends. Random forests and gradient boosted decision trees (like XGBoost) are ensembles of decision trees, so they also cannot extrapolate trends.
 
+There are two types of data for supervised learning: Structured and Unstructured data. The structured data is the data bases of data tabulated in tables. The Unstructured data refers to image, text, or audio. Generally, it is more complex to train a model with unstructured data.
+
 \section{SL: Decision tree}
 
 \subsection{Introduction}
@@ -511,6 +513,8 @@ Each neuron in the layer computes $\overrightarrow{w} . \overrightarrow{x}+b$ an
 
 Each perceptron divides the space into two halves.
 
+It is important to initialize $\overrightarrow{w}$ and $ b$ randomly, and not all equal to zero, otherwise, if all numbers are zero, there would be no training.
+
 
 \subsection{Logistic regression algo with Neural Network}
 We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. There are several option for the activation function g() (see \ref{sec:activation}), for example, for sigmoid function, we have:
@@ -525,10 +529,44 @@ The calculation for the activation j of layer l is:
   a_j^{[l]}= g(\overrightarrow{w}_j^{[l]} . \overrightarrow{a}^{[l-1]}+b_j^{[l]})
 \end{equation}
 
+$a^{[0]}$ refers to the first layer/input layer ($X$), and the last year is  $\hat{y}= a^{[l]}$. Considering all the activation units in one layer:
+\begin{equation}
+  a_{n^{[l]}\times1}^{[l]}= g( z_{n^{[l]}\times1}^{[l]} = \overrightarrow{w}_{n^{[l]}\times n^{[l-1]}}^{[l]} . \overrightarrow{a}_{n^{[l-1]}\times1}^{[l-1]}+b_{n^{[l]}\times1}^{[l]})
+\end{equation}
+
+The dimension of $dW^{[l]}$ $db^{[l]}$ is the same as $W^{[l]}$ and $b^{[l]}$.
+
+The dimension of vectorized items are ($m$ is the number of samples/training set, and $b$ is the broadcast of the same $b$ in the previous equation):
+\begin{equation}
+  A_{n^{[l]}\times m}^{[l]}= g( Z_{n^{[l]}\times m}^{[l]} = \overrightarrow{W}_{n^{[l]}\times n^{[l-1]}}^{[l]} . \overrightarrow{A}_{n^{[l-1]}\times m}^{[l-1]}+b_{n^{[l]}\times m}^{[l]})
+\end{equation}
+
+
+
+
+Why we need a deep neural network instead of a shallow one? There are functions that you can compute with a small L-layer deep neural network that shallower networks require exponentially more hidden units to compute.
+
+Based on these notations, the forward and backward propagation look like the following plot:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/forwardbackward.png}
+  \caption{Forward and Backward functions}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+The backward equations look like this:
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/backwardeq.png}
+  \caption{Forward and Backward functions}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
 For inference (prediction), we only need a forward propagation.
-
-
-
 
 \subsection{Activation functions}
 \label{sec:activation}
@@ -545,6 +583,7 @@ For inference (prediction), we only need a forward propagation.
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
+Since the slope is close to zero at both ends of Sigmoid function, the gradient descent becomes very slow, but with ReLU, we don't have this issue.
 
 \textbf{Rectified Linear Unit (ReLU) function} results in any non-negative value:
 
@@ -563,6 +602,25 @@ For inference (prediction), we only need a forward propagation.
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
+
+\textbf{Leaky Rectified Linear Unit (ReLU) function} results in any non-negative value:
+Since the derivative is zero when z is negative, we may use a small number instead of zero, which works better in practice, but rarely being used.
+\begin{equation}
+  g(z) = max (0,z) =
+  \begin{cases}
+    z \;\; z >= 0  \\
+    small number \;\; z < 0 \\
+  \end{cases}
+\end{equation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.5]{pics/ReLU.png}
+  \caption{ReLU}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
 
 \textbf{Linear function}, or in another words, not using any activation function:
 
@@ -913,6 +971,7 @@ But note that the definition of f for the two regressions are different (for log
 
 Back propagation is used to find the derivatives of cost function with respect to its parameters. This method is nothing but the chain rule. This method is cheaper (\#layers + \#parameter) compared to a direct calculation of the derivatives (\#layers $\times$ \#parameter). The idea is to use the chain rule from left to right.
 
+Note that since the slope is close to zero at both ends of Sigmoid function, the gradient descent becomes very slow, but with ReLU, we don't have this issue.
 
 \textbf{Various types of gradient descent: }
 
