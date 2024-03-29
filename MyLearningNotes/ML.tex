@@ -433,6 +433,8 @@ To find the line:
 \end{equation}
 To find the the two unknowns of the linear fit, a and b, take the derivative of the error with respect to a and b and set it zero. That would be a system of equations with two unknowns. After solving the equation you have the fit. To have a nonlinear fit, we can use a polynomial model, as discussed in the next section.
 
+The parameters of the model are $W $ and $b$, but hyperparameters are learning rate, number of iterations, number of hidden layers, number of hidden units in each layer, the choice of activation functions, momentum, mini batch size, and regularization parameters.
+
 To do linear regression, we can use sklearn.linear\_model.LinearRegression.
 
 \subsection{Non-linear/polynomial regression}
@@ -767,13 +769,16 @@ In these cases, we would like to give the network more expressive power to learn
 
 We can use libraries such is scikit-learn and keras to encode a categorical feature for ML.
 
-\section{Evaluating the model}
+\section{Evaluating the model-partition data set}
 
-Partition the data into three sets: training set (60\%), cross validation set (AKA validation/development/dev set) (20\%), and test set (20\%). Train using the training set, but use the cost function with the cross validation set to evaluate the model (without the regularization parameter). To estimate the generalization error use the test set.
+Partition the data into three sets: training set (60\%), cross validation set (AKA validation/development/dev set) (20\%), and test set (20\%). Train using the training set, but use the cost function with the cross validation set to evaluate the model (without the regularization parameter). To estimate the generalization error use the test set. The data allocation varies as the number of samples grows. For example, for very large data set (1,000,000), we can use 98/1/1.
 
 The other way to evaluate a classification model is find the fraction of the test set and the fraction of the train set that the algorithm has mis-classified.
 
 When selecting a model, you want to choose one that performs well both on the training and cross validation set. It implies that it is able to learn the patterns from your training set without overfitting. If you used the defaults in this lab, you will notice a sharp drop in cross validation error from the models with degree=1 to degree=2. This is followed by a relatively flat line up to degree=5. After that, however, the cross validation error is generally getting worse as you add more polynomial features. Given these, you can decide to use the model with the lowest cv\_mse as the one best suited for your application.
+
+Mismatched train/test distribution: they should be of the same distribution.
+
 
 \section{Cross validation}
 
@@ -973,11 +978,18 @@ Back propagation is used to find the derivatives of cost function with respect t
 
 Note that since the slope is close to zero at both ends of Sigmoid function, the gradient descent becomes very slow, but with ReLU, we don't have this issue.
 
+
+\textbf{Vanishing /Exploding Gradients:}
+For a deep NN, if activation units or weights are greater than one, they explode after multiplying in the forwared propagation. Conversely, if the weights are less than one, they vanish. This causes a very small training process/gradient descent. To solve this issue, we need to be very careful how we should initialize the weights, by setting the weight, not too much greater or smaller than one.
+
+
 \textbf{Various types of gradient descent: }
 
 Batch gradient descent: each step of gradient descent uses all the training examples. While this batching provides computation efficiency, it can still have a long processing time for large training datasets as it still needs to store all of the data into memory. Batch gradient descent also usually produces a stable error gradient and convergence, but sometimes that convergence point isn't the most ideal, finding the local minimum versus the global one.
 
 Mini-batch gradient descent updates the parameters using a subset of training samples.
+
+Epoch is a single pass through the training set. With Batch gradient descent, we do one step of the gradient descent in each epoch, but with the mini-batch gradient descent, we do as many as the number of mini batched gradient descent in each epoch.
 
 \subsection{Learning rate selection}
 \label{sec:learningRate}
@@ -1015,21 +1027,22 @@ Since we care about accuracy on new data, which we estimate from our validation 
 \textbf{To avoid underfitting:}
 \begin{itemize}
 \item adding new features: fixes high bias
-\item adding polynomial features fixes high bias
-\item decrease $lambda$ fixes high bias
+\item adding polynomial features/bigger neural network fixes high bias
+\item decreasing the regularization ($lambda$) fixes high bias
 \end{itemize}
 
 \textbf{To avoid overfitting:}
 \begin{itemize}
 \item one method is to collect more training data. If this option is available, probably we should try this first, but this is not always the option.
 \item feature selection: review features, and use fewer features. The down side of this method is that we are throwing away some useful information about the model. See \ref{sec:featureEngineering}.
-\item Try getting additional features
-\item Try adding polynomial features $x_1^2, x_2^2, $ etc.
-\item Increasing $lambda$ fixes high variance. regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
+\item try getting additional features
+\item try adding polynomial features $x_1^2, x_2^2, $ etc.
+\item increasing regularization ($lambda$) fixes high variance. regularization: it gently reduces the impact of some features, without eliminating the feature. This, in some sort, means that we can have higher order parameters in the model, without overfitting. See \ref{sec:regularization}
+\item Early stopping: the gap between the cross validation (dev) and training error decreases, until it grows at some point. We can stop once the gap between the dev and training error increases.
 \end{itemize}
 
 
-To add data, we can use the augmentation of data (rotating images, cropping images, etc.). If there is not enough data to train a model, one option is to use the \textbf{\textit{transfer learning}}, in which you train a model using data from a different task (this step is called spervised pretraning), and fine tune the model with the actual data (this step is called fine tuning.). The other option is to use the other model parameters, and use the actual data to train only the last year of the neural network.
+To add data, we can use the augmentation of data (rotating images, cropping images, distorting images, etc.). Data augmentation does not add a lot of information to our data set, but in case we really cannot get more data, we can use this method.  If there is not enough data to train a model, one option is to use the \textbf{\textit{transfer learning}}, in which you train a model using data from a different task (this step is called spervised pretraning), and fine tune the model with the actual data (this step is called fine tuning.). The other option is to use the other model parameters, and use the actual data to train only the last year of the neural network.
 
 One more important topic is the baseline level of performance. In other words, how should one know if the $J_{train}$ is low, or high, or good enough. Once method to find the baseline performance is to compare the error with respect to the human level performance. The other options are competing algorithm performance, or guess based on the past experience.
 
@@ -1084,10 +1097,14 @@ How does a neural network work in terms of bias and variance? Large neural netwo
   %#\label{XXX}
 \end{figure}
 
+The other topic is orthogonalization. For training, we try to optimize the cost function, but at the same time, we want to avoid overfitting. These two items are orthogonal, and more optimization means more overfitting. Instead, we need a tool to mix these two goals.
+
 
 \section{Regularization}
 \label{sec:regularization}
 
+
+\textbf{\textit{Lambda method}}
 We need to modify the cost function by penalizing/regularize the features/parameters corresponding to over fitting. When there are many features for a model, it is prone to overfit. To avoid that, the idea is that to build a model with all features, because initially we don't know which features are important, but we penalize all features.
 
 For a linear regression, we get (we are not penalizing b param, if we do it looks like this):
@@ -1096,7 +1113,22 @@ For a linear regression, we get (we are not penalizing b param, if we do it look
 J(\overrightarrow{w},b) = \underbrace{  \frac{1}{2m} \sum_{i=1}^{m} \big( f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)}) - y^{(i)} \big) ^2}_\text{squared mean error} + \underbrace{ \frac{\lambda}{2m} \sum_{i=1}^n w_j^2 + \frac{\lambda}{2m} b^2}_\text{regularization term}
 \end{equation}
 
-The regularization term forces the coefficient to remain small and $\lambda$ is the coefficient to control this. A large $\lambda$ results in underfit by reducing weights, but a very small one, leads to overfit. To find the right value for the regularization parameter, we can train the model with a sweep of $\lambda$ s and calculate $J_{cv}$ for each case, and pick a $\lambda$, corresponding to the lowest cost function.
+This is the $L_2 (||w||^2_2) $ regularization, but we can also use the $L_1 (||w||_1)$ regularization.
+
+
+The regularization for the neural network is applied to all weights:
+
+\begin{equation}
+  J(w^{[1]},b^{[1]}, ... , w^{[l]},b^{[l]}) = \frac{1}{m} \sum_{i=1}^{m} L \big( \hat{y}^{(i)} - y^{(i)} \big)+ \underbrace{ \frac{\lambda}{2m} \sum_{i=1}^l ||w^{[l]}||_F^2 }_\text{regularization term}
+\end{equation}
+where, the Frobenius norm is:
+
+\begin{equation}
+ ||w^{[l]}||_F^2 = \sum_{i=1}\sum_{j=1} (w_{ij}^{[l]})^2 \; \; w (n^{[l]} n^{[l-1]} )
+\end{equation}
+
+
+The regularization term forces the coefficient to remain small and $\lambda$ is the coefficient to control this. A large $\lambda$ results in underfit by reducing weights, but a very small one, leads to overfit. To find the right value for the regularization parameter, we can train the model with a sweep of $\lambda$ s and calculate $J_{cv}$ for each case, and pick a $\lambda$, corresponding to the lowest cost function. But this requires running the model many times for each regularization parameter.
 
 \begin{figure}[H]
   \centering
@@ -1124,6 +1156,21 @@ For a logistic regression, we get:
 \label{eq:logisticReg}
 \end{equation}
 The derivatives of equation \ref{eq:logisticReg} for gradient descent is similar to \ref{eq:libRegReg}, just f is different.
+
+
+\textbf{\textit{Dropout regularization:}}
+
+We set a probability to drop units in each layer of neural network. For each sample then we use the reduce network. To implement dropout, we can use the inverted dropout method. In each iteration, we randomly drop some units. There would be no dropout for predictions
+
+\begin{figure}[H]
+  \centering
+  \caption{Neural network training}
+  \includegraphics[trim =3.0cm 2.0cm 3.0cm 2.0cm, clip, scale=0.12]{pics/dropoutregularization.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
 
 
 \section{Model validation}
@@ -1249,7 +1296,7 @@ In pseudocode: encoding = weight * in\_category (ex. mean of the category for th
 
 \subsection{scaling vs normalization}
 
-In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties. The point is to help with the gradient descent to converge faster. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in \textbf{normalization}, you're changing the shape of the distribution of your data.
+In both cases, you're transforming the values of numeric variables so that the transformed data points have specific helpful properties to speed of the training. The point is to help with the gradient descent to converge faster. The difference is that: in \textbf{scaling}, you're changing the range of your data, while in \textbf{normalization}, you're changing the shape of the distribution of your data.
 
 \subsubsection{scaling}
 This means that you're transforming your data so that it fits within a specific scale, like 0-100 or 0-1. You want to scale data when you're using methods based on measures of how far apart data points are, like support vector machines (SVM) or k-nearest neighbors (KNN). With these algorithms, a change of "1" in any numeric feature is given the same importance. By scaling your variables, you can help compare different variables on equal footing.
