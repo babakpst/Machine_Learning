@@ -552,7 +552,7 @@ Based on these notations, the forward and backward propagation look like the fol
 
 \begin{figure}[H]
   \centering
-  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/forwardbackward.png}
+  \includegraphics[trim =3.5cm 3.0cm 3.5cm 3.0cm, clip, scale=0.15]{pics/forwardbackward.png}
   \caption{Forward and Backward functions}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
@@ -650,6 +650,9 @@ The last layer, then, has m activation units, each of which calculated as:
 \end{equation}
 Note that $\sum_{i = 1}^{m}  a_i = 1$
 
+The name softmax is coming from the contrast function hard-max, which converts the last year, to a vector with only one true / 1 label, and the rests would be zero. But with the softmax, all elements have a value and the sum of all values are one. Note also that if number of softmax classes is two, the softmax reduces to logistic regression.
+
+
 Tanh function, LeakyReLU function, and swish function are other choices.
 
 
@@ -688,7 +691,23 @@ Common practice is choosing small, random values for our initial weights. The ra
 \subsection{Convolutional Neural Network (CNN)}
 In this method, each neuron only looks at part of the previous layer's outputs, instead of a regular layer, which each neuron has weights for all previous layer neurons. The main advantage of this method is that 1) it is faster, 2) Need less training data and less prone to overfitting.
 
+\subsection{Tuning hyperparameters}
 
+\begin{itemize}
+  \item learning rate (most important parameter \#1) $\alpha$
+  \item momentum term  (\#2)$\beta$
+  \item Adam optimization $\beta_1, \beta_2, \epsilon$ (\#4)
+  \item number of layers (\#3)
+  \item number of units in each layer (\#2)
+  \item learning rate decay (\#3)
+  \item mini-batch size (\#2)
+\end{itemize}
+
+To investigate the hyperparameters, use random points rather than a grid. You may need to test these with many hyperparamters simultaneously. The other technique is to go from a coarse to fine regions.
+
+Using an appropriate scale to pick hyperparamters matters, for example, for number of layers/units, we can use an equally spaced grid or linear scale, but for the learning rate we need to use logarithmic pattern ($\alpha = 10^{-4 \times np.random.rand()}$).
+
+For exponentially weighted average, we can use $1-\beta$, sample uniformly between 0.1 to 0.001 $\beta = 1-10^{-3 \times np.random.rand()}$.
 
 \section{SL: Instance based learning}
 \section{SL: Ensemble B\&B}
@@ -937,7 +956,7 @@ The cost is (called Sparse Ctegorical Cross Entropy)-SparseCtegoricalCrossentrop
 \end{align}
 where $m$ is the number of examples, $N$ is the number of outputs. This is the average of all the losses.
 
-For more accurate (less floating point error) calculation in tensorflow, it is preferred to have a linear activation function for the last layer, instead of a softmax (the output is this form call logits) use from\_logits=True. This informs the loss function that the softmax operation should be included in the loss calculation. This allows for an optimized implementation. Notice that in the preferred model, the outputs are not probabilities, but the output for each data sample is a vector of size the number of neurons in the last year. This vector for each sample can range from large negative numbers to large positive numbers. The output must be sent through a softmax when performing a prediction that expects a probability. However, we really don't need to apply a softmax to select the most likely category, we can just find the index of the largest output using np.argmax(). See 1\_MachineLearning\_Stanford\\Projects\\python\\C2W2\\2\_softmax.ipynb.
+For more accurate (less floating point error) calculation in tensorflow, it is preferred to have a linear activation function for the last layer, instead of a softmax (the output is this form call logits) use from\_logits=True. This informs the loss function that the softmax operation should be included in the loss calculation. This allows for an optimized implementation. Notice that in the preferred model, the outputs are not probabilities, but the output for each data sample is a vector of size the number of neurons in the last year. This vector for each sample can range from large negative numbers to large positive numbers. The output must be sent through a softmax when performing a prediction that expects a probability. However, we really don't need to apply a softmax to select the most likely category, we can just find the index of the largest output using np.argmax(). See 1\_MachineLearning\_Stanford\_Projects\_python\_C2W2\_2\_softmax.ipynb.
 
 
 
@@ -982,14 +1001,93 @@ Note that since the slope is close to zero at both ends of Sigmoid function, the
 \textbf{Vanishing /Exploding Gradients:}
 For a deep NN, if activation units or weights are greater than one, they explode after multiplying in the forwared propagation. Conversely, if the weights are less than one, they vanish. This causes a very small training process/gradient descent. To solve this issue, we need to be very careful how we should initialize the weights, by setting the weight, not too much greater or smaller than one.
 
+\textbf{\textit{Local optima in neural network}} most neural network problems are saddle points rather than local optima. Problem is really not the local optima, but the plateaus, a region where the derivative is close to zero for a long time.
 
-\textbf{Various types of gradient descent: }
 
-Batch gradient descent: each step of gradient descent uses all the training examples. While this batching provides computation efficiency, it can still have a long processing time for large training datasets as it still needs to store all of the data into memory. Batch gradient descent also usually produces a stable error gradient and convergence, but sometimes that convergence point isn't the most ideal, finding the local minimum versus the global one.
+\subsubsection{Various types of gradient descent:}
+\textbf{\textit{Batch gradient descent:}} each step of gradient descent uses all the training examples. While this batching provides computation efficiency, it can still have a long processing time for large training datasets as it still needs to store all of the data into memory. Batch gradient descent also usually produces a stable error gradient and convergence (if you plot cost vs iteration, ideally it should decrease as the number of iteration increases), but sometimes that convergence point isn't the most ideal, finding the local minimum versus the global one.
 
-Mini-batch gradient descent updates the parameters using a subset of training samples.
+\textbf{\textit{Mini-batch gradient descent}} updates the parameters using a subset of training samples. That means you do a full forward and backward propagation using a subset of samples. If you plot cost vs iterations, it is more noisy but the trend should be the same as a batch gradient descent. The noise is due to the subsets, one subset might have a higher cost, and the other might have a lower cost. The size of the mini-batch determines the type of gradient descent:
+
+\begin{itemize}
+  \item size = m: Batch gradient descent (The cons is that it is long per iteration. )
+  \item size = 1: stochastic gradient descent (every example is its own mini-batch). This one is very noisy, but the average direction is toward the minimum, but may never hit the minimum.
+  \item $1< size < m (~1000)$: This is the fastest learning. It makes progress without processing all training samples. Typical batch size is powers of two (64, 128, 256, 512, and 1024), depending on the memory size of GPU/CPU. The mini-batch size is another hyperparameter.
+\end{itemize}
+
+If the training set is small (less than 2000), go with the batch gradient method.
 
 Epoch is a single pass through the training set. With Batch gradient descent, we do one step of the gradient descent in each epoch, but with the mini-batch gradient descent, we do as many as the number of mini batched gradient descent in each epoch.
+
+\textbf{\textit{Gradient descent with momentum}}: It moves faster than the regular gradient descent. First, we need to learn about Exponentially weighted average, as defined below to find the average of a quantity, such as temperature.
+\begin{equation}
+  V_t = \beta V_{t-1} + (1-\beta) \theta_t
+\end{equation}
+
+$V_t$ is approximately average over $\frac{1}{1-\beta}$. The main advantage of this method, is that it takes a little memory, compared to a moving average that requires more memory (but it is more accurate).
+
+The first few samples of the weighted average is not valid, because we don't have information for the prior points. We need to use bias computation to correct this. Bias correction makes the computation more accurately. The correction is:
+
+\begin{equation}
+  V_t = \frac{V_{t}}{1-\beta^t}
+\end{equation}
+
+
+Now that we know what exponential weighted average is, we need to use it with gradient descent to boost the efficiency. on iteration t, compute the dw and db as usual in the backward propagation, then:
+
+\begin{align}
+  V_{dw} &= V_{db} = 0 \\
+  V_{dw} &= \beta V_{dw} + (1-\beta) dw \\
+  V_{db} &=  \beta V_{db} + (1-\beta) db \\
+  W &= W- \alpha V_{dw} \\
+  b &= b- \alpha V_{db} \\
+\end{align}
+
+The $\beta$ is another hyperparameter in our model, but, in practice, it is ok to skip bias correction. Additionally, in some literature, the term $1-\beta$ is omitted.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =25cm 22.0cm 40cm 20.0cm, clip, scale=0.4]{pics/GD_with_momentum.png}
+    \caption{Gradient descent with momentum}
+    %\label{}
+  \end{center}
+\end{figure}
+
+
+\textbf{\textit{RMSprop (Root Mean Square propagation)}}:
+
+on iteration t, compute the dw and db as usual in the backward propagation, then (squared in the following equation is element-wise):
+
+\begin{align}
+  S_{dw} &= S_{db} = 0 \\
+  S_{dw} &= \beta S_{dw} + (1-\beta) dw^2\\
+  S_{db} &= \beta S_{db} + (1-\beta) db^2\\
+  W &= W- \alpha \frac{dw}{\sqrt{S_{dw}}} \\
+  b &= b- \alpha \frac{db}{\sqrt{S_{db}}} \\
+\end{align}
+
+
+\textbf{\textit{Adam algorithm for optimization}}
+Adam (Adaptive Moment estimation) is the same as the gradient descent method, but it adjusts the learning rate (increases or decreases the rate). In practice, this method uses different learning rates for different parameters. Basically, it is a combination of RMSprop and momentum.
+
+The idea is that if gradient descent direction is roughly the same in each iteration, it increases the learning rate, but if direction is changing, the Adam algorithm reduces the learning rate.
+
+on iteration t, compute the dw and db as usual in the backward propagation, then (squared in the following equation is element-wise):
+\begin{align}
+  S_{dw} &= S_{db} = V_{dw} = V_{db} = 0 \\
+  V_{dw} &= \beta_1 V_{dw} + (1-\beta_1) dw \\
+  V_{db} &=  \beta_1 V_{db} + (1-\beta_1) db \\
+  S_{dw} &= \beta_2 S_{dw} + (1-\beta_2) dw^2\\
+  S_{db} &= \beta_2 S_{db} + (1-\beta_2) db^2\\
+  V_{dw}^{corrected} &= \frac{V_{dw}}{(1-\beta_1^t)} \\
+  V_{db}^{corrected} &= \frac{V_{db}}{(1-\beta_1^t)} \\
+  S_{dw}^{corrected} &= \frac{S_{dw}}{(1-\beta_1^t)} \\
+  S_{db}^{corrected} &= \frac{S_{db}}{(1-\beta_1^t)} \\
+  W &= W- \alpha \frac{V_{dw}^{corrected}}{\sqrt{S_{dw}^{corrected} + \epsilon}} \\
+  b &= b- \alpha \frac{V_{db}^{corrected}}{\sqrt{S_{db}^{corrected} + \epsilon}} \\ \\
+\end{align}
+
+Hyperparameters are: $\alpha, \beta_1(0.9), \beta_2(0.999), \epsilon (10^{-8})$.
 
 \subsection{Learning rate selection}
 \label{sec:learningRate}
@@ -1001,9 +1099,17 @@ If we are exactly at the minimum, since slope is zero, the value of the learning
 
 \includegraphics[scale=0.12]{pics/learningrate2.png}
 
-\subsection{Adam algorithm for optimization}
-Adam (Adaptive Moment estimation) is the same as the gradient descent method, but it adjusts the learning rate (increases or decreases the rate). In practice, this method uses different learning rates for different parameters. The idea is that if gradient descent direction is roughly the same in each iteration, it increases the learning rate, but if direction is changing, the Adam algorithm reduces the learning rate.
+\textbf{\textit{Learning rate decay}}: To speed up the learning algorithm, we can slowly reduce the learning rate over iterations. This helps with the mini-batched gradient descent, which potentially, has a noisy nature, and the algorithm may never reach to the minimum. By reducing the learning rate, we can reduce the region in which the algorithm is oscillating. Different formulas are used in the literature:
 
+\begin{align}
+  \alpha &= \frac{1}{1+decayRate\times epochNumber} \alpha_0 \\
+  \alpha &= 0.95^{epochNumbre} \alpha_0 \; \; \text{(exponential decay)} \\
+  \alpha &= \frac{k}{\sqrt{epochNum}}  \alpha_0 \\
+  \text{staircase decay} \\
+  \text{Manual decay}
+\end{align}
+
+Decay rate is another hyperparameter.
 
 \section{Overfitting (high variance) vs underfitting (high bias)}
 Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc. In sklearn, we can calculate the cost with mean\_squared\_error.
@@ -1132,8 +1238,8 @@ The regularization term forces the coefficient to remain small and $\lambda$ is 
 
 \begin{figure}[H]
   \centering
-  \caption{Regularization parameter}
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/regularization.png}
+  \caption{Regularization parameter}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1164,8 +1270,8 @@ We set a probability to drop units in each layer of neural network. For each sam
 
 \begin{figure}[H]
   \centering
-  \caption{Neural network training}
   \includegraphics[trim =3.0cm 2.0cm 3.0cm 2.0cm, clip, scale=0.12]{pics/dropoutregularization.png}
+  \caption{Neural network training}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1333,10 +1439,45 @@ If you partition the set to training, cross validation, and testing sets, and z-
 Using intuition to design new features by transforming or combining original features.
 
 
+\subsection{Batch normalization}
 
+This is the normalization of the activation units $a^{[l-1]}$ to help optimizing $W^{[l]}$ and $b^{[l]}$ in the next layer more efficiently. In the literature, we can apply normalization on $Z^{[l-1]}$ (before applying the activation function) or on $a^{[l-1]}$ (after applying the activation function). The former is more often. The normalization equation is the same as z-score normalization. $\epsilon$ is to avoid division by zero.
 
+\begin{equation}
+  z_{norm}^{(i)} = \frac{z^{(i)}-\mu}{ \sqrt{\sigma^2 + \epsilon}}
+\end{equation}
 
+We don't want all the hidden units have the mean zero and variance one to take advantage of the non-linearity of the model, especially with the sigmoid function, so to avoid that, we adjust the equation as follows:
 
+\begin{equation}
+  \tilde{Z}^{(i)} = \gamma  z_{norm}^{(i)}  + \beta
+\end{equation}
+
+where $\gamma$ and $\beta$ are learnable parameters (not hyperparameters) that can be optimized in each iteration, for example, using gradient descent.
+
+This is how the batch norm is applied in a neural network:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/batchNorm.png}
+  \caption{Batch normalization}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+If we use batch norm with mini-batch, we can eliminate the b parameter, because it will be zeroed by the batch norm process anyways.
+
+Here is the implementation of the nn with gradient descent (similarly for GD with momentum, RMSprop, Adam) with batch norm:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/NN_with_batchNorm.png}
+  \caption{NN with Batch normalization}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+One other impact that batch norm has in the training of a neural network is that it makes weights later or deeper in the nn more robust to changes to weights in earlier layers of the neural network. This is called covariant shift. This has some regularization effect.
 
 
 \section{Ensemble methods}
