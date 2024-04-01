@@ -709,6 +709,31 @@ Using an appropriate scale to pick hyperparamters matters, for example, for numb
 
 For exponentially weighted average, we can use $1-\beta$, sample uniformly between 0.1 to 0.001 $\beta = 1-10^{-3 \times np.random.rand()}$.
 
+Some of the hyperparameters have independent effects on the outcome. This is called orthogonalization. Experts know what knob to turn, to get what they want in a model. Here is the chain of assumptions in ML:
+\begin{itemize}
+  \item fit training set well on cost function (human level performance). If not working well:
+  \begin{itemize}
+    \item use a bigger network
+    \item use more efficient optimization, such as Adam
+  \end{itemize}
+  \item fit dev set well on cost function. if not working well:
+  \begin{itemize}
+    \item use regularization
+    \item use bigger training set
+  \end{itemize}
+  \item fit test set well on cost function. if not working well:
+  \begin{itemize}
+    \item use bigger dev set
+  \end{itemize}
+  \item performs well in real world
+  \begin{itemize}
+    \item change dev set
+    \item change cost function
+  \end{itemize}
+\end{itemize}
+
+Early stopping method might not be good option.
+
 \section{SL: Instance based learning}
 \section{SL: Ensemble B\&B}
 
@@ -832,9 +857,9 @@ Observation for using cross validation with linear regression:
 \section{F1 score, precision, and recall}
 Refer to \href{https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html#precision-recall}{this source.}
 
-Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$): $P = \frac{T_p}{T_p + F_p} $. This means if ML detects a class/category, most likely it is correct.
+Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$): $P = \frac{T_p}{T_p + F_p} $. This criterion implies the percentage of true positive (of all examples that are positive, what percentage are actually positive). This means if ML detects a class/category, how likely it is correct.
 
-Recall (R) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$): $R = \frac{T_p}{T_p + F_n} $. This means if ML can correctly identify the class even if the class is very rare.
+Recall (R) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$): $R = \frac{T_p}{T_p + F_n} $. This criterion implies what percentage of actual positives are correctly recognized. This means if ML can correctly identify the class even if the class is very rare.
 
 
 \begin{figure}[H]
