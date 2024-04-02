@@ -813,18 +813,22 @@ In these cases, we would like to give the network more expressive power to learn
 
 We can use libraries such is scikit-learn and keras to encode a categorical feature for ML.
 
-\section{Evaluating the model-partition data set}
+\section{Evaluating the model-partitioning the data set}
 
-Partition the data into three sets: training set (60\%), cross validation set (AKA validation/development/dev set) (20\%), and test set (20\%). Train using the training set, but use the cost function with the cross validation set to evaluate the model (without the regularization parameter). To estimate the generalization error use the test set. The data allocation varies as the number of samples grows. For example, for very large data set (1,000,000), we can use 98/1/1.
+Partition the data into three sets: training set, cross validation set (AKA validation/development/dev set), and test set. Train using the training set, but use the cost function with the cross validation set to evaluate the model (without the regularization parameter). To estimate the generalization error use the test set. The data allocation varies as the number of samples grows. For example, for smaller data set (< 10,000) 60\%/20\%/20\% is reasonable, but for very large data set (1,000,000), we can use 98/1/1.
 
 The other way to evaluate a classification model is find the fraction of the test set and the fraction of the train set that the algorithm has mis-classified.
 
 When selecting a model, you want to choose one that performs well both on the training and cross validation set. It implies that it is able to learn the patterns from your training set without overfitting. If you used the defaults in this lab, you will notice a sharp drop in cross validation error from the models with degree=1 to degree=2. This is followed by a relatively flat line up to degree=5. After that, however, the cross validation error is generally getting worse as you add more polynomial features. Given these, you can decide to use the model with the lowest cv\_mse as the one best suited for your application.
 
-Mismatched train/test distribution: they should be of the same distribution.
+Mismatched train/test distribution: they should be of the same distribution. Choose the dev set and test st to reflect data you expect to get in the future and consider important to do well on.
+
+For the size of the test set, we need to set it such that it is big enough to give high confidence in the overall performance of your system. For some applications, we don't need to have test set, just train and dev is fine.
 
 
-\section{Cross validation}
+
+
+\section{Cross validation method}
 
 The goal is always to generalize the model to fit the real world data. The test set is just a representation of the data that we may see in future. The model should be complex enough to model the training set without over-fitting.
 
@@ -854,7 +858,7 @@ Observation for using cross validation with linear regression:
   \item After the golden degree, increasing the degree of polynomial will result in overfitting, and the Cross Validation error will start to increase.
 \end{itemize}
 
-\section{F1 score, precision, and recall}
+\section{Accuracy of the model: F1 score, precision, and recall}
 Refer to \href{https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html#precision-recall}{this source.}
 
 Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$): $P = \frac{T_p}{T_p + F_p} $. This criterion implies the percentage of true positive (of all examples that are positive, what percentage are actually positive). This means if ML detects a class/category, how likely it is correct.
@@ -873,12 +877,14 @@ Recall (R) is defined as the number of true positives ($T_p$) over the number of
 
 These quantities are also related to the ($F1$) score, which is defined as the harmonic mean of precision and recall: $F1 = 2 \frac{R * P}{ P + R } $. The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0. F1 score allows us to select the best model among many models with different recall and precision. F1 combines both recall and precision.
 
+The other important factor is the running time of the model. We can combine accuracy and running time into one metric. What we want is to maximize accuracy subject to running time less than a certain amount. In that sense, running time itself becomes an optimization metric. This metric is just a satisficing metric (should be less than a certain amount).
+
 \section{Optimization}
 
 \subsection{Cost function}
 \label{sec:cost}
 Loss function: Used when we refer to the error for a single training example. Cost function: Used to refer to an average of the loss functions over an entire training dataset.
-The cost function gives you a way to measure how well a specific set of parameters fits the training data. Thereby gives you a way to try to choose better parameters.
+The cost function gives you a way to measure the error, and how well a specific set of parameters fits the training data. Thereby gives you a way to try to choose better parameters. The selection of the loss function depends on the model.
 
 Let's use the concept of multiple linear regression (which is the same for NN) to discuss the cost function.
 
@@ -980,6 +986,21 @@ The cost is (called Sparse Ctegorical Cross Entropy)-SparseCtegoricalCrossentrop
   J(\mathbf{w},b) = - \left[ \sum_{i=1}^{m} \sum_{j=1}^{N}  1\left\{y^{(i)} == j\right\} \log \frac{e^{z^{(i)}_j}}{\sum_{k=1}^N e^{z^{(i)}_k} }\right] \tag{4}
 \end{align}
 where $m$ is the number of examples, $N$ is the number of outputs. This is the average of all the losses.
+
+
+We can also add a weight to this error classification (\textbf{1}) to penalize some cases. For example, if we are training a cat classification model, and the model shows pornographic pics as cats, we can penalize the pornographic images with a larger weight. In that case, the error/cost would be:
+
+
+\begin{align}
+  J = \frac{1}{ \sum_{i = 1}^{m_{dev}} \mathbf{w^{(i)}} } \sum_{i = 1}^{m_{dev}} \mathbf{w^{(i)}} 1 \{y_{predic}^{(i)}  \neq y^{(i)} \}\\
+  \mathbf{w^{(i)}} = \begin{cases}
+    1, & \text{if} x^{(i)} \text{is non-porn} \\
+    10, & \text{if} x^{(i)} \text{is porn}
+  \end{cases}
+\end{align}
+
+
+The error model/cost function is orthogonal (separate problem) than the training and doing well on the metric itself. First, we need to establish the error/target, then we need to train the model to reduce the error.
 
 For more accurate (less floating point error) calculation in tensorflow, it is preferred to have a linear activation function for the last layer, instead of a softmax (the output is this form call logits) use from\_logits=True. This informs the loss function that the softmax operation should be included in the loss calculation. This allows for an optimized implementation. Notice that in the preferred model, the outputs are not probabilities, but the output for each data sample is a vector of size the number of neurons in the last year. This vector for each sample can range from large negative numbers to large positive numbers. The output must be sent through a softmax when performing a prediction that expects a probability. However, we really don't need to apply a softmax to select the most likely category, we can just find the index of the largest output using np.argmax(). See 1\_MachineLearning\_Stanford\_Projects\_python\_C2W2\_2\_softmax.ipynb.
 
@@ -1756,7 +1777,7 @@ Here are strategies for producing the multiple target steps required for a forec
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =35cm 14.0cm 33cm 19cm, clip, scale=0.3]{pics/forecast1.png}
+    \includegraphics[trim =35cm 14.0cm 33cm 19cm, clip, scale=0.2]{pics/forecast1.png}
     \caption{MultiOutput Model}
     \label{fig:multiouput}
   \end{center}
@@ -1766,7 +1787,7 @@ Here are strategies for producing the multiple target steps required for a forec
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =24cm 17.0cm 22cm 20cm, clip, scale=0.4]{pics/forecast2.png}
+    \includegraphics[trim =24cm 17.0cm 22cm 20cm, clip, scale=0.3]{pics/forecast2.png}
     \caption{Direct strategy}
     \label{fig:direct}
   \end{center}
@@ -1776,7 +1797,7 @@ Here are strategies for producing the multiple target steps required for a forec
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =30cm 14.0cm 28cm 19cm, clip, scale=0.4]{pics/forecast3.png}
+    \includegraphics[trim =30cm 14.0cm 28cm 19cm, clip, scale=0.3]{pics/forecast3.png}
     \caption{Recursive strategy}
     \label{fig:recursive}
   \end{center}
@@ -1786,7 +1807,7 @@ Here are strategies for producing the multiple target steps required for a forec
 
 \begin{figure}[htbp]
   \begin{center}
-    \includegraphics[trim =24cm 17.0cm 22cm 20cm, clip, scale=0.4]{pics/forecast4.png}
+    \includegraphics[trim =24cm 17.0cm 22cm 20cm, clip, scale=0.3]{pics/forecast4.png}
     \caption{DirRec strategy}
     \label{fig:DirRec}
   \end{center}

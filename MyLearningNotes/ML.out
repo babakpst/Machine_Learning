@@ -46,9 +46,9 @@
 \BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 46
 \BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 47
 \BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 48
-\BOOKMARK [1][-]{section.5.2}{Evaluating the model-partition data set}{chapter.5}% 49
-\BOOKMARK [1][-]{section.5.3}{Cross validation}{chapter.5}% 50
-\BOOKMARK [1][-]{section.5.4}{F1 score, precision, and recall}{chapter.5}% 51
+\BOOKMARK [1][-]{section.5.2}{Evaluating the model-partitioning the data set}{chapter.5}% 49
+\BOOKMARK [1][-]{section.5.3}{Cross validation method}{chapter.5}% 50
+\BOOKMARK [1][-]{section.5.4}{Accuracy of the model: F1 score, precision, and recall}{chapter.5}% 51
 \BOOKMARK [1][-]{section.5.5}{Optimization}{chapter.5}% 52
 \BOOKMARK [2][-]{subsection.5.5.1}{Cost function}{section.5.5}% 53
 \BOOKMARK [2][-]{subsection.5.5.2}{Gradient descent \(steepest descent\) method}{section.5.5}% 54
