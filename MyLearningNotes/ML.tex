@@ -455,9 +455,6 @@ To calculate the parameters of the model, we need to form the cost function (see
 
 For the regression, we can have multiple independent variables/features for the regression ($x_1, ..., x_n$).
 
-
-
-
 \subsection{Other cases}
 Using discrete numbers is also possible for regression, however this is no trivial. We need to encode the attributes. For example, by enumerating the categories (giving a number to each possible value of this feature). It is a bit misleading because a correlation between the ordering of the
 enumeration and the its value can be interpolated. The other option is represent the value of the feature as a Boolean.
@@ -711,7 +708,7 @@ For exponentially weighted average, we can use $1-\beta$, sample uniformly betwe
 
 Some of the hyperparameters have independent effects on the outcome. This is called orthogonalization. Experts know what knob to turn, to get what they want in a model. Here is the chain of assumptions in ML:
 \begin{itemize}
-  \item fit training set well on cost function (human level performance). If not working well:
+  \item fit training set well on cost function (human-level performance). If not working well:
   \begin{itemize}
     \item use a bigger network
     \item use more efficient optimization, such as Adam
@@ -733,6 +730,10 @@ Some of the hyperparameters have independent effects on the outcome. This is cal
 \end{itemize}
 
 Early stopping method might not be good option.
+
+\subsection{Error analysis}
+
+Deep learning models are quite robust to random errors in the training set, but very sensitive to the systematic errors.
 
 \section{SL: Instance based learning}
 \section{SL: Ensemble B\&B}
@@ -814,6 +815,7 @@ In these cases, we would like to give the network more expressive power to learn
 We can use libraries such is scikit-learn and keras to encode a categorical feature for ML.
 
 \section{Evaluating the model-partitioning the data set}
+\label{sec:dist}
 
 Partition the data into three sets: training set, cross validation set (AKA validation/development/dev set), and test set. Train using the training set, but use the cost function with the cross validation set to evaluate the model (without the regularization parameter). To estimate the generalization error use the test set. The data allocation varies as the number of samples grows. For example, for smaller data set (< 10,000) 60\%/20\%/20\% is reasonable, but for very large data set (1,000,000), we can use 98/1/1.
 
@@ -821,7 +823,7 @@ The other way to evaluate a classification model is find the fraction of the tes
 
 When selecting a model, you want to choose one that performs well both on the training and cross validation set. It implies that it is able to learn the patterns from your training set without overfitting. If you used the defaults in this lab, you will notice a sharp drop in cross validation error from the models with degree=1 to degree=2. This is followed by a relatively flat line up to degree=5. After that, however, the cross validation error is generally getting worse as you add more polynomial features. Given these, you can decide to use the model with the lowest cv\_mse as the one best suited for your application.
 
-Mismatched train/test distribution: they should be of the same distribution. Choose the dev set and test st to reflect data you expect to get in the future and consider important to do well on.
+Mismatched train/test distribution: they should be of the same distribution. Choose the dev set and test set to reflect data you expect to get in the future and consider important to do well on. For example, if you training cat recognition models, and have 200K good images and 10K mobile images (the actual use-case distribution), it is not a good idea to merge all 210K images, shuffle, and split. The better option is to split the 10K mobile data into dev and test sets, each 2.5K, and add 5K mobile images to the good 200K images for training.
 
 For the size of the test set, we need to set it such that it is big enough to give high confidence in the overall performance of your system. For some applications, we don't need to have test set, just train and dev is fine.
 
@@ -905,19 +907,27 @@ Here is the model:
 
 Problem statement: find $\overrightarrow{w},b$ such that $\hat{y}^{(i)}$ is close to $y^{(i)}$ for all $(x^{(i)}, y^{(i)} )$. $\big(\hat{y}^{(i)}  - y^{(i)} \big) ^2$, the error for one single sample is called the loss function.
 
-To find $\overrightarrow{w},b$, we form the the cost function. The cost function depends on the method we measure the error. For example, using \textbf{squared error cost}:
+To find $\overrightarrow{w},b$, we form the the cost function. The cost function depends on the method we measure the error. There are many methods to define loss/cost functions. One example is Mean Absolute Error (MAE), which measures the disparity from the true target by an absolute difference: abs(y\_true - y\_pred).
+
+\begin{multline}
+  \text{find $\overrightarrow{w},b$:} \\
+  \text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) \\
+\end{multline}
+
+
+The other widely used method is \textbf{mean squared error cost (MSE)}:
 
 \begin{multline}
 	\text{find $\overrightarrow{w},b$:} \\
 	\text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
 \end{multline}
-m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. In sklearn, we can caculate the cost with mean\_squared\_error. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression. The reason is that the logistic regression model, which is defined by:
+m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. In sklearn, we can caculate the cost with mean\_squared\_error. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression, using Sigmoid function. The reason is that the logistic regression model, which is defined by (sigmoid):
 
 \begin{equation}
   f_{\overrightarrow{w},b} (\overrightarrow{x}) = \frac{1}{1+e^{-(\overrightarrow{w} \overrightarrow{x} ^ {(i)} + b)}}
 \end{equation}
 
-is non-convex, as opposed to linear regression model which is convex. To have a convergent gradient descent method, the cost function should be convex.
+is non-convex, as opposed to linear regression model which is convex. For logistic/classification problems, we cannot use Mean Absolute Error (MAE) either for the same reason. To have a convergent gradient descent method, the cost function should be convex.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -927,7 +937,7 @@ is non-convex, as opposed to linear regression model which is convex. To have a 
   \end{center}
 \end{figure}
 
-To convert the logistic function to a convex function (for a binary classification), we need to ue the following loss definition known as logistic loss. AKA binary cross entropy (see ML C1W3+ML C2W2):
+To convert the logistic function to a convex function (for a binary classification), we need to ue the following loss definition known as logistic loss. AKA binary cross entropy (see ML C1W3+ML C2W2). What we want instead is a distance between probabilities, and this is what cross-entropy provides. Cross-entropy is a sort of measure for the distance from one probability distribution to another. The idea is that we want our network to predict the correct class with probability 1.0. The further away the predicted probability is from 1.0, the greater will be the cross-entropy loss:
 
 \begin{multline}
 J(\overrightarrow{w},b) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(\hat{y}^{(i)}  - y^{(i)} \big) = \frac{1}{m} \sum_{i=1}^{m} \frac{1}{2}  L\big(f_{\overrightarrow{w},b} (\overrightarrow{x}^{(i)})   - y^{(i)} \big)\\
@@ -986,6 +996,9 @@ The cost is (called Sparse Ctegorical Cross Entropy)-SparseCtegoricalCrossentrop
   J(\mathbf{w},b) = - \left[ \sum_{i=1}^{m} \sum_{j=1}^{N}  1\left\{y^{(i)} == j\right\} \log \frac{e^{z^{(i)}_j}}{\sum_{k=1}^N e^{z^{(i)}_k} }\right] \tag{4}
 \end{align}
 where $m$ is the number of examples, $N$ is the number of outputs. This is the average of all the losses.
+
+
+
 
 
 We can also add a weight to this error classification (\textbf{1}) to penalize some cases. For example, if we are training a cat classification model, and the model shows pornographic pics as cats, we can penalize the pornographic images with a larger weight. In that case, the error/cost would be:
@@ -1158,7 +1171,11 @@ If we are exactly at the minimum, since slope is zero, the value of the learning
 Decay rate is another hyperparameter.
 
 \section{Overfitting (high variance) vs underfitting (high bias)}
-Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc. In sklearn, we can calculate the cost with mean\_squared\_error.
+Overfitting (high variance) is the case that a model matches the training data almost perfectly, i.e.  $J_{train}$ is low, but does poorly in validation and other new data, i.e. $J_{cv}$ is high. On the flip side, When a model fails to capture important distinctions and patterns in the data, so it performs poorly even in training data, i.e. $J_{train}$ and $J_{cv}$ are high, that is called underfitting (high bias). Note that bias has a other meanings, such as checking the models based on characteristics such as gender, ethnicity, etc.
+
+We can think of overfitting/underfitting as follows. the information in the training data as being of two kinds: signal and noise. The signal is the part that generalizes, the part that can help our model make predictions from new data. The noise is that part that is only true of the training data; the noise is all of the random fluctuation that comes from data in the real-world or all of the incidental, non-informative patterns that can't actually help the model make predictions. The noise is the part might look useful but really isn't. Now, the training loss will go down either when the model learns signal or when it learns noise. But the validation loss will go down only when the model learns signal. (Whatever noise the model learned from the training set won't generalize to new data.) So, when a model learns signal both curves go down, but when it learns noise a gap is created in the curves. The size of the gap tells you how much noise the model has learned. Underfitting the training set is when the loss is not as low as it could be because the model hasn't learned enough signal. Overfitting the training set is when the loss is not as low as it could be because the model learned too much noise. The trick to training deep learning models is finding the best balance between the two.
+
+
 
 
 The case in the middle is "just right" model where $J_{train}$ and $J_{cv}$ are low.
@@ -1179,7 +1196,7 @@ Since we care about accuracy on new data, which we estimate from our validation 
 \textbf{To avoid underfitting:}
 \begin{itemize}
 \item adding new features: fixes high bias
-\item adding polynomial features/bigger neural network fixes high bias
+\item adding polynomial features/bigger neural network fixes high bias (Wider networks have an easier time learning more linear relationships, while deeper networks prefer more nonlinear ones. Which is better just depends on the dataset.)
 \item decreasing the regularization ($lambda$) fixes high bias
 \end{itemize}
 
@@ -1196,24 +1213,55 @@ Since we care about accuracy on new data, which we estimate from our validation 
 
 To add data, we can use the augmentation of data (rotating images, cropping images, distorting images, etc.). Data augmentation does not add a lot of information to our data set, but in case we really cannot get more data, we can use this method.  If there is not enough data to train a model, one option is to use the \textbf{\textit{transfer learning}}, in which you train a model using data from a different task (this step is called spervised pretraning), and fine tune the model with the actual data (this step is called fine tuning.). The other option is to use the other model parameters, and use the actual data to train only the last year of the neural network.
 
-One more important topic is the baseline level of performance. In other words, how should one know if the $J_{train}$ is low, or high, or good enough. Once method to find the baseline performance is to compare the error with respect to the human level performance. The other options are competing algorithm performance, or guess based on the past experience.
+One more important topic is the baseline level of performance. In other words, how should one know if the $J_{train}$ is low, or high, or good enough. Once method to find the baseline performance is to compare the error with respect to the human-level performance. The other options are competing algorithm performance, or guess based on the past experience.
+
+Note also that the best possible error is called Bayes optimal error. There is not a big difference between human-level and Bayes optimal error, thus, we can use the human-level error as a proxy for the Bayes error. In general, the training process is pretty fast, between until it reaches the human-level error, but slows down between the human-level and the Bayes. Knowing the human-level error, allows us to better analyze bias and variance.
 
 If there is a gap between the baseline and the training error, then model in underfit (high bias), but if the gap is between the train and cross validation, it is the overfit (high variance) problem.
 
+
 \begin{figure}[H]
   \centering
-  \caption{Bias vs Variance}
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/biasVariance2.png}
+  \caption{Bias vs Variance}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
+
+
+All the above argument is valid if the train and dev sets are from the same distribution. But if dev and training are from a different distribution. For example, if there is a gap between training and dev error (usually considered as high variance problem), the gap might be due to the difference in the dev set (dev set has more challenging samples). We mentioned in \ref{sec:dist} that the it is more efficient if the dev set contains samples from the real application (ex. mobile data), in that case, dev set has more difficult samples, compared to the training set which has high quality images/samples. The high dev set error is due to two items, one is the model has not seen this set before (new data which is the source of high variance), or second, the distribution gap issue (data mismatch problem). To detect the high dev set error is from which of these cases, we can define a new set call training-dev set, with the same distribution as the training set, but you did not trained on that. In short, we have four sets,  one: train, two: train-dev (both from the same distribution), three: dev, and four: test (3 and 4 from the same distribution but different from the first two sets). To do the error analysis, we get the error for all four sets. If there is a gap between train and train-dev (but little gap between train-dev and dev), this is an indication of the high variance problem. On the other hand, if train-dev error is only a bit above train, but has a good gap with the dev set, then the issue is data mismatch.
+
+
+The other case is that if training, training-dev, dev, and test sets are close, but much higher than the human-level, this is an indication of the high bias problem.
+
+Another note, it may also happen that dev/test set are much easier than the train and train-dev sets. In those cases, the error on dev/test might be even lower than the error in the train set.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/biasVariance_dist.png}
+  \caption{Bias vs Variance distribution}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Here is the chart to decide how to adjust the model:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/biasVariance_chart.png}
+  \caption{Bias vs Variance model based on error analysis}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+To resolve a data mismatch, e can carry out manual error analysis to try to understand difference between training and dev/text sets. The other option is to make training data more similar or collect more data similar to dev/test sets. You can synthesis artificial data.
 
 Note also that as the training set size increases, $J_{train}$ increases, because it is harder to fit the curve, but generally $J_{cv}$ drops.
 
 \begin{figure}[H]
   \centering
-  \caption{learning curve}
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/LearningCurve.png}
+  \caption{learning curve}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1222,8 +1270,8 @@ For a model with high bias, the addition of sampling sizes after certain point, 
 
 \begin{figure}[H]
   \centering
-  \caption{High bias}
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/highBias.png}
+  \caption{High bias}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1232,8 +1280,8 @@ For a model with high variance, increase the training set results in converging 
 
 \begin{figure}[H]
   \centering
-  \caption{High variance}
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/highVariance.png}
+  \caption{High variance}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1243,13 +1291,33 @@ How does a neural network work in terms of bias and variance? Large neural netwo
 
 \begin{figure}[H]
   \centering
-  \caption{Neural network training}
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/nn.png}
+  \caption{Neural network training}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
 
 The other topic is orthogonalization. For training, we try to optimize the cost function, but at the same time, we want to avoid overfitting. These two items are orthogonal, and more optimization means more overfitting. Instead, we need a tool to mix these two goals.
+
+\section{Transfer learning and multi-task learning}
+
+It is the idea of taking the knowledge the neural network has learned from one task and apply that knowledge to a separate task. Based on this method, you train a network based on a data set, then, you re-train the last layer or even adding more layers, using the new data set.
+
+Transfer learning makes sense when 1) both tasks/data have the same input, 2) when you have a lot of data for the data set you are transferring from, and less data for the set you are transferring to (It does not make sense for the other case (less data for the first set, more data for the second set)), and 3) low level features from the frist set coulld be helpful for learning the second set.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.12]{pics/transferLearning.png}
+  \caption{Transfer learning}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+In multi task learning, you start training an nn doing multiple tasks at the same time. In this manner, the final output layer has a dimension for all tasks. For example, if you are training an nn, to detect cars, pedestrians, and signs, then, the output layer should have three units, each for one class.
+
+Multi-task learning makes sense when 1) training on a se of tasks that could benefit from having shared lower-level features, 2) amount of data you have for each task is quite similar.
+
+
 
 
 \section{Regularization}
