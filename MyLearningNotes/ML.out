@@ -80,4 +80,8 @@
 \BOOKMARK [2][-]{subsection.5.15.3}{Cycles: serial dependence \(time series as features\)}{section.5.15}% 80
 \BOOKMARK [2][-]{subsection.5.15.4}{Forecasting with hybrid models: Components and residuals}{section.5.15}% 81
 \BOOKMARK [2][-]{subsection.5.15.5}{Forecasting}{section.5.15}% 82
-\BOOKMARK [0][-]{figure.5.26}{Bibliography}{}% 83
+\BOOKMARK [1][-]{section.5.16}{ML explainability}{chapter.5}% 83
+\BOOKMARK [2][-]{subsection.5.16.1}{Feature importance}{section.5.16}% 84
+\BOOKMARK [2][-]{subsection.5.16.2}{Partial dependence plots}{section.5.16}% 85
+\BOOKMARK [2][-]{subsection.5.16.3}{SHAP values}{section.5.16}% 86
+\BOOKMARK [0][-]{subsection.5.16.3}{Bibliography}{}% 87

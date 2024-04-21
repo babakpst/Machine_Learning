@@ -1614,9 +1614,6 @@ Then, we start the cycle:
 XGBoost stands for extreme gradient boosting, which is an implementation of gradient boosting with several additional features focused on performance and speed. (Scikit-learn has another version of gradient boosting, but XGBoost has some technical advantages.) scikit-learn API for XGBoost (xgboost.XGBRegressor) allows us to build and fit a model just as we would in scikit-learn. The XGBRegressor class has many tunable parameters. See the code.
 
 
-
-
-
 \subsection{Data leakage}
 
 Data leakage (or leakage) happens when your training data contains information about the target, but similar data will not be available when the model is used for prediction. This leads to high performance on the training set (and possibly even the validation data), but the model will perform poorly in production.
@@ -1764,8 +1761,6 @@ Finally, we need to be mindful that autocorrelation and partial autocorrelation 
 
 Lag features require that the lagged target value is known at the time being forecast. A lag 1 feature shifts the time series forward 1 step, which means you could forecast 1 step into the future but not 2 steps. we just assumed that we could always generate lags up to the period we wanted to forecast (every prediction was for just one step forward, in other words). But, in reality, we need to forecast a few steps ahead. Machine learning can help with this.
 
-
-
 \subsection{Forecasting with hybrid models: Components and residuals}
 
 We could imagine learning the components of a time series as an iterative process: first learn the trend and subtract it out from the series, then learn the seasonality from the detrended residuals and subtract the seasons out, then learn the cycles and subtract the cycles out, and finally only the unpredictable error remains. Add together all the components we learned and we get the complete model. This is essentially what linear regression would do if you trained it on a complete set of features modeling trend, seasons, and cycles.
@@ -1880,6 +1875,82 @@ Here are strategies for producing the multiple target steps required for a forec
     \label{fig:DirRec}
   \end{center}
 \end{figure}
+
+
+\section{ML explainability}
+
+We want to know:
+
+\begin{itemize}
+  \item What features in the data did the model think are most important?
+  \item For any single prediction from a model, how did each feature in the data affect that particular prediction?
+  \item How does each feature affects the model's predictions in a big-picture sense (what is its typical effect when considered over a large number of possible predictions)?
+\end{itemize}
+
+\subsection{Feature importance}
+What features have the biggest impact on predictions? There are multiple ways to measure feature importance. Some approaches answer subtly different versions of the question above. Other approaches have documented shortcomings.
+
+One approach is permutation importance. Compared to most other approaches, permutation importance is: fast to calculate, widely used and understood, and consistent with properties we would want a feature importance measure to have. Permutation importance is calculated after a model has been fitted. So we won't change the model or change what predictions we'd get for a given value. The idea is: If I randomly shuffle a single column of the validation data, leaving the target and all other columns in place, how would that affect the accuracy of predictions in that now-shuffled data? Randomly re-ordering a single column should cause less accurate predictions, since the resulting data no longer corresponds to anything observed in the real world. Model accuracy especially suffers if we shuffle a column that the model relied on heavily for predictions.
+
+To use permutation with a trained model, we can PermutationImportance from eli5.sklearn.
+
+The output for each row shows how much model performance decreased with a random shuffling (in this case, using "accuracy" as the performance metric). There is some randomness to the exact performance change from a shuffling a column. We measure the amount of randomness in our permutation importance calculation by repeating the process with multiple shuffles. The number after $\pm$ measures how performance varied from one-reshuffling to the next.
+
+Occasionally, you may see negative values for permutation importances. In those cases, the predictions on the shuffled (or noisy) data happened to be more accurate than the real data. This happens when the feature didn't matter (should have had an importance close to 0), but random chance caused the predictions on shuffled data to be more accurate. This is more common with small datasets, because there is more room for luck/chance.
+
+\subsection{Partial dependence plots}
+
+While feature importance shows what variables most affect predictions, partial dependence plots show how a feature affects predictions.
+
+This is useful to answer questions like:
+
+\begin{itemize}
+\item Controlling for all other house features, what impact do longitude and latitude have on home prices? To restate this, how would similarly sized houses be priced in different areas?
+\item Are predicted health differences between two groups due to differences in their diets, or due to some other factor?
+\end{itemize}
+
+Partial dependence plots can be interpreted similarly to the coefficients in linear or logistic regression models. Though, partial dependence plots on sophisticated models can capture more complex patterns than coefficients from simple models.
+
+Like permutation importance, partial dependence plots are calculated after a model has been fit. The model is fit on real data that has not been artificially manipulated in any way.
+
+To see how partial plots separate out the effect of each feature, we start by considering a single row of data. We will use the fitted model to predict our outcome. But we repeatedly alter the value for one variable (from small to large) to make a series of predictions. We trace out predicted outcomes (on the vertical axis) as we move from small values to large values (on the horizontal axis).
+
+In this description, we used only a single row of data. Interactions between features may cause the plot for a single row to be atypical. So, we repeat that mental experiment with multiple rows from the original dataset, and we plot the average predicted outcome on the vertical axis.
+
+
+2D Partial Dependence Plots: If you are curious about interactions between features, 2D partial dependence plots are also useful.
+
+
+\subsection{SHAP values}
+
+SHAP Values (an acronym from SHapley Additive exPlanations) break down a prediction to show the impact of each feature. Where could you use this?
+\begin{itemize}
+\item A model says a bank shouldn't loan someone money, and the bank is legally required to explain the basis for each loan rejection.
+\item A healthcare provider wants to identify what factors are driving each patient's risk of some disease so they can directly address those risk factors with targeted health interventions.
+\end{itemize}
+
+SHAP values interpret the impact of having a certain value for a given feature in comparison to the prediction we'd make if that feature took some baseline value. SHAP values do this in a way that guarantees a nice property. Specifically, you decompose a prediction with the following equation:
+
+sum(SHAP values for all features) = pred\_for\_team - pred\_for\_baseline\_values
+
+That is, the SHAP values of all features sum up to explain why my prediction was different from the baseline. This allows us to decompose a prediction in a graph3.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 % Appendix ==========================================================
