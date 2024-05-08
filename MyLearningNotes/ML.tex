@@ -770,7 +770,7 @@ There are \href{https://www.geeksforgeeks.org/different-types-clustering-algorit
 \subsection{K-means clustering}
 It measures similarity using ordinary straight-line distance (Euclidean distance). It creates clusters by placing a number of points, called centroids, inside the feature-space. Each point in the dataset is assigned to the cluster of whichever centroid it's closest to. The "k" in "k-means" is how many centroids it creates.
 
-Clustering has two main steps, selecting or moving centriods, and then assigning nodes to centriods. To do the clustering, we randomly select k points/centroids in the space, not necessarily a real point from the data set, but just in the space3. Then, it calculates the distance between each node and the centroids, and assigns each node to closest centriod. For the next iteration, we need to adjust the centriod. First, we find the average of each cluster points, and use that one as the new centriod. We repeat the process, until the point is not moving.
+Clustering has two main steps, selecting or moving centriods, and then assigning nodes to centriods. To do the clustering, we randomly select k points/centroids in the space, not necessarily a real point from the data set, but just in the space3. Then, it calculates the distance between each node and the centroids, and assigns each node to closest centriod. For the next iteration, we need to adjust the centriod. First, we find the average of each cluster points, and use that one as the new centriod. We repeat the process, until the point is not moving. In the first step, we keep the centriods fixed and just change the point assignments. In the next step, centriods change. This method is guaranteed to converge.
 
 \begin{figure}[H]
   \centering
@@ -783,24 +783,48 @@ Clustering has two main steps, selecting or moving centriods, and then assigning
 
 The only exception is that if there is no point assigned to a centriod, which means calculating the average is not defined. In that case, we either eliminate the cluster point, or randomly assign a new point to the cluster. Sometimes, the points are not really separated/clustered. In that case, theoretically, it is more difficult to decide how many points are needed.
 
-The K-mean algorithm is indeed an optimization problem, based on the distortion cost function.
 
+The K-mean algorithm is indeed an optimization problem, based on the distortion cost function.
 
 \begin{figure}[H]
   \centering
   \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/distortion.png}
   \caption{K-mean clustering distortion optimizer}
+  %#\label{XXX}
+\end{figure}
+
+
+
+
+The very first step of the K-means algorithm is the initial guess for the number of clusters and the location of centriods. K should definitely be less than the number of points. To find out the best K for a data set, we can test various K numbers and plot K vs variance, this is called an \textit{elbow plot}. The best K is the one that the slope of variance reduces. If K is equal to the number of items in the dataset, then, the variance would be zero. The other factor is that how you want to use the clusters, the larger the K is, may cause a higher cost.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/elbow.png}
+  \caption{K-mean clustering, K selection}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
 
 
 
+For the location of centriods, we can randomly choose from nodes. The downside of this method is that we may stuck in the local minimum. To avoid that, we can run this process multiple times and select the one with the lowest cost.
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/k-initialization.png}
+  \caption{K-mean clustering initialization}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
 The k-means algorithm is sensitive to scale. This means we need to be thoughtful about how and whether we rescale our features since we might get very different results depending on our choices. As a rule of thumb, if the features are already directly comparable (like a test result at different times), then you would *not* want to rescale. On the other hand, features that aren't on comparable scales (like height and weight) will usually benefit from rescaling. Sometimes, the choice won't be clear though. In that case, you should try to use common sense, remembering that features with larger values will be weighted more heavily.
 
 What you should take away from this is that the decision of whether and how to rescale features is rarely automatic -- it will usually depend on some domain knowledge about your data and what you're trying to predict. Comparing different rescaling schemes through cross-validation can also be helpful.
 
-To find out the best K for a data set, we can test various K numbers and plot K vs variance, this is called an \textit{elbow plot}. The best K is the one that the slope of variance reduces. If K is equal to the number of items in the dataset, then, the variance would be zero.
+
 
 
 \subsection{Principal Component Analysis (PCA)}
