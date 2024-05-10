@@ -833,6 +833,17 @@ Just like clustering is a partitioning of the dataset based on proximity, you co
 PCA also tells us the amount of variation in each component. We can see from the figures that there is more variation in the data along the Size component than along the Shape component. PCA makes this precise through each component's percent of explained variance. It's important to remember, however, that the amount of variance in a component doesn't necessarily correspond to how good it is as a predictor: it depends on what you're trying to predict.
 
 
+\section{Anomaly detection}
+The idea is to build and train a (unsupervised) model based on some samples and their features, then the task for this model is to review any new sample and find out if there is any anomaly with the features. The method for this task is called density estimation. In this method, we find regions with different levels of probability/anomaly, in which, if the new sample features locate in the high probability area, there is no anomaly, but as we move away from it, anomaly probability increases. This method has several applications including fraud detection, manufacturing, monitoring computers in data centers, etc.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/density. png}
+  \caption{Density estimation}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
 
 
 \chapter[Reinforced Learning]{Reinforced Learning (RL)}
