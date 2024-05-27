@@ -735,6 +735,33 @@ Early stopping method might not be good option.
 
 Deep learning models are quite robust to random errors in the training set, but very sensitive to the systematic errors.
 
+\section{SL: Sequence models-Recurrent Neural Network (RNN)}
+
+RNN is a neural network that deals with the different amount of inputs. Similar to the regular NN, RNN has bias, weights, and activation functions. The only difference is that RNN has feedback loops, which allows prior values influence the prediction. Examples of sequence data with different amount of input: stock market predictions, speech recognition, music generation, sentiment classification, DNA sequence analysis, machine translation, video activity recognition, and name entity recognition (finding the names in a sentence).
+
+The main idea is that we have the same NN, and for each each input we repeat/unroll the same NN and add the output from the previous input/NN to the next one. Regardless of how many times we unroll the neural network, weights and biases are shared across every input. One mathematical issue with the RNN is the \textbf{\textit{vanishing/exploding gradient problem}}. As the number of input increases, if the weight is greater than one, we keep multiplying, until the number explodes, and this results is very large steps in the gradient descent.  The same way, if weights are less than one, after some multiplication, the number vanishes, and in the gradient descent, this results in very small steps.
+
+The downside of RNN is that it only uses the info before the current layer (This is for unidirectional method, in the bidirectional, we move in both directions). Here is the forward propagation:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/RNN.png}
+  \caption{Forward propagation chart for RNN}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
+One main application of the DRNN is in NLP models. There is a dictionary/vector with all the words, and each word of the sentence is translated to a one-hot vector of the size of the dictionary, with all zeros, except for the index of the word which is one. Then, each sentence is a matrix where the number of columns is equal to the number of words in the sentence. For the words that are not in the dictionary, we can add one token to the dictionary for unknown words. Since every sentence has a different length, we cannot just train a regular NN.
+
+
+
+
+
+
+
+
+
 \section{SL: Instance based learning}
 \section{SL: Ensemble B\&B}
 
@@ -838,11 +865,74 @@ The idea is to build and train a (unsupervised) model based on some samples and 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/density. png}
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/density.png}
   \caption{Density estimation}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
+
+To apply anomaly detection, we use Gaussian (normal/bell shape) distribution. The next picture shows the distribution equation:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/gaussian.png}
+  \caption{Gaussian distribution}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+To calculate the Gaussian distribution for a set of data:
+
+\begin{equation}
+  \mu = \frac{1}{m} \Sigma_{i=1}^{m} x ^ {(i)} \newline
+  \sigma^2 = \frac{1}{m} \Sigma_{i=1}^{m} \big(x ^ {(i)} -\mu  \big)^2
+\end{equation}
+but notice that each sample might have multiple features. To calculate the probability of one sample, then we need to multiply the probability of each each feature. Multiplication is only valid if the features are statically independent, which is usually not the case, but for this purpose, it is fine to use multiplication, even though features are dependent. Here is how it works:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/anomaly.png}
+  \caption{Gaussian distribution}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+In summary, here are the steps for anomaly detection:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/anomaly.png}
+  \caption{Gaussian distribution}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
+To train the anomaly detection system, as always, we need to partition the data set. Let's say we have a data set with 10000 normal cases and 20, anomalies. We can partition the data as follows, then we use the training set to find $\mu \& \sigma^2$, and we use the cross validation algorithm to find and tune $\epsilon$ and even add or subtract some features. The test set is to report on the accuracy of the model, but if the set is small, we can skip the test set, and put all the anomalies in the cross validation set.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/anomalymodel.png}
+  \caption{Gaussian distribution}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+To predict the accuracy of the model, we use the cross/test sets and see how many anomalies are flagged, and how many normal engines are flagged as anomalies.
+
+
+This is still an unsupervised approach, because, technically samples don't have a label, but we just have a few anomalies labels. The question is why if we have anomalies label, not to use a supervised approach then. The way anomaly detection looks at the data set versus the way supervised learning looks at the data set are quite different. If you think there are many different types of anomalies or many different types of positive examples, then anomaly detection might be more appropriate. If there may be a brand new way anomaly then your 20 say positive examples may not cover all of the anomaly types. That makes it hard for any algorithm to learn from the small set of positive examples. And future anomalies may look nothing like any of the anomalous examples we've seen so far. If you believe this to be true for your problem, then I would gravitate to using an anomaly detection algorithm rather than supervised learning. In contrast, if there are enough positive examples that cover all types of anomalies, then a supervised algo is more appropriate. Anomaly detection tries to find brand new types that might not have been seen before.
+
+In anomaly detection, choosing the features is one main question (this is not the case with supervised learning, as less important features will phase out in the learning process). Features should be Gaussian, and if they are not, we should change them to be look like more to Gaussian distribution:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/convertToGaussian.png}
+  \caption{Gaussian distribution}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
 
 
 

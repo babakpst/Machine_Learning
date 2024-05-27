@@ -32,56 +32,58 @@
 \BOOKMARK [2][-]{subsection.2.4.5}{Convolutional Neural Network \(CNN\)}{section.2.4}% 32
 \BOOKMARK [2][-]{subsection.2.4.6}{Tuning hyperparameters}{section.2.4}% 33
 \BOOKMARK [2][-]{subsection.2.4.7}{Error analysis}{section.2.4}% 34
-\BOOKMARK [1][-]{section.2.5}{SL: Instance based learning}{chapter.2}% 35
-\BOOKMARK [1][-]{section.2.6}{SL: Ensemble B\046B}{chapter.2}% 36
-\BOOKMARK [1][-]{section.2.7}{SL: Kernel methods and SVMs}{chapter.2}% 37
-\BOOKMARK [1][-]{section.2.8}{SL: Comp Learning Theory}{chapter.2}% 38
-\BOOKMARK [1][-]{section.2.9}{SL: VC dimensions}{chapter.2}% 39
-\BOOKMARK [1][-]{section.2.10}{SL: Bayesian Learning}{chapter.2}% 40
-\BOOKMARK [1][-]{section.2.11}{SL: Bayesian inference}{chapter.2}% 41
-\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 42
-\BOOKMARK [1][-]{section.3.1}{Clustering}{chapter.3}% 43
-\BOOKMARK [2][-]{subsection.3.1.1}{K-means clustering}{section.3.1}% 44
-\BOOKMARK [2][-]{subsection.3.1.2}{Principal Component Analysis \(PCA\)}{section.3.1}% 45
-\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 46
-\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 47
-\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 48
-\BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 49
-\BOOKMARK [1][-]{section.5.2}{Evaluating the model-partitioning the data set}{chapter.5}% 50
-\BOOKMARK [1][-]{section.5.3}{Cross validation method}{chapter.5}% 51
-\BOOKMARK [1][-]{section.5.4}{Accuracy of the model: F1 score, precision, and recall}{chapter.5}% 52
-\BOOKMARK [1][-]{section.5.5}{Optimization}{chapter.5}% 53
-\BOOKMARK [2][-]{subsection.5.5.1}{Cost function}{section.5.5}% 54
-\BOOKMARK [2][-]{subsection.5.5.2}{Gradient descent \(steepest descent\) method}{section.5.5}% 55
-\BOOKMARK [2][-]{subsection.5.5.3}{Learning rate selection}{section.5.5}% 56
-\BOOKMARK [1][-]{section.5.6}{Overfitting \(high variance\) vs underfitting \(high bias\)}{chapter.5}% 57
-\BOOKMARK [1][-]{section.5.7}{Transfer learning and multi-task learning}{chapter.5}% 58
-\BOOKMARK [1][-]{section.5.8}{Regularization}{chapter.5}% 59
-\BOOKMARK [1][-]{section.5.9}{Model validation}{chapter.5}% 60
-\BOOKMARK [1][-]{section.5.10}{Data processing/cleaning: Missing Values}{chapter.5}% 61
-\BOOKMARK [1][-]{section.5.11}{Data processing \046 Feature engineering}{chapter.5}% 62
-\BOOKMARK [2][-]{subsection.5.11.1}{Feature engineering}{section.5.11}% 63
-\BOOKMARK [2][-]{subsection.5.11.2}{How to create new features}{section.5.11}% 64
-\BOOKMARK [2][-]{subsection.5.11.3}{scaling vs normalization}{section.5.11}% 65
-\BOOKMARK [2][-]{subsection.5.11.4}{Scaling a feature}{section.5.11}% 66
-\BOOKMARK [2][-]{subsection.5.11.5}{Mean normalization}{section.5.11}% 67
-\BOOKMARK [2][-]{subsection.5.11.6}{z-score normalization}{section.5.11}% 68
-\BOOKMARK [2][-]{subsection.5.11.7}{Combining features}{section.5.11}% 69
-\BOOKMARK [2][-]{subsection.5.11.8}{Batch normalization}{section.5.11}% 70
-\BOOKMARK [1][-]{section.5.12}{Ensemble methods}{chapter.5}% 71
-\BOOKMARK [2][-]{subsection.5.12.1}{Gradient Boosting}{section.5.12}% 72
-\BOOKMARK [2][-]{subsection.5.12.2}{Data leakage}{section.5.12}% 73
-\BOOKMARK [1][-]{section.5.13}{Python}{chapter.5}% 74
-\BOOKMARK [1][-]{section.5.14}{ML Checklist}{chapter.5}% 75
-\BOOKMARK [2][-]{subsection.5.14.1}{Time series}{section.5.14}% 76
-\BOOKMARK [1][-]{section.5.15}{Time series}{chapter.5}% 77
-\BOOKMARK [2][-]{subsection.5.15.1}{Trend}{section.5.15}% 78
-\BOOKMARK [2][-]{subsection.5.15.2}{Seasonality}{section.5.15}% 79
-\BOOKMARK [2][-]{subsection.5.15.3}{Cycles: serial dependence \(time series as features\)}{section.5.15}% 80
-\BOOKMARK [2][-]{subsection.5.15.4}{Forecasting with hybrid models: Components and residuals}{section.5.15}% 81
-\BOOKMARK [2][-]{subsection.5.15.5}{Forecasting}{section.5.15}% 82
-\BOOKMARK [1][-]{section.5.16}{ML explainability}{chapter.5}% 83
-\BOOKMARK [2][-]{subsection.5.16.1}{Feature importance}{section.5.16}% 84
-\BOOKMARK [2][-]{subsection.5.16.2}{Partial dependence plots}{section.5.16}% 85
-\BOOKMARK [2][-]{subsection.5.16.3}{SHAP values}{section.5.16}% 86
-\BOOKMARK [0][-]{subsection.5.16.3}{Bibliography}{}% 87
+\BOOKMARK [1][-]{section.2.5}{SL: Sequence models-Recurrent Neural Network \(RNN\)}{chapter.2}% 35
+\BOOKMARK [1][-]{section.2.6}{SL: Instance based learning}{chapter.2}% 36
+\BOOKMARK [1][-]{section.2.7}{SL: Ensemble B\046B}{chapter.2}% 37
+\BOOKMARK [1][-]{section.2.8}{SL: Kernel methods and SVMs}{chapter.2}% 38
+\BOOKMARK [1][-]{section.2.9}{SL: Comp Learning Theory}{chapter.2}% 39
+\BOOKMARK [1][-]{section.2.10}{SL: VC dimensions}{chapter.2}% 40
+\BOOKMARK [1][-]{section.2.11}{SL: Bayesian Learning}{chapter.2}% 41
+\BOOKMARK [1][-]{section.2.12}{SL: Bayesian inference}{chapter.2}% 42
+\BOOKMARK [0][-]{chapter.3}{Unsupervised learning}{}% 43
+\BOOKMARK [1][-]{section.3.1}{Clustering}{chapter.3}% 44
+\BOOKMARK [2][-]{subsection.3.1.1}{K-means clustering}{section.3.1}% 45
+\BOOKMARK [2][-]{subsection.3.1.2}{Principal Component Analysis \(PCA\)}{section.3.1}% 46
+\BOOKMARK [1][-]{section.3.2}{Anomaly detection}{chapter.3}% 47
+\BOOKMARK [0][-]{chapter.4}{Reinforced Learning}{}% 48
+\BOOKMARK [1][-]{section.4.1}{Markov Decision Process}{chapter.4}% 49
+\BOOKMARK [0][-]{chapter.5}{Miscellaneous topics}{}% 50
+\BOOKMARK [1][-]{section.5.1}{One hot encoding for categorical features}{chapter.5}% 51
+\BOOKMARK [1][-]{section.5.2}{Evaluating the model-partitioning the data set}{chapter.5}% 52
+\BOOKMARK [1][-]{section.5.3}{Cross validation method}{chapter.5}% 53
+\BOOKMARK [1][-]{section.5.4}{Accuracy of the model: F1 score, precision, and recall}{chapter.5}% 54
+\BOOKMARK [1][-]{section.5.5}{Optimization}{chapter.5}% 55
+\BOOKMARK [2][-]{subsection.5.5.1}{Cost function}{section.5.5}% 56
+\BOOKMARK [2][-]{subsection.5.5.2}{Gradient descent \(steepest descent\) method}{section.5.5}% 57
+\BOOKMARK [2][-]{subsection.5.5.3}{Learning rate selection}{section.5.5}% 58
+\BOOKMARK [1][-]{section.5.6}{Overfitting \(high variance\) vs underfitting \(high bias\)}{chapter.5}% 59
+\BOOKMARK [1][-]{section.5.7}{Transfer learning and multi-task learning}{chapter.5}% 60
+\BOOKMARK [1][-]{section.5.8}{Regularization}{chapter.5}% 61
+\BOOKMARK [1][-]{section.5.9}{Model validation}{chapter.5}% 62
+\BOOKMARK [1][-]{section.5.10}{Data processing/cleaning: Missing Values}{chapter.5}% 63
+\BOOKMARK [1][-]{section.5.11}{Data processing \046 Feature engineering}{chapter.5}% 64
+\BOOKMARK [2][-]{subsection.5.11.1}{Feature engineering}{section.5.11}% 65
+\BOOKMARK [2][-]{subsection.5.11.2}{How to create new features}{section.5.11}% 66
+\BOOKMARK [2][-]{subsection.5.11.3}{scaling vs normalization}{section.5.11}% 67
+\BOOKMARK [2][-]{subsection.5.11.4}{Scaling a feature}{section.5.11}% 68
+\BOOKMARK [2][-]{subsection.5.11.5}{Mean normalization}{section.5.11}% 69
+\BOOKMARK [2][-]{subsection.5.11.6}{z-score normalization}{section.5.11}% 70
+\BOOKMARK [2][-]{subsection.5.11.7}{Combining features}{section.5.11}% 71
+\BOOKMARK [2][-]{subsection.5.11.8}{Batch normalization}{section.5.11}% 72
+\BOOKMARK [1][-]{section.5.12}{Ensemble methods}{chapter.5}% 73
+\BOOKMARK [2][-]{subsection.5.12.1}{Gradient Boosting}{section.5.12}% 74
+\BOOKMARK [2][-]{subsection.5.12.2}{Data leakage}{section.5.12}% 75
+\BOOKMARK [1][-]{section.5.13}{Python}{chapter.5}% 76
+\BOOKMARK [1][-]{section.5.14}{ML Checklist}{chapter.5}% 77
+\BOOKMARK [2][-]{subsection.5.14.1}{Time series}{section.5.14}% 78
+\BOOKMARK [1][-]{section.5.15}{Time series}{chapter.5}% 79
+\BOOKMARK [2][-]{subsection.5.15.1}{Trend}{section.5.15}% 80
+\BOOKMARK [2][-]{subsection.5.15.2}{Seasonality}{section.5.15}% 81
+\BOOKMARK [2][-]{subsection.5.15.3}{Cycles: serial dependence \(time series as features\)}{section.5.15}% 82
+\BOOKMARK [2][-]{subsection.5.15.4}{Forecasting with hybrid models: Components and residuals}{section.5.15}% 83
+\BOOKMARK [2][-]{subsection.5.15.5}{Forecasting}{section.5.15}% 84
+\BOOKMARK [1][-]{section.5.16}{ML explainability}{chapter.5}% 85
+\BOOKMARK [2][-]{subsection.5.16.1}{Feature importance}{section.5.16}% 86
+\BOOKMARK [2][-]{subsection.5.16.2}{Partial dependence plots}{section.5.16}% 87
+\BOOKMARK [2][-]{subsection.5.16.3}{SHAP values}{section.5.16}% 88
+\BOOKMARK [0][-]{subsection.5.16.3}{Bibliography}{}% 89
