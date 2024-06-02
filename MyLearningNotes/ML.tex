@@ -751,15 +751,69 @@ The downside of RNN is that it only uses the info before the current layer (This
   %#\label{XXX}
 \end{figure}
 
+Here is the backpropagation model:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/RNNback.png}
+  \caption{Back propagation chart for RNN}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+There are five different types of RNN model, as depicted in the following figure:
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/RNNtypes.png}
+  \caption{Various RNN types}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
 
 One main application of the DRNN is in NLP models. There is a dictionary/vector with all the words, and each word of the sentence is translated to a one-hot vector of the size of the dictionary, with all zeros, except for the index of the word which is one. Then, each sentence is a matrix where the number of columns is equal to the number of words in the sentence. For the words that are not in the dictionary, we can add one token to the dictionary for unknown words. Since every sentence has a different length, we cannot just train a regular NN.
 
 
+From chatGPT: which ML model is used for LLM:
+"
+Transformer-based architectures, including those used in large language models like GPT, are not based on Recurrent Neural Networks (RNNs). Instead, they rely on a different architecture known as the transformer.
 
+RNNs are sequential models that process input data one element at a time while maintaining an internal state that represents information from previous elements. While RNNs have been widely used in natural language processing tasks, they have limitations in capturing long-range dependencies due to the sequential nature of their computation and the vanishing gradient problem.
 
+Transformers, on the other hand, are designed to handle sequential data more efficiently by employing self-attention mechanisms. This allows them to capture relationships between different elements of the input sequence simultaneously, making them better suited for tasks involving long-range dependencies. Transformers have gained popularity in recent years due to their superior performance on various natural language processing tasks, including language modeling, machine translation, and text generation.
+"
 
+Vanishing and exploding gradients are major challenges of RNN. One way to avoid that is Gated Recurrent Unit (GRU).
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/RNNGRU.png}
+  \caption{Various RNN types}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
 
+Long Short-Term Memory (LSTM) is similar to GRU,
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/LSTM.png}
+  \caption{LSTM}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Bidirectional RNN lets you at the point in time to take information from both earlier and later in the sequence.
+
+Deep RNNs have hidden layers:
+\begin{figure}[H]
+  \centering
+  \includegraphics[trim =0.0cm 0.0cm 0.0cm 0.0cm, clip, scale=0.15]{pics/DRNN.png}
+  \caption{LSTM}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
 
 
 \section{SL: Instance based learning}
