@@ -1015,7 +1015,13 @@ The power of Generative AIs is coming from transformers. A transformer model con
   %#\label{XXX}
 \end{figure}
 
-ML models are just big statistical calculators and they work with numbers, not words. So, before passing texts into the model to process, you must first tokenize the words. This converts the words into numbers with each number representing a position in a dictionary of all the possible words that the model can work with. There are multiple tokenization methods. For example, token IDs matching the entire word, or or using token IDs to represent parts of words. We need to use the same tokenizer for encoding and decoding. Once the input is tokenized, you can pass it to the embedding layer. This is a trainable vector embedding in space. Each token ID is represented as a vector and is mapped to a multi dimensional vector.
+
+Step 1:
+ML models are just big statistical calculators and they work with numbers, not words. So, before passing texts into the model to process, you must first tokenize the words. This converts the words into numbers with each number representing a position in a dictionary of all the possible words that the model can work with. There are multiple tokenization methods. For example, token IDs matching the entire word, or using token IDs to represent parts of words. We need to use the same tokenizer for encoding and decoding.
+
+
+Step 2:
+Once the input is tokenized, you can pass it to the embedding layer. This is a trainable vector embedding in space. Each token ID is represented as a vector and is mapped to a multi dimensional vector. These vectors learn to encode the meaning and the context of the individual tokens in the input sequence.
 
 \begin{figure}[H]
   \centering
@@ -1036,6 +1042,42 @@ The embedded space allows you to find the relation ship between spaces. For exam
   %#\label{XXX}
 \end{figure}
 
+
+Step 3: Positional encoding. The model processes each of the input tokens in parallel. So, bu adding the positional encoding, you preserve the information about the word order and don't lose the relevance of the position of the word in the sentence. Once you summed the input tokens and the positional encodings, you pass the resulting vectors to the self-attention layer.
+
+\begin{figure}[H]
+  \centering
+  \caption{Positional encoding}
+  \includegraphics[scale=0.2]{pics/positional.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
+Step 4: Self-attention layer. The model analyzes the relationships between the tokens in your input sequence. This allows the model to attend to different parts of the input sequence to better capture the contextual dependencies between the words. The self-attention weights  that are learned during training and stored in these layers reflect the importance of each word in that input sequence to all other words in the sequence.
+
+
+Step 5: Multi-headed self-attention. Multiple sets of self-attention weights or heads are learned in parallel independently of each other,. The number of attention heads included in the attention layer varies from model to model, but number in the range 12~100 are common. Each self-attention head will learn a different aspect of language. For example, one head may see the relationship between the people entities in our sentence. Whilst another head may focus on the activity of the sentence. Another head, may search for other properties. The weights of each head are randomly initialized, so each, randomly, learn different aspect of the language.
+
+
+\begin{figure}[H]
+  \centering
+  \caption{Multi-headed self-attention}
+  \includegraphics[scale=0.2]{pics/multiheaded.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+Step 6: The output is processed through a fully connected feed forward network. The output of this layer is a vector of logics proportional to the probability score for each and every token in the tokenizer dictionary. You can pass these logics to the final softmax layer, where  they are normalized into a probability score for each word. This output includes a probability for every single word in the vocabulary, so there is likely to be thousands of scores here. One single token will have a score higher than the rest. This is the most likely predicted token. There are a number of methods that you can use to vary the final selection from this vector of probabilities.
+
+
+\begin{figure}[H]
+  \centering
+  \caption{Feed forward network}
+  \includegraphics[scale=0.2]{pics/feed.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
 
 
 
