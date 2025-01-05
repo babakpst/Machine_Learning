@@ -994,7 +994,7 @@ In anomaly detection, choosing the features is one main question (this is not th
 
 \section{Markov Decision Process}
 
-\chapter[Large Language Models]{Large Language Models (LLM)}
+\chapter[Large Language Models (LLM) and Transformers]{Large Language Models (LLM) and Transformers}
 
 Generative AI: A type of AI that can produce various types of content, including text, imagery, audio, and synthetic data based on what it has learned from existing content. Gen AI is a subset of Deep Learning, which uses Artificial Neural Networks, can process both labeled and unlabeled data, using supervised, unsupervised, and semi-supervised methods.
 
@@ -1004,29 +1004,38 @@ DL/ML can be divided into two types: generative and discriminative/predictive. \
 In short, the output of a discriminative model is a number, probability, class, and discrete. But the output of generative AI is natural language, audio, or image.
 
 
-The power of Generative AIs is coming from transformers. A transformer model consists of an encode and a decoder. The encoder encodes the input sequence and passes it to the decoder, which learns how to decode the representations for a relevant task. A transformer is a special type of neural network.
+The power of Generative AIs is coming from transformers, announced for the first time in a paper called "Attention is all you need", which proposed a neural network architecture that replaces traditional recurrent neural networks (RNN and CNN).
+The Transformer architecture consists of an encoder and a decoder, each of which is composed of several layers. Each layer consists of two sub-layers: a multi-head self-attention mechanism and a feed-forward neural network. The multi-head self-attention mechanism allows the model to attend to different parts of the input sequence, while the feed-forward network applies a point-wise fully connected layer to each position separately and identically. The Transformer model also uses residual connections and layer normalization to facilitate training and prevent overfitting. In addition, the authors introduce a positional encoding scheme that encodes the position of each token in the input sequence, enabling the model to capture the order of the sequence without the need for recurrent or convolutional operations. A transformer is a special type of neural network.
 
 
-\begin{figure}[H]
+\begin{figure}
   \centering
-  \caption{Transformer structure}
-  \includegraphics[scale=0.2]{pics/transformers.png}
-  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
-  %#\label{XXX}
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.11]{pics/transformers.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[trim=10cm 1cm 10cm 5cm,clip,scale=0.12]{pics/arch.png} %
+    %\caption{}
+    %%\label{fig:sub2}
+  \end{subfigure}
+  \caption{Transformer structure: (a) Encoder/decoder section, (b) Full picture}
+  %\label{fig:test}
 \end{figure}
-
 
 Step 1:
 ML models are just big statistical calculators and they work with numbers, not words. So, before passing texts into the model to process, you must first tokenize the words. This converts the words into numbers with each number representing a position in a dictionary of all the possible words that the model can work with. There are multiple tokenization methods. For example, token IDs matching the entire word, or using token IDs to represent parts of words. We need to use the same tokenizer for encoding and decoding.
 
-
 Step 2:
-Once the input is tokenized, you can pass it to the embedding layer. This is a trainable vector embedding in space. Each token ID is represented as a vector and is mapped to a multi dimensional vector. These vectors learn to encode the meaning and the context of the individual tokens in the input sequence.
+Once the input is tokenized, you can pass it to the embedding layer. This is a trainable vector embedding in space. Each token ID is represented as a vector and is mapped to a multi dimensional vector. These vectors learn to encode the meaning and the context of the individual tokens in the input sequence. Words with similar meanings land in a space closer to each other.
 
 \begin{figure}[H]
   \centering
   \caption{Embedded spaces in transformers}
-  \includegraphics[scale=0.2]{pics/embeddedSpace.png}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/embeddedSpace.png}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1037,7 +1046,7 @@ The embedded space allows you to find the relation ship between spaces. For exam
 \begin{figure}[H]
   \centering
   \caption{Example of embedded spaces}
-  \includegraphics[scale=0.2]{pics/exEmbedSpace.png}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/exEmbedSpace.png}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1048,7 +1057,7 @@ Step 3: Positional encoding. The model processes each of the input tokens in par
 \begin{figure}[H]
   \centering
   \caption{Positional encoding}
-  \includegraphics[scale=0.2]{pics/positional.png}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/positional.png}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1063,7 +1072,7 @@ Step 5: Multi-headed self-attention. Multiple sets of self-attention weights or 
 \begin{figure}[H]
   \centering
   \caption{Multi-headed self-attention}
-  \includegraphics[scale=0.2]{pics/multiheaded.png}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/multiheaded.png}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
@@ -1074,11 +1083,46 @@ Step 6: The output is processed through a fully connected feed forward network. 
 \begin{figure}[H]
   \centering
   \caption{Feed forward network}
-  \includegraphics[scale=0.2]{pics/feed.png}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/feed.png}
   %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
   %#\label{XXX}
 \end{figure}
 
+The process is depicted in the following picture, the process is iterative, until the end of the process, then, the final sequence of tokens are detokenized into words and you get the output
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[scale=0.08]{pics/fullTransformer.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[scale=0.08]{pics/fullTransformer2.png}
+    %\caption{}
+    %\label{fig:sub2}
+  \end{subfigure}
+  \caption{Full transformer process: (a) Iterations of transformer model, (b) Detokenization of the final sequence}
+  \label{fig:test}
+\end{figure}
+
+Examples of Encoder/Decoder models are BART and T5.
+
+Some models only uses the Encoder section of the transformer (Encoder Only Models) by adding some extra layers to the output, for example BERT is as a classification model such sentiment analysis.
+
+Decoder only models are another set of models, such as GPT,BLOOM, and LLaMa.
+
+
+\begin{figure}[H]
+  \centering
+  \caption{Different transformer models}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/VariousTransformers.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
 
 
 Issues of transformers: Hallucinations are words or phrases that are generated by the model that are often nonsensical or grammatically incorrect. This may cause by a number of factors: when a model is not trained on enough data, trained on noisy or dirty data, not given enough context, not given enough constraints.
@@ -1097,7 +1141,74 @@ The more parameter a model has, the more memory it has, and the more sophisticat
 
 The text you pass to LLM is known as a prompt. The space you have for prompt is called the context window (usually 1000 words). The output of the model is called a completion. The act of using the model to generate an answer is called inference.
 
-Multi-headed attention:
+\begin{figure}[H]
+  \centering
+  \caption{Different transformer models}
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/prompt.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+We frequently encounter situations where the model does not produce the outcome you want, on the first try (Zero-shot inference). So, you may have to reviset the language in the prompt.The work to improve the prompt is known as prompt engineering. One way in prompt engineering is to provide examples in the prompt, which is known as in-context learning (ICL). See a one-shot inference in the picture below. We can extend the strategy to have few-shot inference. If the answer is not desirable even with few examples, we need to fine-tune the model. Note also that the context window is limited.
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/zeroshot.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/oneshot.png}
+    %\caption{one-shot inference}
+    %\label{fig:sub2}
+  \end{subfigure}
+  \begin{subfigure}[] % {.5\textwidth}
+  \centering
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/fewshot.png}
+  %\caption{few-shot inference}
+  %\label{fig:sub2}
+  \end{subfigure}
+  \caption{Prompt engineering: (a) zero-shot inference, (b) one-shot inference, (c) few-shot inference}
+  %\label{fig:test}
+\end{figure}
+
+To control LLM behaviors we can set configuration parameters that are different from the training parameters. They invoked at inference time. There are at least four parameters:
+\begin{enumerate}
+  \item Max new tokens: Max number of tokens/output the model generate. This is like another stop condition.
+  \item Sample top K\\
+  The output from the LLM is a probability distribution across the entire dictionary of words that a model uses. After assigning a probability to each word, there are two modes to select the word, greedy (highest probability is selected) or random sampling (chooses the word from a random sampling using a probability distribution.)
+  Greedy method is good for short generation, but it is susceptible to repeated words, or repeated sequences of words. For more natural and creative, and avoid repeating words, we can use random sampling. The output might be too creative to the point that it does not make any sense. So, we have to limit the random sampling.
+  The top-K select an output from the top-k results after applying random-weighted strategy using the probabilities (choosing the from the top K highest probable tokens).
+
+\begin{figure}[H]
+  \centering
+  \caption{Generative configuration}
+  \includegraphics[trim=3cm 6cm 5cm 0cm,clip,scale=0.15]{pics/config.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+
+  \item Sample top P: Select an output using the random weighted strategy with the top-ranked consecutive results by probability  and with a cumulative probability <= p.
+  \item Temperature: impact the shape of probability distribution.  The higher the temperature, the higher the randomness.
+
+  \begin{figure}[H]
+    \centering
+    \caption{Generative configuration}
+    \includegraphics[trim=3cm 6cm 5cm 0cm,clip,scale=0.15]{pics/temperature.png}
+    %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+    %#\label{XXX}
+  \end{figure}
+
+
+
+\end{enumerate}
+
+
 
 
 \chapter[Miscellaneous topics]{Miscellaneous topics}
@@ -1235,7 +1346,7 @@ The other widely used method is \textbf{mean squared error cost (MSE)}:
 	\text{find $\overrightarrow{w},b$:} \\
 	\text{minimize:  }  J(\overrightarrow{w},b) = \frac{1}{2m} \sum_{i=1}^{m} \big(\hat{y}^{(i)}  - y^{(i)} \big) ^2 = \frac{1}{2m} \sum_{i=1}^{m} \big( wx ^ {(i)} + b - y^{(i)} \big) ^2 \\
 \end{multline}
-m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. In sklearn, we can caculate the cost with mean\_squared\_error. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression, using Sigmoid function. The reason is that the logistic regression model, which is defined by (sigmoid):
+m is the to total number of data points. The extra 2 in the denominator is just for convenience. This is the squared error cost function, which is widely used. In sklearn, we can calculate the cost with mean\_squared\_error. However, there are other options for the cost functions as well. For example, the squared error cost function is not an ideal cost function for logistic regression, using Sigmoid function. The reason is that the logistic regression model, which is defined by (sigmoid):
 
 \begin{equation}
   f_{\overrightarrow{w},b} (\overrightarrow{x}) = \frac{1}{1+e^{-(\overrightarrow{w} \overrightarrow{x} ^ {(i)} + b)}}
@@ -2288,3 +2399,32 @@ That is, the SHAP values of all features sum up to explain why my prediction was
 %    %\label{}
 %  \end{center}
 %\end{figure}
+
+% ===============
+
+\begin{comment}
+\begin{figure}
+  \centering
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/zeroshot.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/oneshot.png}
+    %\caption{one-shot inference}
+    %\label{fig:sub2}
+  \end{subfigure}
+  \caption{Prompt engineering: (a) zero-shot inference, (b) one-shot inference, (c) few-shot inference}
+  %\label{fig:test}
+\end{figure}
+\end{comment}
+
+
+
+
+
+
+
