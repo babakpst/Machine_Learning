@@ -1149,7 +1149,7 @@ The text you pass to LLM is known as a prompt. The space you have for prompt is 
   %#\label{XXX}
 \end{figure}
 
-We frequently encounter situations where the model does not produce the outcome you want, on the first try (Zero-shot inference). So, you may have to reviset the language in the prompt.The work to improve the prompt is known as prompt engineering. One way in prompt engineering is to provide examples in the prompt, which is known as in-context learning (ICL). See a one-shot inference in the picture below. We can extend the strategy to have few-shot inference. If the answer is not desirable even with few examples, we need to fine-tune the model. Note also that the context window is limited.
+We frequently encounter situations where the model does not produce the outcome you want, on the first try (Zero-shot inference). So, you may have to reviset the language in the prompt.The work to improve the prompt is known as prompt engineering. One way in prompt engineering is to provide examples in the prompt, which is known as in-context learning (ICL). See a one-shot inference in the picture below. We can extend the strategy to have few-shot inference. Sometimes, adding more shots, does not improve the output, for example, if you don't get better answers with 5 shot, probably does not worth try more shots. Also, you need to make sure that you do not exceed the model's input-context length. If the answer is not desirable even with few examples, we need to fine-tune the model.
 
 
 \begin{figure}
@@ -1206,6 +1206,7 @@ To control LLM behaviors we can set configuration parameters that are different 
 \end{enumerate}
 
 
+Project life cycle:
 
 
 \begin{figure}[H]
