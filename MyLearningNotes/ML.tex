@@ -1313,8 +1313,174 @@ There are three factors that affects the model performance, as depicted in the f
 \end{figure}
 
 \section{Instruction fine-tuning}
-How to fine-tune an LLM with instruction prompts? In the previous section, we learned how to use the few-shot method to improve the learning/output, but this method may not work for smaller models. More importantly, examples take up space in the context window. Instead, we can use fine-tuning to further tune a base model.
-1:44
+How to fine-tune an LLM with instruction prompts? In the previous section, we learned how to use the few-shot method to improve the learning/output, but this method may not work for smaller models. More importantly, examples take up space in the context window. Instead, we can use fine-tuning to further tune a base model. Instead of few shots, we can try fine-tuning the model. Fine-tuning is a supervised learning process, where we use labeled examples (prompt completion pairs) to update the model. This method is also known as full fine tuning, because all parameters are retuned. The fine-tuned labeled data is divided into training, validation, and test as usual, can be used to train the LLM. At the end, the new model, called the instruct model, is better is responding.
+
+\begin{figure}[H]
+  \centering
+  \caption{Distributed Data Parallel}
+  \includegraphics[trim=0cm 6cm 5cm 0cm,clip,scale=0.15]{pics/finetuning.png}
+  %{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+  %#\label{XXX}
+\end{figure}
+
+We can fine-tune a model for a single task, but there is a potential downside. Fine-tuning can significantly increase the performance of a model on a specific task, but can lead to reduction in ability on other tasks. This is called \textit{catastrophic forgetting}.
+
+How to avoid catastrophic forgetting?
+\begin{itemize}
+  \item First, we need to know if this affects your use case. If not, we don't need to worry about it.
+  \item Fine-tune on multiple tasks at the same time.
+  \item Consider Parameter Efficient Fine-tuning (PEFT).
+\end{itemize}
+
+Instruction fine-tuning with FLAN (Fine-tuning LAnguage Net): FLAN models refer to a specific set of instructions used to perform instruction fine-tuning. For example, FLAN-T5 is the FLAN version of T5 model.
+
+\section{LLM evaluation metrics}
+
+
+Terminology:
+\begin{itemize}
+  \item unigram: one word in a sentence
+  \item bigram: two (consecutive) words
+  \item n-gram: a group of n-words.
+\end{itemize}
+
+
+Traditionally, we use accuracy (correct predictions/Total predictions) to measure how good/accurate the model is. But, this approach is not working for LLM, because the output is a sentence and not easy to check it correct or not.
+
+There are two methods to measure the accuracy for LLMs:
+\begin{itemize}
+  \item ROUGE (Recall Oriented Under study for (G)jesting Evaluation): is primarily employed to assess the quality of automatically generated summaries by comparing them to human generated reference summaries.
+  \begin{itemize}
+    \item used for text summarization
+    \item compares a summary to one or more reference summaries
+  \end{itemize}
+  \item BLEU (BiLingual Evaluation Understudy)
+  \begin{itemize}
+    \item used for text translation
+    \item compares to human-generated translations
+  \end{itemize}
+\end{itemize}
+
+For an answer that is generate by human (reference) and the generated output, you can calculate the metrics as follows:
+
+\begin{align}
+  ROUGE-1 Recall = \frac{unigram matches}{unigrams in reference} \\
+  ROUGE-1 Recall = \frac{unigram matches}{unigrams in reference} \\
+  ROUGE-1 F1 = 2 \frac{precision x recall}{precision + recall}
+\end{align}
+
+This metric only focuses on individual words (that is why there is a -1 in the name, which means only one word or unigrams), and it does not consider the ordering of the words. We can define the same metric with pairs of words, bigram, and define the similar metrics. The other metric is ROUGE-L which is based on the Longest Common Subsequence (LCS), which is the number of similar consecutive words in reference and generated output. We can also use clipping to avoid higher score for repeated words.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rouge1.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rouge2.png}
+    %\caption{one-shot inference}
+    %\label{fig:sub2}
+  \end{subfigure}
+  \begin{subfigure}[] % {.5\textwidth}
+  \centering
+  \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rougel.png}
+  %\caption{one-shot inference}
+  %\label{fig:sub2}
+  \end{subfigure}
+  \begin{subfigure}[] % {.5\textwidth}
+  \centering
+  \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rougec.png}
+  %\caption{one-shot inference}
+  %\label{fig:sub2}
+  \end{subfigure}
+
+  \caption{ROUGE metric}
+  %\label{fig:test}
+\end{figure}
+
+BLEU score is the average of precision across range of n-gram sizes. We need to use libraries to calculate that.
+
+To measure and compare LLMs more holistically, you can make use of pre-exisiting datasets, and associated benchmarks that have been established by LLM researchers specifically for this purpose. There are a couple of these datasets/benchmarks: GLUE, SuperGLUE, MMLU (Massive Multitask Language Understanding), BIG-bench, and HELM (Holistic Evaluation of Language Models).
+
+\section{Parameter Efficient Fine Tuning (PEFT)}
+
+In contrast to full fine-tuning where every model weight is updated during supervised learning, Parameter Efficient Fine Tuning methods only update a small subset of parameters. Some PEFT techniques freeze most model weights and only tune a small subset of trainable layers, for example a particular layer of the model. Some other techniques freeze all model weights, and add new parameters/layers and fine tune only new components. The trained weights are usually around 10~15\% of the original weights. PEFT is less prone to catastrophic forgetting problems of full fine-tuning. Full fine-tuning results in a new version of the model for every task you train on. There are several methods for PEFT, each would trade-offs with
+\begin{itemize}
+  \item Parameter efficiency,
+  \item Memory efficiency,
+  \item Model performance,
+  \item Inference costs,
+  \item Training speed.
+\end{itemize}
+
+PEFT methods:
+\begin{itemize}
+  \item Selective: Select a subset of initial LLM parameters to fine-tune. There are methods to identify which parameters you want to update: certain components of the model or specific layers, or even individual parameter types.
+  \item Reparameterize model work with the original LLM parameters, but reduce the number of parameters to train by creating new low rank transformations of the original network weights. Example: LoRA.
+  \item Additive methods carry out fine-tuning by keeping all of the original LLM weights frozen and introducing new trainable components. There are two approaches here: adapters add new trainable layers to the architecture of the model, typically inside encoder or decoder components after the attention or feed-forward layers. Soft prompt methods, keep the model architecture fixed and froze, and focus on manipulating the input to achieve better performance, by adding trainable parameter to the prompt embedding or keeping the input fixed and retraining the embedding weights.
+\end{itemize}
+
+Low Rank Adaptation (LoRA) freezes most of the original weights (which is now a matrix of size MxN), and injects 2 rank decomposition matrices (of rank r), alongside the original weights. The dimension of the new matrices Mxr and rxN. Then we train the weights of the smaller matrices. Once the new weights are trained for a task (and we can have multiple of these new low rank matrices for different tasks), we multiply the two matrices and add them, and replace them as the original weights in the model. The size of new matrices/parameters are small, and the weights for multiple tasks can be loaded in memory simultaneously. How to choose the size of r is still under investigation. Effectiveness of higher rank appears to plateau (larger r did not improve the performance).
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/lora.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/lora2.png}
+    %\caption{one-shot inference}
+    %\label{fig:sub2}
+  \end{subfigure}
+  \caption{LoRA (a) process, (b) using LoRA for two/multiple tasks}
+  %\label{fig:test}
+\end{figure}
+
+Prompt tuning with soft prompts: \\
+Prompt tuning is not the same as prompt engineering. Prompt engineering requires a lot of manual work to try different prompts, it is limited by the length of the context window, and output, at the end, might not be performing well yet.
+
+With prompt tuning, we add additional trainable tokens to your prompt and leave it to the supervised learning process to determine their optimal values. These set of trainable tokens are called soft prompt, and gets prepended to embedding vectors that represents your input text. The embedding vectors  have the same length as token vectors and typically 20~100 tokens.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[] %{.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft.png}
+    %\caption{}
+    %\label{fig:sub1}
+  \end{subfigure}%
+  \begin{subfigure}[] % {.5\textwidth}
+    \centering
+    \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft2.png}
+    %\caption{one-shot inference}
+    %\label{fig:sub2}
+  \end{subfigure}
+  \begin{subfigure}[] % {.5\textwidth}
+  \centering
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft3.png}
+  %\caption{one-shot inference}
+  %\label{fig:sub2}
+  \end{subfigure}
+  \begin{subfigure}[] % {.5\textwidth}
+  \centering
+  \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft4.png}
+  %\caption{one-shot inference}
+  %\label{fig:sub2}
+\end{subfigure}
+  \caption{Soft prompts (a) token addition, (b) hard tokens, (c) soft tokens, (d) multiple prompts  }
+  %\label{fig:test}
+\end{figure}
+
+Tokens that represent natural language are hard (fixed location in the embedded vector space), but soft prompts are not fixed discrete words of natural language. These are virtual tokens that can take on any value within the continuous multidimensional embedding space, and through supervised learning, the model learns the values for these virtual tokens. With prompt tuning, the weights of model frozen and soft prompts token trained/updated over time. Number of parameters to be tuned here is less than the actual model tuning.  We can tune multiple prompts for each task on top of the LLM, and when we change the task, we can just change the prompt.
+4:21
 
 \chapter[Miscellaneous topics]{Miscellaneous topics}
 
@@ -1629,7 +1795,7 @@ Now that we know what exponential weighted average is, we need to use it with gr
   V_{dw} &= \beta V_{dw} + (1-\beta) dw \\
   V_{db} &=  \beta V_{db} + (1-\beta) db \\
   W &= W- \alpha V_{dw} \\
-  b &= b- \alpha V_{db} \\
+  b &= b- \alpha V_{db}
 \end{align}
 
 The $\beta$ is another hyperparameter in our model, but, in practice, it is ok to skip bias correction. Additionally, in some literature, the term $1-\beta$ is omitted.
@@ -2497,17 +2663,26 @@ That is, the SHAP values of all features sum up to explain why my prediction was
 
 \end{document}
 
-%\begin{figure}[htbp]
-%  \begin{center}
-%    \includegraphics[trim =30cm 8.0cm 20cm 27cm, clip, scale=0.4]{pics/seasonal_indicator.png}
-%    \caption{seasonal indicators}
-%    %\label{}
-%  \end{center}
-%\end{figure}
+
 
 % ===============
 
 \begin{comment}
+
+\begin{align}
+  V_{dw} &= V_{db} = 0 \\
+  b &= b- \alpha V_{db}
+\end{align}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 8.0cm 20cm 27cm, clip, scale=0.4]{pics/seasonal_indicator.png}
+    \caption{seasonal indicators}
+    %\label{}
+  \end{center}
+\end{figure}
+
+
 \begin{figure}
   \centering
   \begin{subfigure}[] %{.5\textwidth}
