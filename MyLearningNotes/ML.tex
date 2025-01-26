@@ -1312,7 +1312,7 @@ There are three factors that affects the model performance, as depicted in the f
   %#\label{XXX}
 \end{figure}
 
-\section{Instruction fine-tuning}
+\section{Instruction fine-tuning/Full fine-tuning}
 How to fine-tune an LLM with instruction prompts? In the previous section, we learned how to use the few-shot method to improve the learning/output, but this method may not work for smaller models. More importantly, examples take up space in the context window. Instead, we can use fine-tuning to further tune a base model. Instead of few shots, we can try fine-tuning the model. Fine-tuning is a supervised learning process, where we use labeled examples (prompt completion pairs) to update the model. This method is also known as full fine tuning, because all parameters are retuned. The fine-tuned labeled data is divided into training, validation, and test as usual, can be used to train the LLM. At the end, the new model, called the instruct model, is better is responding.
 
 \begin{figure}[H]
@@ -1480,7 +1480,30 @@ With prompt tuning, we add additional trainable tokens to your prompt and leave 
 \end{figure}
 
 Tokens that represent natural language are hard (fixed location in the embedded vector space), but soft prompts are not fixed discrete words of natural language. These are virtual tokens that can take on any value within the continuous multidimensional embedding space, and through supervised learning, the model learns the values for these virtual tokens. With prompt tuning, the weights of model frozen and soft prompts token trained/updated over time. Number of parameters to be tuned here is less than the actual model tuning.  We can tune multiple prompts for each task on top of the LLM, and when we change the task, we can just change the prompt.
-4:21
+One potential issue here is interpretability of learned virtual tokens, because soft prompts can take any value within the embedding space. An analysis of the nearest neighbor tokens to the soft prompt location shows that they form tight semantic clusters. In other words, the words closest to the soft prompt tokens have similar meanings. The words identified usually have some meaning related to the task, suggesting that the prompts are learning word like representations.
+
+
+\section{Reinforcement learning from human feedback (RLHF)}
+
+Large Language models behaving badly, because large language models trained on vast amount of data:
+
+\begin{itemize}
+  \item Toxic language
+  \item Aggressive responses
+  \item Providing dangerous information
+\end{itemize}
+
+The output of the LLM should be Helpful, Honest, and Harmless (HHH). This step is basically trying to align the output with human feedback.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[trim =30cm 8.0cm 20cm 27cm, clip, scale=0.1]{pics/RLHF.png}
+    \caption{seasonal indicators}
+    %\label{}
+  \end{center}
+\end{figure}
+
+
 
 \chapter[Miscellaneous topics]{Miscellaneous topics}
 
