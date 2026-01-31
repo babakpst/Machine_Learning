@@ -162,6 +162,87 @@ The important thing is this: feature transformers generally can extrapolate targ
 
 There are two types of data for supervised learning: Structured and Unstructured data. The structured data is the data bases of data tabulated in tables. The Unstructured data refers to image, text, or audio. Generally, it is more complex to train a model with unstructured data.
 
+\section{SL: Data analysis pipeline}
+
+The ML pipeline:
+
+Data ingestion/collection $\rightarrow$
+Data preparation (cleaning and preprocessing) $\rightarrow$
+Pre-processing $\rightarrow$
+ML model building $\rightarrow$
+Training $\rightarrow$
+Evaluation $\rightarrow$
+Deployment
+
+\subsection{Data ingestion/ collection}
+This is raw data collection. The questions we need to ask is:
+\begin{itemize}
+  \item enough data?
+  \item too much data?
+  \item representative data? coverage and bias
+\end{itemize}
+
+\subsection{Data preparation}
+Access, quality, efficiency. We do cleaning, transforming, and organizing. This fixes errors, handling missing values, engineering new features.
+
+\subsubsection{Data cleaning}
+\begin{itemize}
+\item missing features
+\item extraneous features
+\item dimension mis-match
+\item adequate labeling
+\end{itemize}
+
+\subsubsection{Pre-processing}
+\begin{itemize}
+  \item numerical encoding
+  \item normalization
+  \item alternate representation
+  \item test/train
+\end{itemize}
+
+\subsection{ML model building}
+Choosing the right architecture.
+\begin{itemize}
+  \item How many neurons should you use?
+  \item How are they connected?
+  \item What kind of layers does the model need?
+\end{itemize}
+
+
+\subsection{Training}
+measure, diagnose, adjust.
+\begin{itemize}
+  \item How to measure prediction errors?
+  \item How to guide the model to improve?
+  \item How fast it learns?
+  \item
+\end{itemize}
+
+
+\subsection{Evaluation}
+Testing, debugging.
+
+Use a test set.
+
+\subsubsection{Post-processing}
+\begin{itemize}
+  \item de-normalization/de-coding
+  \item confidence intervals
+  \item data presentation (visualization, computational next steps)
+\end{itemize}
+
+\subsubsection{Analysis}
+\begin{itemize}
+  \item validation
+  \item hyper-parameters tuning/model selection
+  \item statistical summarization
+  \item mathematical modeling
+\end{itemize}
+
+\subsection{Deployment}
+serving, monitoring. At the end we have the prediction.
+
 \section{SL: Decision tree}
 
 \subsection{Introduction}
@@ -296,7 +377,7 @@ Inductive bias of ID3 algorithm:
 \end{itemize}
 
 \subsection{Extending ID3 algorithm-other consideration}
-\textbf{For continuous values attributes/features}, we can classify the attributes based on thresholds (that exists in the data set). Without threshhold, the continuous data attribute provides the most information gain, while giving a decision tree that is not generalize well. To find the threshold, we can plot the values and decide based on a threshold the returns the best outcome, by calculating the information gain values for each threshold. One way to select the threshold is to take all the values that are mid points between the sorted list of training. For example, for 10 training samples, we need to test the info gain for 9 values, for this specific feature. We can even have multiple threshold for one feature (by creating multiple features).
+\textbf{For continuous values attributes/features}, we can classify the attributes based on thresholds (that exists in the data set). Without threshold, the continuous data attribute provides the most information gain, while giving a decision tree that is not generalize well. To find the threshold, we can plot the values and decide based on a threshold the returns the best outcome, by calculating the information gain values for each threshold. One way to select the threshold is to take all the values that are mid points between the sorted list of training. For example, for 10 training samples, we need to test the info gain for 9 values, for this specific feature. We can even have multiple threshold for one feature (by creating multiple features).
 
 \textbf{Does it make sense to repeat an attribute along a path in a decision tree?} No, it does not make sense for discrete values, but for continuous values, it makes sense, because indeed we are asking a different question (for a different range).
 
@@ -508,15 +589,20 @@ Layer: a group of neurons, which take the same input/features as input. A layer 
 
 In practice, each neuron from one layer, has access to all the neurons/inputs from the previous layer. During the training process, the weight of unrelated neurons/features becomes smaller.
 
-Each neuron in the layer computes $\overrightarrow{w} . \overrightarrow{x}+b$ and passes the value to the next layer. Each neuron will learn a feature (such as affordability, quality, vertical line, etc.) by itself.
+Each neuron in the layer computes $\overrightarrow{w} . \overrightarrow{x}+b$ and passes the value to the next layer. The purpose of the biad $b$ is to allow the sum to be non-zero, if all the inputs are zero (some consider that as another weight, coming into the neuron). Each neuron will learn a feature (such as affordability, quality, vertical line, etc.) by itself.
 
 Each perceptron divides the space into two halves.
 
 It is important to initialize $\overrightarrow{w}$ and $ b$ randomly, and not all equal to zero, otherwise, if all numbers are zero, there would be no training.
 
+Model parameters: The part of a model that will be tuned by training, weights and bias.
+
+Hyperparameters: tunable aspects of a model not adapted by training: step sizes, iteration, .... .
+
+
 
 \subsection{Logistic regression algo with Neural Network}
-We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. There are several option for the activation function g() (see \ref{sec:activation}), for example, for sigmoid function, we have:
+We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. There are several option for the activation function g() and each neuron can get a different activation function (see \ref{sec:activation}), for example, for sigmoid function, we have:
 
 \begin{equation}
   a= f_{\overrightarrow{w},b}(\overrightarrow{x}) = g(z=\overrightarrow{w} . \overrightarrow{x}+b) = \frac{1}{1+e^{-z}}
@@ -539,8 +625,6 @@ The dimension of vectorized items are ($m$ is the number of samples/training set
 \begin{equation}
   A_{n^{[l]}\times m}^{[l]}= g( Z_{n^{[l]}\times m}^{[l]} = \overrightarrow{W}_{n^{[l]}\times n^{[l-1]}}^{[l]} . \overrightarrow{A}_{n^{[l-1]}\times m}^{[l-1]}+b_{n^{[l]}\times m}^{[l]})
 \end{equation}
-
-
 
 
 Why we need a deep neural network instead of a shallow one? There are functions that you can compute with a small L-layer deep neural network that shallower networks require exponentially more hidden units to compute.
@@ -635,9 +719,17 @@ Since the derivative is zero when z is negative, we may use a small number inste
   %#\label{XXX}
 \end{figure}
 
+In this case, the neuron changes to a simple linear regression.
+
 \textbf{Multiclass classification} refers to classification problems where you can have more than just two possible output labels. The last layer has m activation units, corresponding to the m required classes, where each output is associated with a category/class.
 
-\textbf{Softmax function} is a generalization of the logistic function. The last layer generates a vector of size m by a linear function which is applied to a softmax function. The softmax function converts the last layer into a probability distribution as described below. After applying softmax, each output will be between 0 and 1 and the outputs will add to 1, so that they can be interpreted as probabilities. The larger inputs will correspond to larger output probabilities. It provides probabilities of the input being in each category.
+\textbf{Softmax function} is a generalization of the logistic function.
+
+This is used when we have a multi class classification problem. If you use sigmoid on each layer, it can produce lots of large values. We define the class based on the largest value. However, training a model with sigmoid is also a challenge, especially if we want to turn the last layer into a one-hot vector. The issue with sigmoid in this case is for the classes that are not valid, the derivative is small (both ends of sigmoid is almost flat, and derivate is close to zero), and make it is difficult to train those nodes.
+
+Softmax applies on the entire layer, rather than individually applying on each neuron. This activation only applied to the output layer for a classification problem (should not be used for hidden layers).
+
+The last layer generates a vector of size m by a linear function which is applied to a softmax function. The softmax function converts the last layer into a probability distribution as described below (which can be better interpreted). After applying softmax, each output will be between 0 and 1 and the outputs will add to 1, so that they can be interpreted as probabilities. The larger inputs will correspond to larger output probabilities. It provides probabilities of the input being in each category.
 
 
 The last layer, then, has m activation units, each of which calculated as:
@@ -647,7 +739,7 @@ The last layer, then, has m activation units, each of which calculated as:
 \end{equation}
 Note that $\sum_{i = 1}^{m}  a_i = 1$
 
-The name softmax is coming from the contrast function hard-max, which converts the last year, to a vector with only one true / 1 label, and the rests would be zero. But with the softmax, all elements have a value and the sum of all values are one. Note also that if number of softmax classes is two, the softmax reduces to logistic regression.
+The name softmax is coming from the contrast function hard-max, which converts the last layer, to a vector with only one true / 1 label, and the rests would be zero. But with the softmax, all elements have a value and the sum of all values are one. Note also that if number of softmax classes is two, the softmax reduces to logistic regression.
 
 
 Tanh function, LeakyReLU function, and swish function are other choices.
@@ -675,8 +767,7 @@ What kind of problems are neural networks appropriate for solving?
 This lack of restriction does mean that there’s a significant danger of overfitting, but by carefully limiting things that add complexity (as before, this might be layers, nodes, or even the weights themselves), we can stay relatively generalized.
 
 
-\textbf{Preference Bias} On the other hand, we can’t yet answer the question of the pref-
-erence bias of a neural network (which, if you recall, describes which hypotheses from
+\textbf{Preference Bias} On the other hand, we can’t yet answer the question of the preference bias of a neural network (which, if you recall, describes which hypotheses from
 the restricted space are preferred). We discussed the algorithm for updating weights
 (gradient descent), but have yet to discuss how the weights should be initialized in the first place.
 
@@ -1012,13 +1103,13 @@ The Transformer architecture consists of an encoder and a decoder, each of which
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.11]{pics/transformers.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=10cm 1cm 10cm 5cm,clip,scale=0.12]{pics/arch.png} %
     %\caption{}
@@ -1095,13 +1186,13 @@ The process is depicted in the following picture, the process is iterative, unti
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[scale=0.08]{pics/fullTransformer.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[scale=0.08]{pics/fullTransformer2.png}
     %\caption{}
@@ -1172,19 +1263,19 @@ We frequently encounter situations where the model does not produce the outcome 
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/zeroshot.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/oneshot.png}
     %\caption{one-shot inference}
     %\label{fig:sub2}
   \end{subfigure}
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
   \centering
   \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/fewshot.png}
   %\caption{few-shot inference}
@@ -1239,17 +1330,33 @@ After defining the use case, we need to decide whether to use pre-trained LLMs o
 
 
 \section{Quantization}
-To do the massive computation for training, we need a lot of memory, which might not be available. By quantization, we can use lower precision datatypes, to be able to fit the model on the GPU memory.
+To do the massive computation for training, we need a lot of memory (RAM), which might not be available on GPU. There are a few other options:
+\begin{itemize}
+  \item Pruning: remove connections that do not improve the model.
+  \item Knowledge distillation: train a smaller model using the original model
+  \item Quantization: we can use lower precision data types, to be able to fit the model on the GPU memory. Quantization can be applied to weights and/or activations.
+\end{itemize}
+
+
+
+Summary of quantization:
+\textbf{pros}
+\begin{itemize}
+  \item Reduced memory footprint (more efficient use of GPU memory, enables the training of larger models, enables larger batch sizes)
+  \item Increased speed
+\end{itemize}
+\textbf{Cons:}
+Downcasting, when a higher data type, converted to a lower data type, such as an integer, results in loss of data/accuracy.
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[H] %{.5\textwidth}
     \centering
   \includegraphics[trim=0cm 6cm 5cm 0cm,clip,scale=0.15]{pics/F16.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[H] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.15]{pics/BF16.png}
     %\caption{one-shot inference}
@@ -1258,6 +1365,13 @@ To do the massive computation for training, we need a lot of memory, which might
   \caption{Quantization: (a) F16, (b) BF16}
   %\label{fig:test}
 \end{figure}
+
+We can use the linear quantization. We need to find scale, and zero point ($r$: is the original unquantized value, and $q$ is the quantized value):
+\begin{align}
+  s &= \frac{r_{max} - r_{min}}{q_{max} - q_{min}} \\
+  z &= q_{min}- \frac{r_{min}}{s}
+\end{align}
+
 
 
 \section{Scale computation}
@@ -1273,24 +1387,24 @@ In the DDP, pytorch copies your entire model on all GPUs, and sends batches of D
   %#\label{XXX}
 \end{figure}
 
-The other option is Fully Sharded Data Parallel (FSDP), motivated by ZeRO (Zero Redundancy Optimizer), which allows to distribute model parameters on multiple GPUs, as opposed to DDP which stores all model parameters on each GPU. ZeRO distribute/shard the model parameters, gradients, and optimizer states across GPUs. It has three stages, depending on which model parameters are distributed. This model allows to work on models that are too big to fit on a single chip. Since not all parameters are available on a GPU, you need to Get weights from all GPUs before you run forward or backward pass. This is more like a memory vs performance trade-off decision. In short, this model, allows you to reduce overall GPU memory utilization, supports offloading to CPU if needed. To manage the trade off between performance and memory utilization, you can configure the level of sharding via sharding factor.
+The other option is Fully Sharded Data Parallel (FSDP), motivated by ZeRO (Zero Redundancy Optimizer), which allows to distribute ameters on multiple GPUs, as opposed to DDP which stores all model parameters on each GPU. ZeRO distribute/shard the model parameters, gradients, and optimizer states across GPUs. It has three stages, depending on which model parameters are distributed. This model allows to work on models that are too big to fit on a single chip. Since not all parameters are available on a GPU, you need to Get weights from all GPUs before you run forward or backward pass. This is more like a memory vs performance trade-off decision. In short, this model, allows you to reduce overall GPU memory utilization, supports offloading to CPU if needed. To manage the trade off between performance and memory utilization, you can configure the level of sharding via sharding factor.
 
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/ZeRO.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/ZeRO2.png}
     %\caption{one-shot inference}
     %\label{fig:sub2}
   \end{subfigure}
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
   \centering
   \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/FSDP.png}
   %\caption{one-shot inference}
@@ -1373,25 +1487,25 @@ This metric only focuses on individual words (that is why there is a -1 in the n
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rouge1.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rouge2.png}
     %\caption{one-shot inference}
     %\label{fig:sub2}
   \end{subfigure}
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
   \centering
   \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rougel.png}
   %\caption{one-shot inference}
   %\label{fig:sub2}
   \end{subfigure}
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
   \centering
   \includegraphics[trim=3cm 7cm 4cm 0cm,clip,scale=0.1]{pics/rougec.png}
   %\caption{one-shot inference}
@@ -1428,13 +1542,13 @@ Low Rank Adaptation (LoRA) freezes most of the original weights (which is now a 
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/lora.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/lora2.png}
     %\caption{one-shot inference}
@@ -1451,25 +1565,25 @@ With prompt tuning, we add additional trainable tokens to your prompt and leave 
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft2.png}
     %\caption{one-shot inference}
     %\label{fig:sub2}
   \end{subfigure}
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
   \centering
   \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft3.png}
   %\caption{one-shot inference}
   %\label{fig:sub2}
   \end{subfigure}
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
   \centering
   \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.08]{pics/soft4.png}
   %\caption{one-shot inference}
@@ -1710,15 +1824,14 @@ $$\mathbf{1}\{y == n\} = =\begin{cases}
   1, & \text{if $y==n$}.\\
   0, & \text{otherwise}.
 \end{cases}$$
-The cost is (called Sparse Ctegorical Cross Entropy)-SparseCtegoricalCrossentropy):
+
+
+When we use softmax as the activation, we want to use categorical cross entropy.
+The cost is (called Sparse Categorical Cross Entropy)-SparseCtegoricalCrossentropy:
 \begin{align}
   J(\mathbf{w},b) = - \left[ \sum_{i=1}^{m} \sum_{j=1}^{N}  1\left\{y^{(i)} == j\right\} \log \frac{e^{z^{(i)}_j}}{\sum_{k=1}^N e^{z^{(i)}_k} }\right] \tag{4}
 \end{align}
 where $m$ is the number of examples, $N$ is the number of outputs. This is the average of all the losses.
-
-
-
-
 
 We can also add a weight to this error classification (\textbf{1}) to penalize some cases. For example, if we are training a cat classification model, and the model shows pornographic pics as cats, we can penalize the pornographic images with a larger weight. In that case, the error/cost would be:
 
@@ -1777,7 +1890,7 @@ Note that since the slope is close to zero at both ends of Sigmoid function, the
 
 
 \textbf{Vanishing /Exploding Gradients:}
-For a deep NN, if activation units or weights are greater than one, they explode after multiplying in the forwared propagation. Conversely, if the weights are less than one, they vanish. This causes a very small training process/gradient descent. To solve this issue, we need to be very careful how we should initialize the weights, by setting the weight, not too much greater or smaller than one.
+For a deep NN, if activation units or weights are greater than one, they explode after multiplying in the forward propagation. Conversely, if the weights are less than one, they vanish. This causes a very small training process/gradient descent. To solve this issue, we need to be very careful how we should initialize the weights, by setting the weight, not too much greater or smaller than one.
 
 \textbf{\textit{Local optima in neural network}} most neural network problems are saddle points rather than local optima. Problem is really not the local optima, but the plateaus, a region where the derivative is close to zero for a long time.
 
@@ -2708,13 +2821,13 @@ That is, the SHAP values of all features sum up to explain why my prediction was
 
 \begin{figure}
   \centering
-  \begin{subfigure}[] %{.5\textwidth}
+  \begin{subfigure}[htbp] %{.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/zeroshot.png}
     %\caption{}
     %\label{fig:sub1}
   \end{subfigure}%
-  \begin{subfigure}[] % {.5\textwidth}
+  \begin{subfigure}[htbp] % {.5\textwidth}
     \centering
     \includegraphics[trim=3cm 7cm 5cm 0cm,clip,scale=0.1]{pics/oneshot.png}
     %\caption{one-shot inference}

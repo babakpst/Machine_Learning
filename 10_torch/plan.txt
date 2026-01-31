@@ -1,0 +1,9 @@
+
+1_intro: 9:57 - Models
+2_Tensors: Done
+3_autograd: 2:15
+4_models: 0:00
+5_TensorBoard: 0:00
+6_training: 0:00
+7_captum: 0:00
+8_inference: 0:00
