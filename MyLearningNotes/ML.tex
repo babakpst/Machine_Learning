@@ -1908,7 +1908,7 @@ For a deep NN, if activation units or weights are greater than one, they explode
 
 If the training set is small (less than 2000), go with the batch gradient method.
 
-Epoch is a single pass through the training set. With Batch gradient descent, we do one step of the gradient descent in each epoch, but with the mini-batch gradient descent, we do as many as the number of mini batched gradient descent in each epoch.
+Epoch is a single pass through the all training set. With Batch gradient descent, we do one step of the gradient descent in each epoch, but with the mini-batch gradient descent, we do as many as the number of mini batched gradient descent in each epoch.
 
 \textbf{\textit{Gradient descent with momentum}}: It moves faster than the regular gradient descent. First, we need to learn about Exponentially weighted average, as defined below to find the average of a quantity, such as temperature.
 \begin{equation}
@@ -2869,10 +2869,3 @@ rescue:
   %\label{fig:test}
 \end{figure}
 \end{comment}
-
-
-
-
-
-
-
