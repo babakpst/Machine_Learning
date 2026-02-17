@@ -164,6 +164,8 @@ There are two types of data for supervised learning: Structured and Unstructured
 
 \section{SL: Data analysis pipeline}
 
+In the real world, data is rarely perfect. Even the most powerful model architecture can fail if it's fed a messy, inefficient, or unreliable data stream. This is where a robust \textbf{data pipeline} becomes essential. To overcome these hurdles, you will use PyTorch's core data management tools: The \textbf{Dataset} and \textbf{DataLoader} classes.
+
 The ML pipeline:
 
 Data ingestion/collection $\rightarrow$
@@ -2043,7 +2045,7 @@ Since we care about accuracy on new data, which we estimate from our validation 
 \end{itemize}
 
 
-To add data, we can use the augmentation of data (rotating images, cropping images, distorting images, etc.). Data augmentation does not add a lot of information to our data set, but in case we really cannot get more data, we can use this method.  If there is not enough data to train a model, one option is to use the \textbf{\textit{transfer learning}}, in which you train a model using data from a different task (this step is called spervised pretraning), and fine tune the model with the actual data (this step is called fine tuning.). The other option is to use the other model parameters, and use the actual data to train only the last year of the neural network.
+To add data, we can use the augmentation of data (rotating images, cropping images, distorting images, etc.). Data augmentation does not add a lot of information to our data set, but in case we really cannot get more data, we can use this method.  If there is not enough data to train a model, one option is to use the \textbf{\textit{transfer learning}}, in which you train a model using data from a different task (this step is called supervised pretraning), and fine tune the model with the actual data (this step is called fine tuning.). The other option is to use the other model parameters, and use the actual data to train only the last year of the neural network.
 
 One more important topic is the baseline level of performance. In other words, how should one know if the $J_{train}$ is low, or high, or good enough. Once method to find the baseline performance is to compare the error with respect to the human-level performance. The other options are competing algorithm performance, or guess based on the past experience.
 

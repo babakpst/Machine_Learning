@@ -1,6 +1,6 @@
 
 sources_fromGithub/
-#*.pdf
+*.pdf
 #*.tar.gz
 
 
