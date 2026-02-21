@@ -166,6 +166,20 @@ There are two types of data for supervised learning: Structured and Unstructured
 
 In the real world, data is rarely perfect. Even the most powerful model architecture can fail if it's fed a messy, inefficient, or unreliable data stream. This is where a robust \textbf{data pipeline} becomes essential. To overcome these hurdles, you will use PyTorch's core data management tools: The \textbf{Dataset} and \textbf{DataLoader} classes.
 
+The \textbf{Dataset} needs to answer three questions:
+\begin{itemize}
+\item \_\_init\_\_: Initializes the dataset object.
+\begin{itemize}
+  \item Typically accepts the data path and any transforms to apply.
+  \item Optionally loads metadata or labels associated with the data.
+\end{itemize}
+\item \_\_len\_\_: Returns the number of samples in the dataset.
+\item \_\_getitem\_\_: Retrieves a single sample given an index. Loads the image and its label, applies transforms, and returns them.
+\end{itemize}
+
+
+
+
 The ML pipeline:
 
 Data ingestion/collection $\rightarrow$
@@ -2765,57 +2779,9 @@ SHAP Values (an acronym from SHapley Additive exPlanations) break down a predict
 
 SHAP values interpret the impact of having a certain value for a given feature in comparison to the prediction we'd make if that feature took some baseline value. SHAP values do this in a way that guarantees a nice property. Specifically, you decompose a prediction with the following equation:
 
-sum(SHAP values for all features) = pred\_for\_team - pred\_for\_baseline\_values
+sum(SHAP values for all features) = $pred\_for\_team - pred\_for\_baseline\_values$
 
 That is, the SHAP values of all features sum up to explain why my prediction was different from the baseline. This allows us to decompose a prediction in a graph3.
-
-
-
-\section{pytorch}
-\subsection{coding}
-unsqueeze + squeeze
-
-The `unsqueeze()` method adds a dimension of extent 1. `unsqueeze(0)`
-adds it as a new zeroth dimension - now you have a batch of one!
-
-Squeeze and unsqueez only work with dimension of extent one.
-
-You may only `squeeze()` dimensions of extent 1. See above where we try
-to squeeze a dimension of size 2 in `c`, and get back the same shape we
-started with. Calls to `squeeze()` and `unsqueeze()` can only act on
-dimensions of extent 1 because to do otherwise would change the number
-of elements in the tensor.
-
-Another place you might use `unsqueeze()` is to ease broadcasting.
-Recall the example above where we had the following code:
-
-``` {.python}
-a = torch.ones(4, 3, 2)
-
-c = a * torch.rand(   3, 1) # 3rd dim = 1, 2nd dim identical to a
-print(c)
-```
-
-The net effect of that was to broadcast the operation over dimensions 0
-and 2, causing the random, 3 x 1 tensor to be multiplied element-wise by
-every 3-element column in `a`.
-
-What if the random vector had just been 3-element vector? We'd lose the
-ability to do the broadcast, because the final dimensions would not
-match up according to the broadcasting rules. `unsqueeze()` comes to the
-rescue:
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

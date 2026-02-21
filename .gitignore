@@ -1,8 +1,9 @@
 
 sources_fromGithub/
 *.pdf
-#*.tar.gz
-
+*/*.pdf
+*.tar.gz
+*.tgz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
