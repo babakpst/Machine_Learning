@@ -1,5 +1,6 @@
 
 sources_fromGithub/
+MyLearningNotes/ML.pdf
 *.pdf
 */*.pdf
 *.tar.gz
