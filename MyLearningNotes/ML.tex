@@ -190,7 +190,7 @@ Training $\rightarrow$
 Evaluation $\rightarrow$
 Deployment
 
-\subsection{Data ingestion/ collection}
+\subsection{Data ingestion/collection}
 This is raw data collection. The questions we need to ask is:
 \begin{itemize}
   \item enough data?
@@ -794,6 +794,36 @@ Common practice is choosing small, random values for our initial weights. The ra
 
 \subsection{Convolutional Neural Network (CNN)}
 In this method, each neuron only looks at part of the previous layer's outputs, instead of a regular layer, which each neuron has weights for all previous layer neurons. The main advantage of this method is that 1) it is faster, 2) Need less training data and less prone to overfitting.
+
+CNN is still a NN, but with filters, that does the pattern recognition. Each filter can detect one object. Think of a CNN as a system that:
+
+\begin{itemize}
+  \item looks at small local regions of the input (like tiny patches of an image),
+  \item learns filters that detect simple patterns (edges, corners),
+  \item then combines them to recognize complex structures (shapes, objects).
+\end{itemize}
+Instead of looking at everything at once, it learns what matters locally.
+
+Traditional neural networks:
+\begin{itemize}
+  \item treat all inputs equally
+  \item have huge numbers of parameters for images
+\end{itemize}
+
+CNNs:
+\begin{itemize}
+  \item exploit spatial structure
+  \item reuse the same filter across the input
+  \item are much more efficient and scalable
+\end{itemize}
+
+Core building blocks of a CNN:
+\begin{itemize}
+  \item Convolution layer, applies a filter/kernel that slides over the input. Image/input is HxWxC, and the filter is kxkxC.
+  \item Activation function, to add non linearity (for example ReLU).
+  \item Pooling layer: reduced the spacial sizes while keeping important information. Since we have multiple filters, the total number of numbers increases, pooling allows to reduce the size. What it does it reduced the size of the image by either just using the max number in the region or average of all numbers.
+  \item Fully connected layer: the last layer is a regular fully connected layer, used for classification or regression.
+\end{itemize}
 
 \subsection{Tuning hyperparameters}
 
@@ -2228,7 +2258,8 @@ The derivatives of equation \ref{eq:logisticReg} for gradient descent is similar
 
 \textbf{\textit{Dropout regularization:}}
 
-We set a probability to drop units in each layer of neural network. For each sample then we use the reduce network. To implement dropout, we can use the inverted dropout method. In each iteration, we randomly drop some units. There would be no dropout for predictions
+We set a probability to drop units in each layer of neural network. For each sample then we use the reduce network. To implement dropout, we can use the inverted dropout method. In each iteration, we randomly drop some units. There would be no dropout for predictions. It prevents co-adaptation by forcing the model learn robust features instead of relying on shortcuts.
+
 
 \begin{figure}[H]
   \centering
@@ -2238,7 +2269,7 @@ We set a probability to drop units in each layer of neural network. For each sam
   %#\label{XXX}
 \end{figure}
 
-
+\textbf{\textit{weight decay}} discourages the network to use very large weights. Large weight is a sign that model memorizing specific patterns in the training data rather than features that generalize.
 
 
 \section{Model validation}
@@ -2373,6 +2404,8 @@ This means that you're transforming your data so that it fits within a specific 
 Scaling just changes the range of your data. Normalization is a more radical transformation. The point of normalization is to change your observations so that they can be described as a normal distribution.
 
 In general, you'll normalize your data if you're going to be using a machine learning or statistics technique that assumes your data is normally distributed. Some examples of these include linear discriminant analysis (LDA) and Gaussian naive Bayes. (Pro tip: any method with "Gaussian" in the name probably assumes normality.)
+
+The mean and standard deviation should usually be computed only on the training set. Using statistics computed from the test or validation data can introduce data leakage, where information from the evaluation set influences the training process.
 
 \subsection{Scaling a feature}
 Having two features with large and small values may have adverse impact on our training. For example, for regression, it may cause large round off error, or affects the shape of gradient descent contours and as a result may cause slow convergence or even divergence. To avoid that, it is recommended to scale features so that they have the same range. After scaling, the data range would be 0 to 1.
