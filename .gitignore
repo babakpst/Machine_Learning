@@ -5,6 +5,7 @@ MyLearningNotes/ML.pdf
 */*.pdf
 *.tar.gz
 *.tgz
+14_pytorch_for_deepLearning/C4/lab1/cifar_100/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

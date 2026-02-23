@@ -2430,6 +2430,8 @@ Then, we have the range for each feature between -1 and 1.
 If you partition the set to training, cross validation, and testing sets, and z-score normalize training, you need to normalize testing and cross validation sets with the mean and variance of the training set to ensure that your input features are transformed as expected by the model.
 
 
+
+
 \subsection{Combining features}
 Using intuition to design new features by transforming or combining original features.
 
@@ -2473,6 +2475,22 @@ Here is the implementation of the nn with gradient descent (similarly for GD wit
 \end{figure}
 
 One other impact that batch norm has in the training of a neural network is that it makes weights later or deeper in the nn more robust to changes to weights in earlier layers of the neural network. This is called covariant shift. This has some regularization effect.
+
+BatchNorm2d. This layer is a pivotal technique for building modern, high performing deep neural networks.
+
+Think of Batch Normalization as a traffic controller for the data flowing between your network's layers. After a convolutional layer processes a batch of images, the outputs (or activations) can have widely varying distributions from one batch to the next. BatchNorm2d steps in and normalizes these activations within each mini batch, adjusting them to have a consistent mean and standard deviation. It then uses two learnable parameters to scale and shift this normalized output, allowing the network itself to learn the optimal distribution for the data at that point.
+
+This seemingly simple step provides three profound benefits:
+
+It Stabilizes and Accelerates Training: By keeping the distribution of data consistent between layers, it prevents later layers from having to constantly adapt to a shifting input from the layers before them. This stability allows you to use higher learning rates, which can dramatically speed up how quickly your model learns.
+
+\begin{itemize}
+  \item It Acts as a Regularizer: Because the normalization statistics are calculated for each unique mini batch, it introduces a slight amount of noise into the training process. This noise makes it harder for the model to perfectly memorize the training data, encouraging it to learn more general features and thus reducing overfitting.
+  \item It Reduces Sensitivity to Initialization: The layer makes your model less dependent on the specific random weights it starts with, leading to more reliable and repeatable training results.
+  \item By adding BatchNorm2d to your CNNBlock, you are not just adding another layer; you are fundamentally making your model's training process more stable, efficient, and robust.
+\end{itemize}
+
+
 
 
 \section{Ensemble methods}
