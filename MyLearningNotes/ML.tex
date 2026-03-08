@@ -1742,9 +1742,10 @@ Observation for using cross validation with linear regression:
 \section{Accuracy of the model: F1 score, precision, and recall}
 Refer to \href{https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html#precision-recall}{this source.}
 
-Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$): $P = \frac{T_p}{T_p + F_p} $. This criterion implies the percentage of true positive (of all examples that are positive, what percentage are actually positive). This means if ML detects a class/category, how likely it is correct.
+Precision (P) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$): $P = \frac{T_p}{T_p + F_p} $. This criterion implies the percentage of true positive (of all examples that are positive, what percentage are actually positive). This means if ML detects a class/category, how likely it is correct. This is per-class. Precision is essential when false positives are costly (e.g., spam detection, medical diagnosis).
 
-Recall (R) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$): $R = \frac{T_p}{T_p + F_n} $. This criterion implies what percentage of actual positives are correctly recognized. This means if ML can correctly identify the class even if the class is very rare.
+Recall (R) is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$): $R = \frac{T_p}{T_p + F_n} $. This criterion implies what percentage of actual positives are correctly recognized. This means if ML can correctly identify the class even if the class is very rare. This is per-class. Recall is vital when false negatives are costly (e.g., disease screening, fraud detection).
+
 
 
 \begin{figure}[H]
@@ -1756,9 +1757,38 @@ Recall (R) is defined as the number of true positives ($T_p$) over the number of
 \end{figure}
 
 
-These quantities are also related to the ($F1$) score, which is defined as the harmonic mean of precision and recall: $F1 = 2 \frac{R * P}{ P + R } $. The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0. F1 score allows us to select the best model among many models with different recall and precision. F1 combines both recall and precision.
+These quantities are also related to the ($F1$) score, which is defined as the harmonic mean of precision and recall: $F1 = 2 \frac{R * P}{ P + R } $. The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0. F1 score allows us to select the best model among many models with different recall and precision. F1 combines both recall and precision. F1 score is ideal when both false positives and false negatives matter, as it provides a trade-off between the two.
 
 The other important factor is the running time of the model. We can combine accuracy and running time into one metric. What we want is to maximize accuracy subject to running time less than a certain amount. In that sense, running time itself becomes an optimization metric. This metric is just a satisficing metric (should be less than a certain amount).
+
+
+To evaluate overall performance in a multiclass setting, these metrics can be aggregated:
+
+\begin{itemize}
+\item Macro-average:
+Averages metrics across classes, treating all classes equally. *Useful when class balance is important.
+This is often used for Precision, Recall, and F1 to prevent the majority class from dominating the score.
+
+\item Micro-average:
+Computes metrics globally by aggregating all TP, FP, and FN. *Useful when class sizes vary significantly.
+Standard Accuracy* is calculated using this method (Total Correct / Total Samples).
+
+\item Weighted-average:
+Averages metrics across classes, weighted by the number of true instances per class. *Balances influence of both major and minor classes.*
+Use this when you want a metric that reflects the true data distribution, ensuring that performance on common classes contributes proportionately more to the final score than rare classes.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
 
 \section{Optimization}
 
