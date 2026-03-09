@@ -2068,13 +2068,17 @@ If we are exactly at the minimum, since slope is zero, the value of the learning
 
 \textbf{\textit{Learning rate decay}}: To speed up the learning algorithm, we can slowly reduce the learning rate over iterations. This helps with the mini-batched gradient descent, which potentially, has a noisy nature, and the algorithm may never reach to the minimum. By reducing the learning rate, we can reduce the region in which the algorithm is oscillating. Different formulas are used in the literature:
 
-\begin{align}
-  \alpha &= \frac{1}{1+decayRate\times epochNumber} \alpha_0 \\
-  \alpha &= 0.95^{epochNumbre} \alpha_0 \; \; \text{(exponential decay)} \\
-  \alpha &= \frac{k}{\sqrt{epochNum}}  \alpha_0 \\
-  \text{staircase decay} \\
-  \text{Manual decay}
-\end{align}
+\begin{itemize}
+
+\item StepLR or staircase decay: reduces the LR by a factor (called Gamma) with each number of epochs. Pytorch can manage that. \\
+\item ReduceLROnPlateau: It monitors a particular metric, such as validation accuracy and lower the LR by a factor it the metric does not improve for certain number of epochs, called patience period.
+\item CosineAnnealingLR: gradually reduces the LR, using a smaller transition.
+\item $\alpha = \frac{1}{1+decayRate\times epochNumber} \alpha_0$ \\
+\item $\alpha = 0.95^{epochNumbre} \alpha_0 \; \; \text{(exponential decay)}$ \\
+\item $\alpha = \frac{k}{\sqrt{epochNum}}  \alpha_0$ \\
+\item Manual decay
+\end{itemize}
+
 
 Decay rate is another hyperparameter.
 
