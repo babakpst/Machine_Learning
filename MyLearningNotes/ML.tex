@@ -828,6 +828,29 @@ Core building blocks of a CNN:
 \subsection{Tuning hyperparameters}
 
 \begin{itemize}
+	\item Architectural
+	\begin{itemize}
+		\item number of layers
+		\item number of neurons per layer
+		\item activation function
+	\end{itemize}
+	\item training hyperparameters
+	\begin{itemize}
+		\item learning rate + scheduler (how to change the learning rate during training)
+		\item optimizer
+		\item batch size (hardware capacity may dictate the choice here). Small batch means longer to train, but less memory, and helps to avoid local memory. Larger batch sizes, quicker training, more memory, and stuck in local minima.
+	\end{itemize}
+	\item Regularization to avoid overfitting. Refer to regularization section. 
+	\begin{itemize}
+		\item weight decay
+		\item dropout
+		\item Early stopping
+		\item batch normalization
+	\end{itemize}
+\end{itemize}
+
+
+\begin{itemize}
   \item learning rate (most important parameter \#1) $\alpha$
   \item momentum term  (\#2)$\beta$
   \item Adam optimization $\beta_1, \beta_2, \epsilon$ (\#4)
@@ -2303,8 +2326,12 @@ We set a probability to drop units in each layer of neural network. For each sam
   %#\label{XXX}
 \end{figure}
 
-\textbf{\textit{weight decay}} discourages the network to use very large weights. Large weight is a sign that model memorizing specific patterns in the training data rather than features that generalize.
+\textbf{\textit{weight decay}} discourages the network to use very large weights. Large weight is a sign that model memorizing specific patterns in the training data rather than features that generalize. This is a form of L2 regularization. Very similar to lambda weight?
 
+\textbf{\textit{Early stopping}}: halts the training when the accuracy of the validation stops improving. 
+
+
+\textbf{\textit{Batch normalization}}:
 
 \section{Model validation}
 
