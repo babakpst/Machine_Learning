@@ -895,6 +895,20 @@ Early stopping method might not be good option.
 
 Deep learning models are quite robust to random errors in the training set, but very sensitive to the systematic errors.
 
+
+\subsection{Model selection strategy: Efficiency vs Performance metrics}
+
+Calculating the accuracy of a model (performance metrics such as F1) is not the only reason to choose a model. Efficiency matters too. 
+
+
+\textbf{Efficiency metrics} include but are not limited to:
+\begin{itemize}
+	\item \textbf{Model size:} The memory footprint of the model, often measured in megabytes.
+	\item \textbf{Inference time:} The average time required for the model to make predictions on new data.
+\end{itemize}
+
+To come up with one number for each model, we can normalize performance, inference time, and memory, and add them by a coefficient. 
+
 \section{SL: Sequence models-Recurrent Neural Network (RNN)}
 
 RNN is a neural network that deals with the different amount of inputs. Similar to the regular NN, RNN has bias, weights, and activation functions. The only difference is that RNN has feedback loops, which allows prior values influence the prediction. Examples of sequence data with different amount of input: stock market predictions, speech recognition, music generation, sentiment classification, DNA sequence analysis, machine translation, video activity recognition, and name entity recognition (finding the names in a sentence).
