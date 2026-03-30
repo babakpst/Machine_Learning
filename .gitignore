@@ -6,6 +6,9 @@ MyLearningNotes/ML.pdf
 *.tar.gz
 *.tgz
 14_pytorch_for_deepLearning/C4/lab1/cifar_100/*
+15_pytorch_techniques_and_ecosystems_tools/C2/lab2/pytorch_datasets/EMNIST/*
+15_pytorch_techniques_and_ecosystems_tools/C2/lab2/pytorch_datasets/test_32x32.mat
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

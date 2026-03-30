@@ -1531,6 +1531,22 @@ How to avoid catastrophic forgetting?
 
 Instruction fine-tuning with FLAN (Fine-tuning LAnguage Net): FLAN models refer to a specific set of instructions used to perform instruction fine-tuning. For example, FLAN-T5 is the FLAN version of T5 model.
 
+
+
+From Pytorch course: There are pretrained models in pytorch, that can be improved for a particular datasets with fine-tuning. The next picture shows the general process for a NN model. The initial layers of NN usually learn basic topics such as edges and shapes, so, in a pretrained model, we can freeze initial layers, but unfreeze the rest for better accuracy. If the number of classes of the pretrained model is different from our use case, the last layer can be replaced or adjusted. 
+
+\begin{figure}[H]
+	\centering
+	\caption{Fine tuning process}
+	\includegraphics[trim=0cm 6cm 5cm 0cm,clip,scale=0.15]{pics/fineTuning.png}
+	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
+	%#\label{XXX}
+\end{figure}
+
+
+
+
+
 \section{LLM evaluation metrics}
 
 
