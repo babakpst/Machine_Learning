@@ -1202,8 +1202,30 @@ The Transformer architecture consists of an encoder and a decoder, each of which
   %\label{fig:test}
 \end{figure}
 
+
+Text data is challenging, because:
+\begin{itemize}
+	\item sequence dependencies and context.
+	\item variable length and structure.
+	\item vocabulary and representation challenges (model may have not seen all the work, for example in medicine).
+	\item ambiguity and polysemy.
+\end{itemize}
+
+
+
 Step 1:
 ML models are just big statistical calculators and they work with numbers, not words. So, before passing texts into the model to process, you must first tokenize the words. This converts the words into numbers with each number representing a position in a dictionary of all the possible words that the model can work with. There are multiple tokenization methods. For example, token IDs matching the entire word, or using token IDs to represent parts of words. We need to use the same tokenizer for encoding and decoding.
+
+Comments: Text review is different than Image. Image is represented by tensors, but text has no intrinsic meaning. Also, text is sequential and contextual, this is known as polysemy, which means the text meaning depends on context. 
+
+There are different tokenizers: character tokenization based on character (ASCII). Word tokenizers assign one number to each word. One main challenge with the word tokenizers is the vocabularly size. Word normalization removes punctuations (!), contractions, misspeling, and lower case. 
+
+
+Sentences change in length, but neural networks require fixed length. To overcome the issue, we can use padding method for short sentences or truncation methods for long ones. Padding consequence is extra memory to store, and extra computation for sentences. Truncation the long sentences may cause losing important information. 
+
+The wiser approach is bucketing (grouping sequence of similar length sentences), or smart truncation (prserve the important parts of al ong text).
+
+
 
 Step 2:
 Once the input is tokenized, you can pass it to the embedding layer. This is a trainable vector embedding in space. Each token ID is represented as a vector and is mapped to a multi dimensional vector. These vectors learn to encode the meaning and the context of the individual tokens in the input sequence. Words with similar meanings land in a space closer to each other.
@@ -1228,7 +1250,7 @@ The embedded space allows you to find the relation ship between spaces. For exam
 \end{figure}
 
 
-Step 3: Positional encoding. The model processes each of the input tokens in parallel. So, bu adding the positional encoding, you preserve the information about the word order and don't lose the relevance of the position of the word in the sentence. Once you summed the input tokens and the positional encodings, you pass the resulting vectors to the self-attention layer.
+Step 3: Positional encoding. The model processes each of the input tokens in parallel. So, by adding the positional encoding, you preserve the information about the word order and don't lose the relevance of the position of the word in the sentence. Once you summed the input tokens and the positional encodings, you pass the resulting vectors to the self-attention layer.
 
 \begin{figure}[H]
   \centering
