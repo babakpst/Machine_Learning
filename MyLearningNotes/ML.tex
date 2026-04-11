@@ -1225,6 +1225,7 @@ Sentences change in length, but neural networks require fixed length. To overcom
 
 The wiser approach is bucketing (grouping sequence of similar length sentences), or smart truncation (prserve the important parts of al ong text).
 
+Next topic is how to represent tokenized senetences in tensor. There many options: a) one list of tokens for each sentence, and a tensor holds multiple sentences. b) one-hot: one tensor of size num of words x num of words in vocab dictionary, for each sentence. All elements of the row is 0, except for that word. This method requires a lot of space. c) bog of words: one row of size "num of words on vocab dict" for each sentence, counting number of repetitions of the word. This method loses the word order information. d) term frequency-inverse document frequency (see the detail in the web). e) The more modern approach is embedding method.
 
 
 Step 2:
@@ -1249,6 +1250,13 @@ The embedded space allows you to find the relation ship between spaces. For exam
   %#\label{XXX}
 \end{figure}
 
+The embedded vectors can be added or subtracted, to extract features (king - man keeps the royalty dimensions). Static embedding (just one vector for each word) cannot capture polysemy (example of static embedding: GloVe [Global Vector for Word representation]), instead contextual embeddings allows different embedding, depending on the context, for each word (example: BERT). Despite the benefit, contextual embedding requires more computation.
+
+In short, static embedding  is ideal for simpler tasks, where speed and memory efficiency are prioritized. Contextual embedding is ideal for advanced taskes where subtle differences are critical. 
+
+To visualize the embedded space (with very high dimension), we can use PCA or t-SNE (t-distributed stochastic enighbor embedding), some information may get lost. 
+
+Cosine similarity: the dot product of two embedded vectors shows the similarity of two implementation (close to one similar, 0 orthogonal, -1 opposite).
 
 Step 3: Positional encoding. The model processes each of the input tokens in parallel. So, by adding the positional encoding, you preserve the information about the word order and don't lose the relevance of the position of the word in the sentence. Once you summed the input tokens and the positional encodings, you pass the resulting vectors to the self-attention layer.
 
