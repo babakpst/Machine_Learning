@@ -214,6 +214,7 @@ Access, quality, efficiency. We do cleaning, transforming, and organizing. This 
   \item numerical encoding
   \item normalization
   \item alternate representation
+  \item class weights (if we are dealing with a classification, and the there is an imbalance between number of samples for different classes, we need to smooth this out, by defining class weights to increase the penalty for samples from the class with lower number of sampels.).
   \item test/train
 \end{itemize}
 
@@ -1572,6 +1573,11 @@ From Pytorch course: There are pretrained models in pytorch, that can be improve
 	%{\footnotesize\textbf{Notes:} XXX.} % changed <<<<<<<<<<
 	%#\label{XXX}
 \end{figure}
+
+
+Fine-tuning a language model with millions of parameters is computationally expensive and time-consuming. A more pragmatic and often equally effective approach is partial fine-tuning (also known as parameter-efficient fine-tuning (PEFT)).
+
+The core idea is simple but powerful: you'll freeze the vast majority of the model's pre-trained layers, which already have a strong understanding of language, and only train the last few layers and the final classification head. This dramatically reduces the number of trainable parameters, leading to significantly faster training cycles without a major sacrifice in performance. It's a key strategy for developing models quickly and cost-effectively.
 
 
 
