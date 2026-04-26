@@ -1,0 +1,6 @@
+I finished two pytorch courses and stored the labs, assignments, and slides in 14_pytorch_for_deepLearning/ and 15_pytorch_techniques_and_ecosystems_tools. I want you to read and review all items here and summaries the course notes as follows:
+
+- One MarkDown file, with all the tips and major items.
+- One ipynb, that shows the entire neural network pipeline, consists of dataloaders, transformers, model architecture, calculating and ploting the accuracy and loss. This script should not be based on existing pre-trained models. I want to use this as a prototype to create any Neural Netwrok pipeline. It is ok, if you use one of the labs or assignments. For this script don't use the Lightning module. This script should be a comprehensive script that includes all the major techniques and tips.
+- One ipynb that shows how to use a pre-trained model from pytorch or pytorchvisiont, for example, BERT or ResNet. Include the option for fine-tuning. And for this one, I want you to use the Lightning module. Again, it is ok to use one of the existing labs or assignemtns, but this should be a comprehensive script to include all the techniques and comments. 
+
