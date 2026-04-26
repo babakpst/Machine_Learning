@@ -2063,7 +2063,14 @@ For a deep NN, if activation units or weights are greater than one, they explode
 \subsubsection{Various types of gradient descent:}
 \textbf{\textit{Batch gradient descent:}} each step of gradient descent uses all the training examples. While this batching provides computation efficiency, it can still have a long processing time for large training datasets as it still needs to store all of the data into memory. Batch gradient descent also usually produces a stable error gradient and convergence (if you plot cost vs iteration, ideally it should decrease as the number of iteration increases), but sometimes that convergence point isn't the most ideal, finding the local minimum versus the global one.
 
+
+Definition: Compute gradient using the entire training dataset, then update parameters once.
+Main advantage: Very stable, low-variance gradient direction, which can make optimization behavior smoother and easier to analyze.
+
 \textbf{\textit{Mini-batch gradient descent}} updates the parameters using a subset of training samples. That means you do a full forward and backward propagation using a subset of samples. If you plot cost vs iterations, it is more noisy but the trend should be the same as a batch gradient descent. The noise is due to the subsets, one subset might have a higher cost, and the other might have a lower cost. The size of the mini-batch determines the type of gradient descent:
+
+Definition: Split data into small batches; for each batch, compute gradient and update parameters.
+Main advantage: Best practical tradeoff between speed and stability, with efficient GPU utilization and frequent updates that help convergence.
 
 \begin{itemize}
   \item size = m: Batch gradient descent (The cons is that it is long per iteration. )
@@ -2074,6 +2081,38 @@ For a deep NN, if activation units or weights are greater than one, they explode
 If the training set is small (less than 2000), go with the batch gradient method.
 
 Epoch is a single pass through the all training set. With Batch gradient descent, we do one step of the gradient descent in each epoch, but with the mini-batch gradient descent, we do as many as the number of mini batched gradient descent in each epoch.
+
+
+\textbf{\textit{Gradient Accumulation}}:
+Definition: Run forward/backward on multiple small micro-batches, accumulate gradients, then do one optimizer step after 
+k micro-batches.
+Main advantage: Simulates a larger effective batch size without needing the memory to hold that large batch at once.
+
+
+Note:
+When people say “compute gradients and update parameters,” they usually mean two separate steps:
+
+\textit{Compute gradients:}
+This is the backward pass. In PyTorch, that is typically: loss.backward(). This computes 
+ $\partial loss/ \partial \theta$ for each parameter $\theta$ and stores it in param.grad.
+
+\textit{Update parameters:}
+This is the optimizer step. In PyTorch: optimizer.step(). This uses the stored gradients to actually change the weights. So:
+backward() computes gradients, optimizer.step() updates parameters, optimizer.zero_grad() clears old gradients before the next iteration.
+
+Typical training sequence:
+optimizer.zero_grad()
+loss = model(x)
+loss.backward()
+optimizer.step()
+With gradient accumulation, you do backward() several times before one optimizer.step().
+
+
+
+
+
+
+
 
 \textbf{\textit{Gradient descent with momentum}}: It moves faster than the regular gradient descent. First, we need to learn about Exponentially weighted average, as defined below to find the average of a quantity, such as temperature.
 \begin{equation}
