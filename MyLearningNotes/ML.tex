@@ -616,7 +616,32 @@ Model parameters: The part of a model that will be tuned by training, weights an
 
 Hyperparameters: tunable aspects of a model not adapted by training: step sizes, iteration, .... .
 
+\subsection{Custom architecture}
+Neural network models can be linear (such as MLP), which data just flows to output. But we can have custom architectures as follows.
 
+\begin{figure}
+	\centering
+	\begin{subfigure}[htbp] %{.5\textwidth}
+		\centering
+		\includegraphics[scale=0.08]{pics/linearArch.png}
+		%\caption{}
+		%\label{fig:sub1}
+	\end{subfigure}%
+	\begin{subfigure}[htbp] % {.5\textwidth}
+		\centering
+		\includegraphics[scale=0.08]{pics/CustomArch.png}
+		%\caption{}
+		%\label{fig:sub2}
+	\end{subfigure}
+	\caption{NN architecture: (a) linear, (b) custom}
+	\label{fig:customArch}
+\end{figure}
+
+
+To build non-linear models you need to control over the flow of data through your layers.
+
+\textbf{\textit{Multi-in Multi-out}}: If the input for the model is of different types, for example the picture and the metadata. The output can also be more than one type. 
+\textbf{\textit{Parameter sharing}}: When you want to compare if two items/images are the for the same thing, you train one model (parameter sharing), but you pass each item to the model separately. Then, both features/images map to the same feature space.
 
 \subsection{Logistic regression algo with Neural Network}
 We use $a$ instead of $f$, which indicate the activation function. Each neuron in a layer does this calculations. To distinguish activations/parameters for each layer, we can use superscrip []. For example, $a_2^{[1]}$ denotes the second neuron in the first layer or the same for parameters $w_2^{[1]}$. The output of layer one $a^{[1]}$ is the input for the second layer $\overrightarrow{w}^{[2]} . \overrightarrow{a}^{[1]}+b^{[2]}$. Input layer is considered as layer 0. The input layers is considered as layer 0, so $\overrightarrow{x}=\overrightarrow{a}^{[0]}$. There are several option for the activation function g() and each neuron can get a different activation function (see \ref{sec:activation}), for example, for sigmoid function, we have:
@@ -2098,10 +2123,10 @@ This is the backward pass. In PyTorch, that is typically: loss.backward(). This 
 
 \textit{Update parameters:}
 This is the optimizer step. In PyTorch: optimizer.step(). This uses the stored gradients to actually change the weights. So:
-backward() computes gradients, optimizer.step() updates parameters, optimizer.zero_grad() clears old gradients before the next iteration.
+backward() computes gradients, optimizer.step() updates parameters, optimizer.zero\_grad() clears old gradients before the next iteration.
 
 Typical training sequence:
-optimizer.zero_grad()
+optimizer.zero\_grad()
 loss = model(x)
 loss.backward()
 optimizer.step()
