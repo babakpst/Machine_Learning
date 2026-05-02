@@ -691,6 +691,8 @@ The backward equations look like this:
 \end{figure}
 
 
+To calculate the gradient for each layer, we need to multiply the gradients from the previous layers, and since these gradients are small numbers, the multiplication will be even smaller. Thus, the weights for early layers of very deep neural network won't change much. Overall, the early layers, learn very little, or not at all. This is known as vanishing gradient problem. 
+
 For inference (prediction), we only need a forward propagation.
 
 \subsection{Activation functions}
@@ -814,6 +816,373 @@ the restricted space are preferred). We discussed the algorithm for updating wei
 (gradient descent), but have yet to discuss how the weights should be initialized in the first place.
 
 Common practice is choosing small, random values for our initial weights. The randomness allows for variability so that the algorithm doesn’t get stuck at the same local minima each time; the smallness allows for relative adjustments to be impactful and reduces complexity. Given this knowledge, we can say that neural networks—when all other things are equal—prefer simpler explanations to complex ones. This idea is an embodiment of Occam’s Razor: Entities should not be multiplied unnecessarily. More colloquially, it’s often expressed as the idea that the simpler explanation is likelier to be true.
+
+\subsection{Full equations for forward and backward}
+
+Neural Network with Two Hidden Layers: Full Forward and Backward Propagation
+
+\textbf{Parameters}
+\[
+\theta = \{W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}, W^{[3]}, b^{[3]}\}
+\]
+
+% ----------------------------
+\subsubsection{Forward Propagation}
+
+\textbf{Layer 1}
+\[
+Z^{[1]}(x; W^{[1]}, b^{[1]}) = W^{[1]}x + b^{[1]}
+\]
+
+\[
+A^{[1]}(x; W^{[1]}, b^{[1]}) =
+g^{[1]}(Z^{[1]}(x; W^{[1]}, b^{[1]}))
+\]
+
+% ----------------------------
+
+
+\textbf{Layer 2}
+
+\[
+Z^{[2]}(x; W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}) =
+W^{[2]}A^{[1]}(x; W^{[1]}, b^{[1]}) + b^{[2]}
+\]
+
+\[
+A^{[2]}(x; W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}) =
+g^{[2]}(Z^{[2]}(x; W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}))
+\]
+
+% ----------------------------
+
+
+\textbf{Layer 3 (Output Layer)}
+
+\[
+Z^{[3]}(x; \theta) =
+W^{[3]}A^{[2]}(x; W^{[1]}, b^{[1]}, W^{[2]}, b^{[2]}) + b^{[3]}
+\]
+
+\[
+A^{[3]}(x; \theta) =
+g^{[3]}(Z^{[3]}(x; \theta))
+\]
+
+% ----------------------------
+\textbf{Loss Function}
+
+\[
+\mathcal{L}(\theta; x,y) =
+\ell\big(y,\ A^{[3]}(x; \theta)\big)
+\]
+
+% ============================
+\subsubsection{Backward Propagation}
+
+% ----------------------------
+\textbf{Output Layer}
+
+\[
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial W^{[3]}}
+=
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial A^{[3]}}
+\cdot
+\frac{\partial A^{[3]}}{\partial Z^{[3]}}
+\cdot
+\frac{\partial Z^{[3]}}{\partial W^{[3]}}
+\]
+
+\[
+=
+\frac{\partial \ell(y, A^{[3]})}{\partial A^{[3]}}
+\cdot
+g^{[3]'}(Z^{[3]})
+\cdot
+(A^{[2]})^T
+\]
+
+\[
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial b^{[3]}}
+=
+\frac{\partial \ell(y, A^{[3]})}{\partial A^{[3]}}
+\cdot
+g^{[3]'}(Z^{[3]})
+\]
+
+% ----------------------------
+\textbf{Layer 2}
+
+\[
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial W^{[2]}}
+=
+\frac{\partial \mathcal{L}}{\partial A^{[3]}}
+\cdot
+\frac{\partial A^{[3]}}{\partial Z^{[3]}}
+\cdot
+\frac{\partial Z^{[3]}}{\partial A^{[2]}}
+\cdot
+\frac{\partial A^{[2]}}{\partial Z^{[2]}}
+\cdot
+\frac{\partial Z^{[2]}}{\partial W^{[2]}}
+\]
+
+\[
+=
+\frac{\partial \ell(y, A^{[3]})}{\partial A^{[3]}}
+\cdot
+g^{[3]'}(Z^{[3]})
+\cdot
+W^{[3]}
+\cdot
+g^{[2]'}(Z^{[2]})
+\cdot
+(A^{[1]})^T
+\]
+
+\[
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial b^{[2]}}
+=
+\frac{\partial \ell}{\partial A^{[3]}}
+\cdot
+g^{[3]'}(Z^{[3]})
+\cdot
+W^{[3]}
+\cdot
+g^{[2]'}(Z^{[2]})
+\]
+
+% ----------------------------
+\textbf{Layer 1}
+
+\[
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial W^{[1]}}
+=
+\frac{\partial \mathcal{L}}{\partial A^{[3]}}
+\cdot
+\frac{\partial A^{[3]}}{\partial Z^{[3]}}
+\cdot
+\frac{\partial Z^{[3]}}{\partial A^{[2]}}
+\cdot
+\frac{\partial A^{[2]}}{\partial Z^{[2]}}
+\cdot
+\frac{\partial Z^{[2]}}{\partial A^{[1]}}
+\cdot
+\frac{\partial A^{[1]}}{\partial Z^{[1]}}
+\cdot
+\frac{\partial Z^{[1]}}{\partial W^{[1]}}
+\]
+
+\[
+=
+\frac{\partial \ell(y, A^{[3]})}{\partial A^{[3]}}
+\cdot
+g^{[3]'}(Z^{[3]})
+\cdot
+W^{[3]}
+\cdot
+g^{[2]'}(Z^{[2]})
+\cdot
+W^{[2]}
+\cdot
+g^{[1]'}(Z^{[1]})
+\cdot
+x^T
+\]
+
+\[
+\frac{\partial \mathcal{L}(\theta; x,y)}{\partial b^{[1]}}
+=
+\frac{\partial \ell}{\partial A^{[3]}}
+\cdot
+g^{[3]'}(Z^{[3]})
+\cdot
+W^{[3]}
+\cdot
+g^{[2]'}(Z^{[2]})
+\cdot
+W^{[2]}
+\cdot
+g^{[1]'}(Z^{[1]})
+\]
+
+
+\subsection{ResNet: Residual Network}
+
+
+\subsubsection{Residual Networks (ResNets) — Explanation Notes}
+
+\textbf{1. Motivation}
+
+Deep neural networks suffer from optimization difficulties when they become very deep. 
+In particular:
+
+\begin{itemize}
+	\item Training error may increase with depth (degradation problem)
+	\item Gradients may vanish or become unstable
+	\item Adding layers does not guarantee better performance
+\end{itemize}
+
+Residual networks address these issues by reformulating the learning problem.
+
+% ------------------------------------------------
+
+\textbf{2. Core Idea of Residual Learning}
+
+Instead of learning a direct mapping:
+\[
+H(x)
+\]
+
+a residual block learns a residual function:
+\[
+F(x) = H(x) - x
+\]
+
+Rewriting:
+\[
+H(x) = F(x) + x
+\]
+
+Thus, the network does not learn the full transformation, but only the deviation from the input.
+
+% ------------------------------------------------
+
+\textbf{3. Residual Block Definition}
+
+A residual block is defined as:
+
+\[
+y = F(x, W) + x
+\]
+
+where:
+\begin{itemize}
+	\item $x$ is the input
+	\item $F(x, W)$ is a small neural network (e.g., 2--3 layers)
+	\item $y$ is the output of the block
+	\item the term $x$ is the skip (identity) connection
+\end{itemize}
+
+Example structure:
+\[
+F(x, W) = g_2(W_2 \, g_1(W_1 x))
+\]
+
+So the full block becomes:
+\[
+y = g_2(W_2 \, g_1(W_1 x)) + x
+\]
+
+% ------------------------------------------------
+
+\textbf{4. Why Residual Networks Work}
+
+\textbf{\textit{(1) Easier optimization}}
+
+If the optimal mapping is identity:
+\[
+H(x) = x
+\]
+
+then the residual solution becomes:
+\[
+F(x) = 0
+\]
+
+This is much easier for gradient-based optimization to learn than forcing multiple nonlinear layers to approximate identity.
+
+% ------------------------------------------------
+
+\textbf{\textit{(2) Improved gradient flow}}
+
+For a residual block:
+\[
+y = F(x) + x
+\]
+
+we compute the gradient:
+
+\[
+\frac{\partial \mathcal{L}}{\partial x}
+=
+\frac{\partial \mathcal{L}}{\partial y}
+\cdot
+\frac{\partial (F(x) + x)}{\partial x}
+\]
+
+Using the sum rule:
+
+\[
+\frac{\partial (F(x) + x)}{\partial x}
+=
+\frac{\partial F(x)}{\partial x} + I
+\]
+
+Thus:
+
+\[
+\frac{\partial \mathcal{L}}{\partial x}
+=
+\frac{\partial \mathcal{L}}{\partial y}
+\cdot
+\left(
+\frac{\partial F(x)}{\partial x} + I
+\right)
+\]
+
+The identity term $I$ ensures that gradients always have a direct path backward.
+
+% ------------------------------------------------
+
+\textbf{\textit{(3) Enables very deep networks}}
+
+Because gradients can flow through skip connections, very deep architectures (50, 101, 152+ layers) become trainable.
+
+% ------------------------------------------------
+
+\textbf{\textit{(4) Feature reuse}}
+
+Skip connections allow:
+\begin{itemize}
+	\item low-level features to propagate forward
+	\item higher layers to refine features instead of relearning them
+\end{itemize}
+
+% ------------------------------------------------
+
+\textbf{5. Intuition}
+
+A standard deep network builds representations layer by layer:
+\[
+x \rightarrow H_1(x) \rightarrow H_2(H_1(x)) \rightarrow \cdots
+\]
+
+A residual network instead accumulates corrections:
+\[
+x \rightarrow x + F_1(x) \rightarrow x + F_1(x) + F_2(\cdot) \rightarrow \cdots
+\]
+
+Thus, each layer learns how to \textbf{improve} the representation, not replace it. Indeed, it tried to learn update the Original input to get to the right output (Original input + Correction).
+
+% ------------------------------------------------
+
+\textbf{6. Key Insight}
+
+Residual networks reformulate deep learning as:
+
+\[
+\text{Learn } F(x) \text{ instead of } H(x)
+\quad \text{where } H(x) = F(x) + x
+\]
+
+This simple change significantly improves:
+\begin{itemize}
+	\item optimization stability
+	\item gradient propagation
+	\item scalability to very deep networks
+\end{itemize}
+
 
 
 
