@@ -1010,7 +1010,17 @@ g^{[1]'}(Z^{[1]})
 \subsection{ResNet: Residual Network}
 
 
+
 \subsubsection{Residual Networks (ResNets) — Explanation Notes}
+
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[trim =0cm 0cm 0cm 2cm, clip, scale=0.2]{pics/resnetModel.png}
+		\caption{ResNet: Residual Network model}
+		%\label{}
+	\end{center}
+\end{figure}
 
 \textbf{1. Motivation}
 
@@ -1190,7 +1200,11 @@ This simple change significantly improves:
 \subsection{Convolutional Neural Network (CNN)}
 In this method, each neuron only looks at part of the previous layer's outputs, instead of a regular layer, which each neuron has weights for all previous layer neurons. The main advantage of this method is that 1) it is faster, 2) Need less training data and less prone to overfitting.
 
-CNN is still a NN, but with filters, that does the pattern recognition. Each filter can detect one object. Think of a CNN as a system that:
+CNN is still a NN, but with filters, that does the pattern recognition. Each filter can detect one object. 
+
+What does differentiate CNN from a fully connected NN? An image has a lot of pixels. For example, a 224x224 RGB image has $ 224 \times 224 \times 3 = 150528$ pixels. If you want to use this number of pixels as input to just one hidden layer with 64 layers, that is $64 \times 150528 = 9633792$ weights. This is very expensive and most likely results in overfitting. CNN, on the other hand, instead of learning one weight for every pixel, using a filter (ex 3x3) to learn tiny patch across three channels. That is only $3\times3 \times 3=27$ weights and one bias. When we apply a pool, it shrinks the size of the image, which, in practice, allows to influence a larger portion of the image to the filter. The early layers, then, finds the edges and textures, and deeper layers respond to larger patterns, curves, or combinations of shapes.
+
+Think of a CNN as a system that:
 
 \begin{itemize}
   \item looks at small local regions of the input (like tiny patches of an image),
