@@ -1202,7 +1202,7 @@ In this method, each neuron only looks at part of the previous layer's outputs, 
 
 CNN is still a NN, but with filters, that does the pattern recognition. Each filter can detect one object. 
 
-What does differentiate CNN from a fully connected NN? An image has a lot of pixels. For example, a 224x224 RGB image has $ 224 \times 224 \times 3 = 150528$ pixels. If you want to use this number of pixels as input to just one hidden layer with 64 layers, that is $64 \times 150528 = 9633792$ weights. This is very expensive and most likely results in overfitting. CNN, on the other hand, instead of learning one weight for every pixel, using a filter (ex 3x3) to learn tiny patch across three channels. That is only $3\times3 \times 3=27$ weights and one bias. When we apply a pool, it shrinks the size of the image, which, in practice, allows to influence a larger portion of the image to the filter. The early layers, then, finds the edges and textures, and deeper layers respond to larger patterns, curves, or combinations of shapes.
+What does differentiate CNN from a fully connected NN? An image has a lot of pixels. For example, a 224x224 RGB image has $ 224 \times 224 \times 3 = 150528$ pixels. If you want to use this number of pixels as input to just one hidden layer with 64 layers, that is $64 \times 150528 = 9633792$ weights. This is very expensive and most likely results in overfitting. CNN, on the other hand, instead of learning one weight for every pixel, using a filter (ex 3x3) to learn tiny patch across three channels. That is only $3\times3 \times 3=27$ weights and one bias. When we apply a pool, it shrinks the size of the image, which, in practice, allows to influence a larger portion of the image to the filter. The early layers, then, finds the edges and textures, and deeper layers respond to larger patterns, curves, or combinations of shapes (receptive field).
 
 Think of a CNN as a system that:
 
@@ -1233,6 +1233,109 @@ Core building blocks of a CNN:
   \item Pooling layer: reduced the spacial sizes while keeping important information. Since we have multiple filters, the total number of numbers increases, pooling allows to reduce the size. What it does it reduced the size of the image by either just using the max number in the region or average of all numbers.
   \item Fully connected layer: the last layer is a regular fully connected layer, used for classification or regression.
 \end{itemize}
+
+
+\textbf{Saliency maps} in computer vision are visual maps that highlight which parts of an image are most important for a model’s prediction.
+
+In simple terms, they show:
+\begin{itemize}
+	\item where the model is “looking”
+	\item which pixels or regions most influenced the output
+	\item what the network considers relevant for a class or decision
+\end{itemize}
+
+For example, if a model predicts “cat,” a saliency map may highlight the cat’s face, ears, or outline while downplaying the background.
+
+They are commonly used to:
+
+\begin{itemize}
+	\item interpret model behavior
+	\item debug whether a model is focusing on the right object
+	\item explain predictions to humans
+\end{itemize}
+
+In CNNs, saliency maps are often computed using the gradient of the output with respect to the input image. Higher gradient magnitude means that small changes in that pixel would affect the prediction more.
+
+
+Grad-CAM stands for Gradient-weighted Class Activation Mapping. It is a technique to explain CNN predictions by showing which image regions were most important for a chosen class.
+
+\textbf{How it works:}
+\begin{enumerate}
+	\item Pick a target class score, such as ``dog.''
+	\item Compute gradients of that class score with respect to the last convolutional feature maps.
+	\item Average those gradients over spatial locations to get one weight per feature map.
+	\item Take a weighted sum of the feature maps and apply ReLU.
+	\item Upsample the result to image size and overlay it as a heatmap.
+\end{enumerate}
+
+\textbf{Intuition:}
+\begin{itemize}
+	\item Feature maps tell where visual patterns appear.
+	\item Gradients tell which patterns increase the chosen class score.
+	\item Their weighted combination gives a class-specific importance map.
+\end{itemize}
+
+\textbf{Why use Grad-CAM:}
+\begin{enumerate}
+	\item Model interpretability: see what the model relied on.
+	\item Debugging: detect shortcut learning or background bias.
+	\item Trust and communication: provide visual evidence for predictions.
+\end{enumerate}
+
+\textbf{Strengths:}
+\begin{enumerate}
+	\item Works with many CNN architectures.
+	\item Class-specific, unlike plain activation maps.
+	\item No need to retrain the model.
+\end{enumerate}
+
+\textbf{Limitations:}
+\begin{enumerate}
+	\item Coarse localization because deep feature maps are low resolution.
+	\item Can be unstable for some cases.
+	\item Mainly designed for convolutional layers.
+\end{enumerate}
+
+\textbf{Quick contrast:}
+\begin{itemize}
+	\item Saliency map: pixel-level gradient importance at input.
+	\item Activation map: raw response of a filter.
+	\item Grad-CAM: class-specific heatmap from gradients plus activation maps.
+\end{itemize}
+
+
+
+An \textbf{activation map} is a feature map produced by a convolutional layer in a CNN.
+
+It shows where a particular filter is responding strongly in the input image. In other words, it highlights the spatial locations that activate that filter.
+
+Key idea:
+\begin{itemize}
+	\item Input image goes through a convolutional filter
+	\item The filter detects some pattern, like edges, textures, or object parts
+	\item The output is an activation map showing response strength across the image
+\end{itemize}
+
+What it means:
+
+\begin{itemize}
+	\item Bright or high values = the filter strongly detected its pattern there
+	\item Low values = little or no match
+\end{itemize}
+
+Example:
+\begin{itemize}
+	\item One filter may respond to vertical edges
+	\item Another may respond to fur-like textures
+	\item Another may respond to wheels or eyes in deeper layers
+\end{itemize}
+
+Difference from saliency maps:
+\begin{itemize}
+	\item Activation map: comes from internal CNN feature responses
+	\item Saliency map: shows which input pixels most affect the model’s prediction
+\end{itemize}
+
 
 \subsection{Tuning hyperparameters}
 
