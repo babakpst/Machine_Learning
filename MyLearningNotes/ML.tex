@@ -1337,6 +1337,37 @@ Difference from saliency maps:
 \end{itemize}
 
 
+\subsection{Diffusion models}
+A diffusion model is a generative model that learns to create data (like images, audio, or video) by reversing a gradual noising process.
+
+In simple terms:
+
+\begin{enumerate}
+	\item \textbf{Forward process} \\
+	Start with a real sample and add a little random noise at each step until it becomes pure noise.
+	
+	\item \textbf{Reverse process} \\
+	Train a neural network to undo that noise step by step.
+	
+	\item \textbf{Generation} \\
+	At inference time, start from random noise and repeatedly denoise. After many steps, you get a new realistic sample.
+\end{enumerate}
+
+\textbf{Why it works:}
+\begin{itemize}
+	\item The model learns the structure of the data distribution through denoising.
+	\item Each step is easier to learn than generating everything in one shot.
+\end{itemize}
+
+\textbf{Where you see it:}
+\begin{itemize}
+	\item Text-to-image systems (for example, Stable Diffusion).
+	\item Image editing, inpainting, super-resolution, audio generation, and video generation.
+\end{itemize}
+
+\textbf{Trade-off:} \\
+High quality and diversity, but often slower sampling than some other generative models because of many denoising steps.
+
 \subsection{Tuning hyperparameters}
 
 \begin{itemize}
