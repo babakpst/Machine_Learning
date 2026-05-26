@@ -1501,6 +1501,9 @@ RNNs are sequential models that process input data one element at a time while m
 Transformers, on the other hand, are designed to handle sequential data more efficiently by employing self-attention mechanisms. This allows them to capture relationships between different elements of the input sequence simultaneously, making them better suited for tasks involving long-range dependencies. Transformers have gained popularity in recent years due to their superior performance on various natural language processing tasks, including language modeling, machine translation, and text generation.
 "
 
+In the attention model, each word decides which other words are more important in the context. For more important words in the sentence, they get more attention (larger attention number will be assigned to them). There different attention heads that can focus on different aspect of a sentence. In pytorch, we can train multiHeadAttentions for LLM. Each attention head is like a filter in CNN, which learns something about the input, in this case a sequence of words. Each word, in the attention model, sees all other words, and to keep track of the order of the words/tokens in the actual sentence, attention models also use positions for each word. Positional info gives a sense of order to the sentence. 
+
+
 Vanishing and exploding gradients are major challenges of RNN. One way to avoid that is Gated Recurrent Unit (GRU).
 
 \begin{figure}[H]
@@ -1862,11 +1865,54 @@ The process is depicted in the following picture, the process is iterative, unti
 \section{Transformer types}
 There are three different transformer models (see the picture below).
 
+
+\subsection*{1. Encoder-Only Models (BERT-style)}
+\textbf{Goal:} Deeply understand input text.\\
+\textbf{Attention pattern:} Bidirectional self-attention (each token attends to tokens on both sides).\\
+\textbf{Typical training objective:} Masked language modeling (and sometimes sentence-level auxiliary tasks).\\
+\textbf{Best suited for:} Classification, token tagging, retrieval, sentence similarity, ranking/search.\\
+\textbf{Strength:} Strong contextual representation learning.\\
+\textbf{Limitation:} Not naturally autoregressive for free-form generation.\\
+\textbf{Examples:} BERT, RoBERTa, DeBERTa.
+
+
+
+
 Some models only uses the Encoder section of the transformer (Encoder Only Models, AKA autoencoding models) by adding some extra layers to the output. These models are trained used Masked Language Modeling (MLM), which randomly masks some tokens from the sentence, and tries to guess the masked token. The model is bidirectional (from the beginning to end and end to the beginning of the sentence). These models are good for Sentiment analysis, Name entity recognition, and word classification. Famous autoencoding models are BERT and ROBERTA.
+
+
+
+\subsection*{2. Decoder-Only Models (GPT-style)}
+\textbf{Goal:} Generate text token by token.\\
+\textbf{Attention pattern:} Causal (masked) self-attention, where each token can only attend to previous tokens.\\
+\textbf{Typical training objective:} Next-token prediction.\\
+\textbf{Best suited for:} Chat, code generation, open-ended completion, instruction following, summarization.\\
+\textbf{Strength:} Simple and highly scalable training objective; excellent generation quality.\\
+\textbf{Limitation:} Can be less parameter-efficient for pure understanding tasks than encoder-only models.\\
+\textbf{Examples:} GPT-family, Llama-style models, Mistral-style models.
 
 Decoder only models (autoregressive models) are trained using Causal Language Modeling (CLM). The training objective is to predict the next token based on the previous sequences of tokens (some researchers call this full language modeling). These models mask the input sequence and can only see the input tokens leading up to the token in question. The model has no knowledge of the end of the sentence and the context is unidirectional. These models are good for text generation, and other emergent behavior (depends on model size). Examples of these models are GPT, BLOOM, and LLaMa.
 
+
+\subsection*{3. Encoder--Decoder Models (Seq2Seq, T5-style)}
+\textbf{Goal:} Map an input sequence to an output sequence.\\
+\textbf{Attention pattern:}
+\begin{itemize}
+	\item Encoder: bidirectional self-attention over the source input.
+	\item Decoder: causal self-attention over generated tokens.
+	\item Cross-attention: decoder attends to encoder outputs.
+\end{itemize}
+\textbf{Typical training objective:} Teacher-forced sequence-to-sequence generation.\\
+\textbf{Best suited for:} Translation, summarization, paraphrasing, and structured text transformation.\\
+\textbf{Strength:} Clear separation between source understanding and target generation.\\
+\textbf{Limitation:} Heavier inference stack than decoder-only in some deployment settings.\\
+\textbf{Examples:} T5, BART, mT5, FLAN-T5.
+
+
 The third type of transformer models are Encoder/Decoder or sequence-to-sequence models. It masks a f few words from the sentence, combines it into one token, then it tries to predict the masked tokens (which is also called sentinel token). These models are good for translation, text summarization, and question answering. BART and T5 are of this type.
+
+\textbf{Intuition in one line:} Encoder-only reads, decoder-only writes, encoder--decoder reads then writes.
+
 
 
 \begin{figure}[H]
